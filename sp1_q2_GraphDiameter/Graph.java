@@ -1,4 +1,4 @@
-package cs6301.g12;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q2_GraphDiameter;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Graph implements Iterable<Graph.Vertex> {
+
     Vertex[] v; // vertices of graph
     int n; // number of verices in the graph
     boolean directed;  // true if graph is directed, false otherwise
@@ -15,10 +16,10 @@ public class Graph implements Iterable<Graph.Vertex> {
      * Nested class to represent a vertex of a graph
      */
 
-    static class Vertex implements Iterable<Edge> {
+    public static class Vertex implements Iterable<Edge> {
 	int name; // name of the vertex
 	List<Edge> adj, revAdj; // adjacency list; use LinkedList or ArrayList
-	Vertex parent;
+
 	/**
 	 * Constructor for the vertex
 	 * 
@@ -29,7 +30,14 @@ public class Graph implements Iterable<Graph.Vertex> {
 	    name = n;
 	    adj = new LinkedList<Edge>();
 	    revAdj = new LinkedList<Edge>();   /* only for directed graphs */
-	    parent = null;
+	}
+
+	/**
+	 * Method to get name of a vertex.
+	 *
+	 */
+	public int getName() {
+	    return name;
 	}
 
 	public Iterator<Edge> iterator() { return adj.iterator(); }
@@ -46,7 +54,7 @@ public class Graph implements Iterable<Graph.Vertex> {
      * Nested class that represents an edge of a Graph
      */
 
-    static class Edge {
+    public static class Edge {
 	Vertex from; // head vertex
 	Vertex to; // tail vertex
 	int weight;// weight of edge
@@ -105,7 +113,7 @@ public class Graph implements Iterable<Graph.Vertex> {
      * @param n
      *            : int - number of vertices
      */
-    Graph(int n) {
+    public Graph(int n) {
 	this.n = n;
 	this.v = new Vertex[n];
 	this.directed = false;  // default is undirected graph
@@ -119,7 +127,7 @@ public class Graph implements Iterable<Graph.Vertex> {
      * @param n
      *           : int
      */
-    Vertex getVertex(int n) {
+    public Vertex getVertex(int n) {
 	return v[n-1];
     }
     
@@ -133,7 +141,7 @@ public class Graph implements Iterable<Graph.Vertex> {
      * @param weight
      *            : int - the weight of the edge
      */
-    void addEdge(Vertex from, Vertex to, int weight) {
+    public void addEdge(Vertex from, Vertex to, int weight) {
 	Edge e = new Edge(from, to, weight);
 	if(this.directed) {
 	    from.adj.add(e);
@@ -144,7 +152,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 	}
     }
 
-    int size() {
+    public int size() {
 	return n;
     }
 
@@ -181,5 +189,6 @@ public class Graph implements Iterable<Graph.Vertex> {
 	}
 	return g;
     }
+
 
 }

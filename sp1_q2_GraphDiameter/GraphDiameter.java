@@ -1,12 +1,11 @@
-package cs6301.g12;
-
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q2_GraphDiameter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
- * Class TreeDiameter
+ * Class GraphDiameter
  * 
  * <P> This class forms the graph and finds the longest path by 
  * running bfs twice.
@@ -14,7 +13,7 @@ import java.util.Scanner;
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
-public class TreeDiameter {
+public class GraphDiameter {
 
 
 	/**
@@ -25,7 +24,7 @@ public class TreeDiameter {
 	static LinkedList<Graph.Vertex> diameter(Graph g) {
 		
 		LinkedList<Graph.Vertex> initialPath = BreadthFirstSearch.bfs(g, g.v[0]); // runs  bfs for the first node in the vertices list
-		LinkedList<Graph.Vertex> finalPath = BreadthFirstSearch.bfs(g, g.getVertex(initialPath.get(0).name + 1)); // runs bfs for the farthest node from the first vertice
+		LinkedList<Graph.Vertex> finalPath = BreadthFirstSearch.bfs(g, initialPath.get(0)); // runs bfs for the farthest node from the first vertice
 		return finalPath;
 	}
 

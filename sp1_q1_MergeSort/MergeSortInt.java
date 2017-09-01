@@ -1,7 +1,16 @@
-package cs6301.g12.sp1_q1_MergeSort;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort;
 
 import java.util.Random;
 
+/**
+ * Class InsertionSort
+ * 
+ * <P> This class performs merge sort on basic 'int' type array 
+ * of size ranging from 1M - 16M
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class MergeSortInt {
 	
 	public static void mergeSort(int[] arr,int[] tmp) {

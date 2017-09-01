@@ -1,5 +1,14 @@
-package cs6301.g12.sp1_q1_MergeSort;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort;
 
+/**
+ * Class MergeSort
+ * 
+ * <P> This class performs merge sort on a generic array 
+ * of size ranging from 1M - 16M
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class MergeSortGeneric<T> {
 	
 	public static<T extends Comparable<? super T>> void mergeSort(T[] arr,T[] tmp) {

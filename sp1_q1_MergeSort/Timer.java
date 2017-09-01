@@ -1,4 +1,4 @@
-package cs6301.g12.sp1_q1_MergeSort;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort;
 
 public class Timer {
 	
