@@ -23,27 +23,5 @@ public class Shuffle {
 			arr[y] = tmp;
 		    }
 
-//	static<T> void printArray(T[] arr, String message) {
-//			printArray(arr, 0, arr.length-1, message);
-//		    }
-//
-//	static<T> void printArray(T[] arr, int from, int to, String message) {
-//			System.out.print(message);
-//			for(int i=from; i<=to; i++) {
-//			    System.out.print(" " + arr[i]);
-//			}
-//			System.out.println();
-//		    }
-
-//	public static void main(String[] args) {
-//			int n = 10;
-//		    Integer[] arr = new Integer[n];
-//		    for(int i=0; i<n; i++) {
-//			    arr[i] = new Integer(i);
-//			}
-//			printArray(arr, "Before:");
-//			shuffle(arr);
-//			printArray(arr, "After:");
-//		    }
 
 }

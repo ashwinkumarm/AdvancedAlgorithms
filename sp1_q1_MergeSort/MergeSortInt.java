@@ -60,6 +60,7 @@ public class MergeSortInt {
 		    arr[i] = i+1;
 		}
 	  
+	    //Shuffle.shuffle(arr);
 	    System.out.println("Array Creation Completed");
 	    //Shuffling the int Array
 	    Random rand = new Random();

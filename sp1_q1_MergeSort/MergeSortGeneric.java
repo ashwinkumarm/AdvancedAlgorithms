@@ -11,11 +11,26 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1
  */
 public class MergeSortGeneric<T> {
 	
+	/**
+	 * Gives us the sorted array of elements
+	 *  
+	 * @param arr generic array which has the original content
+	 * @param tmp temporary generic array 
+	 */
 	public static<T extends Comparable<? super T>> void mergeSort(T[] arr,T[] tmp) {
 		divide(arr,tmp,0,arr.length-1);
 	}
 	
-	private static<T extends Comparable<? super T>> void divide(T[] arr,T[] tmp, int l,int r){ //Divide method to carry out the divide phase of divide and conquer strategy
+	
+	/**
+	 * Divides the array into left and right and calls the merge method
+	 * 
+	 * @param arr generic array which has the original content
+	 * @param tmp temporary generic array
+	 * @param l leftmost element index
+	 * @param r rightmost element index
+	 */
+	private static<T extends Comparable<? super T>> void divide(T[] arr,T[] tmp, int l,int r){
 		if(l<r) {
 			int mid = (l+r)/2;
 			
@@ -26,12 +41,22 @@ public class MergeSortGeneric<T> {
 		}	
 	}
 	
-	private static<T extends Comparable<? super T>> void merge(T[] arr,T[] tmp, int l,int m,int r) { //Merge method to carry out the conquer phase of divide and conquer strategy
+	/**
+	 * Helper method which sorts the given array. 
+	 * 
+	 * @param arr generic array which has the original content
+	 * @param tmp temporary generic array
+	 * @param l leftmost element index
+	 * @param m middle element index
+	 * @param r rightmost element index
+	 */
+	private static<T extends Comparable<? super T>> void merge(T[] arr,T[] tmp, int l,int m,int r) { 
+		// copies all the element to temporary array
 		for(int i=0;i<=r;i++)
 			tmp[i]=arr[i];
 		
 		int i=l,j=m+1,k=l;
-		
+		//compares the element in the left and right half and adds it to the original array
 		while(i<=m && j<=r) {
 			if (tmp[i].compareTo(tmp[j])<=0) {
 				arr[k]=tmp[i];
@@ -43,6 +68,7 @@ public class MergeSortGeneric<T> {
 			}
 			k++;
 		}
+		//copies the rest of first half
 		while(i<=m) {
 			arr[k]=tmp[i];
 			k++;
@@ -51,30 +77,23 @@ public class MergeSortGeneric<T> {
 		
 	}
 	
+	/**
+	 * @param args
+	 */
 	public static void main(String args[]) {
 		
-		int n = 100000;
+		int n = 100;
 	    Integer[] integerArr = new Integer[n];
 	    for(int i=0; i<n; i++) {
 	    		integerArr[i] = new Integer(i+1);
 		}
 	    System.out.println("Array Creation Completed");
 	    Shuffle.shuffle(integerArr);
-//	    System.out.println("Printing Shuffled Array");
-//	    for(Integer i:arr)
-//			System.out.print(i+"  ");
 	    
 		Timer t = new Timer();
 		mergeSort(integerArr,new Integer[integerArr.length]);
 		System.out.println(t.end());
-		//for(Integer i:arr)
-		//	System.out.print(i+"  ");
 		
-//		t.start();
-//		mergeSort(doubleArr,new Double[doubleArr.length]);
-//		System.out.println(t.end());
-//		for(Double i:doubleArr)
-//			System.out.print(i+"  ");
 		
 	}
 
