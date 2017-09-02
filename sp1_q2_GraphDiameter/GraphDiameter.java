@@ -39,8 +39,7 @@ public class GraphDiameter {
 	 * This method finds the path from the given node to its farthest node.
 	 *
 	 * @param cc
-	 * @param g
-	 * @param initVertex
+	 * @param startVertex
 	 * @return
 	 */
 	static LinkedList<Vertex> getDiameterPath(CC cc, Vertex startVertex) {
