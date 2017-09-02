@@ -1,34 +1,63 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q2_GraphDiameter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Scanner;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q2_GraphDiameter.Graph.Vertex;
 
 /**
  * Class GraphDiameter
  *
- * <P> This class forms the graph and finds the longest path by
- * running bfs twice.
+ * <P>
+ * This class forms the graph and finds the longest path by running bfs twice.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
 public class GraphDiameter {
 
-
 	/**
 	 * Finds the longest path by running bfs.
 	 *
-	 * @param g graph
-	 * */
-	static LinkedList<Graph.Vertex> diameter(Graph g) {
+	 * @param g
+	 *            graph
+	 */
+	static LinkedList<Vertex> diameter(Graph g) {
+		CC cc = new CC(g);
+		// runs bfs for the first node in the vertex list
+		Vertex lastVertex1 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, g, g.v[0]);
 
-		LinkedList<Graph.Vertex> initialPath = BreadthFirstSearch.bfs(g, g.v[0]); // runs  bfs for the first node in the vertices list
-		LinkedList<Graph.Vertex> finalPath = BreadthFirstSearch.bfs(g, initialPath.get(0)); // runs bfs for the farthest node from the first vertice
-		return finalPath;
+		cc = new CC(g);
+		// runs bfs for the farthest node from the first vertex
+		Vertex lastVertex2 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, g, lastVertex1);
+		return getPathToTheFarthestNode(cc, lastVertex2);
 	}
 
 	/**
+	 * This method finds the path from the given node to its farthest node.
+	 *
+	 * @param cc
+	 * @param g
+	 * @param initVertex
+	 * @return
+	 */
+	static LinkedList<Vertex> getPathToTheFarthestNode(CC cc, Vertex startVertex) {
+		LinkedList<Vertex> path = new LinkedList<>();
+		path.add(startVertex);
+
+		// we iterate till the first node(parent is null) and add the vertices
+		// to the path list
+		while (cc.getCCVertex(startVertex).parent != null) {
+			startVertex = cc.getCCVertex(startVertex).parent;
+			path.add(startVertex);
+		}
+		return path;
+	}
+
+	/**
+	 * Main method where the execution starts.
+	 *
 	 * @param args
 	 * @throws FileNotFoundException
 	 */
@@ -40,13 +69,14 @@ public class GraphDiameter {
 		} else {
 			in = new Scanner(System.in);
 		}
-		Graph graph = Graph.readGraph(in); // passes the scanner object to graph class to construct the graph
+		// passing the scanner object to graph class to construct the graph
+		Graph graph = Graph.readGraph(in);
 
 		// if graph is not empty we call the diameter method
-		if(graph.v.length > 0 && graph.n > 0){
-		LinkedList<Graph.Vertex> longestPath = diameter(graph);
-		System.out.println(longestPath);
-		}else{
+		if (graph.v.length > 0 && graph.n > 0) {
+			LinkedList<Graph.Vertex> longestPath = diameter(graph);
+			System.out.println(longestPath);
+		} else {
 			System.out.println("Empty Graph");
 		}
 	}
