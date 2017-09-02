@@ -43,11 +43,12 @@ public class GraphDiameter {
 	 * @return
 	 */
 	static void printPathToTheFarthestNode(CC cc, Vertex startVertex) {
+		System.out.print("The longest path in the given graph is (");
 		while (cc.getCCVertex(startVertex).parent != null) {
 			System.out.print(startVertex + " -> ");
 			startVertex = cc.getCCVertex(startVertex).parent;
 		}
-		System.out.print(startVertex);
+		System.out.print(startVertex + ")");
 	}
 
 	/**
