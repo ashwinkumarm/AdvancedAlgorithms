@@ -35,7 +35,7 @@ public class BreadthFirstSearch {
 		while (!q.isEmpty()) {
 			currentVertex = q.poll();
 
-			// if the vertice is visited mark them as true.
+			// Marking the vertex as seen.
 			cc.getCCVertex(currentVertex).seen = true;
 
 			// gets all the adjacent vertices
@@ -44,8 +44,7 @@ public class BreadthFirstSearch {
 				adjVertex = adjEdges.next().otherEnd(currentVertex);
 				if (!cc.getCCVertex(adjVertex).seen) {
 					q.add(adjVertex);
-					// to get the path, we assign next vertice parent as the
-					// current vertice
+					// We store the parent to track its traversal path
 					cc.getCCVertex(adjVertex).parent = currentVertex;
 				}
 			}
