@@ -17,15 +17,13 @@ public class BreadthFirstSearch {
 
 	/**
 	 * Breadth first algorithm is being used to find the diameter for the given
-	 * graph(Tree).
+	 * graph(Tree)
 	 *
-	 * @param g
-	 *            graph
-	 * @param v
-	 *            current vertex
-	 * @return path longest path from the currentVertex
+	 * @param cc graph with extra data members
+	 * @param initVertex starting vertex in the graph
+	 * @return farthest Vertex
 	 */
-	static Vertex doBFSAndReturnFarthestNode(CC cc, Graph g, Vertex initVertex) {
+	static Vertex doBFSAndReturnFarthestNode(CC cc, Vertex initVertex) {
 		Queue<Vertex> q = new LinkedList<>();
 		cc.getCCVertex(initVertex).parent = null;
 		q.add(initVertex);

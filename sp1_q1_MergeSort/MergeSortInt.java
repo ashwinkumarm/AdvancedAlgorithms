@@ -3,7 +3,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1
 import java.util.Random;
 
 /**
- * Class InsertionSort
+ * Class MergeSortInt
  * 
  * <P> This class performs merge sort on basic 'int' type array 
  * of size ranging from 1M - 16M
@@ -13,11 +13,26 @@ import java.util.Random;
  */
 public class MergeSortInt {
 	
+	/**
+	 * Gives us the sorted array of elements
+	 *  
+	 * @param arr int type array which has the original content
+	 * @param tmp temporary int array 
+	 */
 	public static void mergeSort(int[] arr,int[] tmp) {
 		divide(arr,tmp,0,arr.length-1);
 	}
 	
-	private static void divide(int[] arr,int[] tmp, int l,int r){ //Divide method to carry out the divide phase of divide and conquer strategy
+	/**
+	 * Divides the array into left and right and calls the merge method
+	 * 
+	 * @param arr int type array which has the original content
+	 * @param tmp temporary int array
+	 * @param l leftmost element index
+	 * @param r rightmost element index
+	 */
+	
+	private static void divide(int[] arr,int[] tmp, int l,int r){ 
 		if(l<r) {
 			int mid = (l+r)/2;
 			
@@ -28,6 +43,15 @@ public class MergeSortInt {
 		}	
 	}
 	
+	/**
+	 * Merge method which sorts the given array. 
+	 * 
+	 * @param arr int type array which has the original content
+	 * @param tmp temporary int array
+	 * @param l leftmost element index
+	 * @param m middle element index
+	 * @param r rightmost element index
+	 */
 	private static void merge(int[] arr,int[] tmp, int l,int m,int r) { //Merge method to carry out the conquer phase of divide and conquer strategy
 		for(int i=0;i<=r;i++)
 			tmp[i]=arr[i];
@@ -53,6 +77,9 @@ public class MergeSortInt {
 		
 	}
 	
+	/**
+	 * @param args
+	 */
 	public static void main(String args[]) {
 		int n = 100000;
 	    int[] arr = new int[n];
@@ -60,9 +87,10 @@ public class MergeSortInt {
 		    arr[i] = i+1;
 		}
 	  
-	    //Shuffle.shuffle(arr);
 	    System.out.println("Array Creation Completed");
-	    //Shuffling the int Array
+	    System.out.println("Shuffling the array and sorting....");
+	    
+	    //Shuffling the int array
 	    Random rand = new Random();
 	    for (int i = arr.length - 1; i > 0; i--)
 	    {
@@ -71,9 +99,6 @@ public class MergeSortInt {
 	        arr[index] = arr[i];
 	        arr[i] = temp;
 	    }
-//	    System.out.println("Printing Shuffled Array: ");
-//		for(int i:arr)
-//			System.out.print(i+"  ");
 	    
 		Timer t = new Timer();
 		mergeSort(arr,new int[arr.length]);

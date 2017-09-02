@@ -1,7 +1,7 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort;
 
 /**
- * Class MergeSort
+ * Class MergeSortGeneric
  * 
  * <P> This class performs merge sort on a generic array 
  * of size ranging from 1M - 16M
@@ -42,7 +42,7 @@ public class MergeSortGeneric<T> {
 	}
 	
 	/**
-	 * Helper method which sorts the given array. 
+	 * Merge method which sorts the given array. 
 	 * 
 	 * @param arr generic array which has the original content
 	 * @param tmp temporary generic array
@@ -82,18 +82,20 @@ public class MergeSortGeneric<T> {
 	 */
 	public static void main(String args[]) {
 		
-		int n = 100;
+		int n = 10000;
 	    Integer[] integerArr = new Integer[n];
 	    for(int i=0; i<n; i++) {
 	    		integerArr[i] = new Integer(i+1);
 		}
 	    System.out.println("Array Creation Completed");
+	    System.out.println("Shuffling the array and sorting....");
 	    Shuffle.shuffle(integerArr);
 	    
 		Timer t = new Timer();
 		mergeSort(integerArr,new Integer[integerArr.length]);
 		System.out.println(t.end());
-		
+//		for(Integer i:integerArr)
+//			System.out.print(i+"  ");
 		
 	}
 

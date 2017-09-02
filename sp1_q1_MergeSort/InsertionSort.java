@@ -11,6 +11,11 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1
  */
 public class InsertionSort {
 	
+	/**
+	 * nSquareSort method gives us the sorted array of elements
+	 *  
+	 * @param arr generic array which has the original content 
+	 */
 	public static<T extends Comparable<? super T>> void nSquareSort(T[] arr) {
 		for(int i=1;i<arr.length;i++) {
 			for(int j=i;j>0;j--) {
@@ -23,6 +28,9 @@ public class InsertionSort {
 		}
 	}
 	
+	/**
+	 * @param args
+	 */
 	public static void main(String args[]) {
 		
 		int n = 100000;
@@ -31,23 +39,14 @@ public class InsertionSort {
 	    		integerArr[i] = new Integer(i+1);
 		}
 	    System.out.println("Array Creation Completed");
+	    System.out.println("Shuffling the array and sorting....");
 	    Shuffle.shuffle(integerArr);
-//	    System.out.println("Printing Shuffled Array");
-//	    for(Integer i:arr)
-//			System.out.print(i+"  ");
 	    
 		Timer t = new Timer();
 		nSquareSort(integerArr);
 		System.out.println(t.end());
-		//for(Integer i:arr)
-		//	System.out.print(i+"  ");
-		
-//		t.start();
-//		nSquareSort(doubleArr);
-//		System.out.println(t.end());
-//		for(Double i:doubleArr)
+//		for(Integer i:integerArr)
 //			System.out.print(i+"  ");
-		
 		
 	}
 
