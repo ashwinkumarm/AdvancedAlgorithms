@@ -2,6 +2,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q2_GraphDiameter.Graph.Vertex;
@@ -23,15 +24,15 @@ public class GraphDiameter {
 	 * @param g
 	 *
 	 */
-	static void findDiameterAndPrintPath(Graph g) {
+	static LinkedList<Graph.Vertex> diameter(Graph g) {
 		CC cc = new CC(g);
 		// runs bfs for the first node in the vertex list
 		Vertex lastVertex1 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, g, g.v[0]);
-
+		
 		cc = new CC(g);
 		// runs bfs for the farthest node from the first vertex
 		Vertex lastVertex2 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, g, lastVertex1);
-		printPathToTheFarthestNode(cc, lastVertex2);
+		return getDiameterPath(cc, lastVertex2);
 	}
 
 	/**
@@ -42,13 +43,17 @@ public class GraphDiameter {
 	 * @param initVertex
 	 * @return
 	 */
-	static void printPathToTheFarthestNode(CC cc, Vertex startVertex) {
-		System.out.print("The longest path in the given graph is (");
+	static LinkedList<Vertex> getDiameterPath(CC cc, Vertex startVertex) {
+		LinkedList<Vertex> path = new LinkedList<>();
+		path.add(startVertex);
+
+		// we iterate till the first node(parent is null) and add the vertices
+		// to the path list
 		while (cc.getCCVertex(startVertex).parent != null) {
-			System.out.print(startVertex + " -> ");
 			startVertex = cc.getCCVertex(startVertex).parent;
+			path.add(startVertex);
 		}
-		System.out.print(startVertex + ")");
+		return path;
 	}
 
 	/**
@@ -69,8 +74,10 @@ public class GraphDiameter {
 		Graph graph = Graph.readGraph(in);
 
 		// if graph is not empty we call the diameter method
-		if (graph.v.length > 0 && graph.n > 0)
-			findDiameterAndPrintPath(graph);
+		if (graph.v.length > 0 && graph.n > 0){
+			System.out.print("The longest path in the given graph is ");
+			System.out.print(diameter(graph));
+		}
 		else
 			System.out.println("Empty Graph");
 	}
