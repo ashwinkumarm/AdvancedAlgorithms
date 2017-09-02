@@ -28,11 +28,11 @@ public class GraphDiameter {
 		CC cc = new CC(g);
 		// runs bfs for the first node in the vertex list
 		Vertex lastVertex1 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, g, g.v[0]);
-
+		
 		cc = new CC(g);
 		// runs bfs for the farthest node from the first vertex
 		Vertex lastVertex2 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, g, lastVertex1);
-		return getPathToTheFarthestNode(cc, lastVertex2);
+		return getDiameterPath(cc, lastVertex2);
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class GraphDiameter {
 	 * @param initVertex
 	 * @return
 	 */
-	static LinkedList<Vertex> getPathToTheFarthestNode(CC cc, Vertex startVertex) {
+	static LinkedList<Vertex> getDiameterPath(CC cc, Vertex startVertex) {
 		LinkedList<Vertex> path = new LinkedList<>();
 		path.add(startVertex);
 
