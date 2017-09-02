@@ -2,8 +2,8 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
 import java.util.Scanner;
+
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q2_GraphDiameter.Graph.Vertex;
 
 /**
@@ -21,9 +21,9 @@ public class GraphDiameter {
 	 * Finds the longest path by running bfs.
 	 *
 	 * @param g
-	 *            graph
+	 *
 	 */
-	static LinkedList<Vertex> diameter(Graph g) {
+	static void findDiameterAndPrintPath(Graph g) {
 		CC cc = new CC(g);
 		// runs bfs for the first node in the vertex list
 		Vertex lastVertex1 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, g, g.v[0]);
@@ -31,7 +31,7 @@ public class GraphDiameter {
 		cc = new CC(g);
 		// runs bfs for the farthest node from the first vertex
 		Vertex lastVertex2 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, g, lastVertex1);
-		return getPathToTheFarthestNode(cc, lastVertex2);
+		printPathToTheFarthestNode(cc, lastVertex2);
 	}
 
 	/**
@@ -42,17 +42,12 @@ public class GraphDiameter {
 	 * @param initVertex
 	 * @return
 	 */
-	static LinkedList<Vertex> getPathToTheFarthestNode(CC cc, Vertex startVertex) {
-		LinkedList<Vertex> path = new LinkedList<>();
-		path.add(startVertex);
-
-		// we iterate till the first node(parent is null) and add the vertices
-		// to the path list
+	static void printPathToTheFarthestNode(CC cc, Vertex startVertex) {
 		while (cc.getCCVertex(startVertex).parent != null) {
+			System.out.print(startVertex + " -> ");
 			startVertex = cc.getCCVertex(startVertex).parent;
-			path.add(startVertex);
 		}
-		return path;
+		System.out.print(startVertex);
 	}
 
 	/**
@@ -73,12 +68,10 @@ public class GraphDiameter {
 		Graph graph = Graph.readGraph(in);
 
 		// if graph is not empty we call the diameter method
-		if (graph.v.length > 0 && graph.n > 0) {
-			LinkedList<Graph.Vertex> longestPath = diameter(graph);
-			System.out.println(longestPath);
-		} else {
+		if (graph.v.length > 0 && graph.n > 0)
+			findDiameterAndPrintPath(graph);
+		else
 			System.out.println("Empty Graph");
-		}
 	}
 
 }
