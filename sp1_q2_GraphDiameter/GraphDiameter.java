@@ -21,9 +21,7 @@ public class GraphDiameter {
 	/**
 	 * Finds the longest diameter path by running bfs.
 	 *
-	 * @param g
-	 *            graph
-	 *
+	 * @param g  graph
 	 */
 	static LinkedList<Graph.Vertex> diameter(Graph g) {
 		CC cc = new CC(g);

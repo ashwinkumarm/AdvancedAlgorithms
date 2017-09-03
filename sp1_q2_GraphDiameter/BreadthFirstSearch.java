@@ -27,7 +27,6 @@ public class BreadthFirstSearch {
 	 */
 	static Vertex doBFSAndReturnFarthestNode(CC cc, Vertex initVertex) {
 		Queue<Vertex> q = new LinkedList<>();
-		cc.getCCVertex(initVertex).parent = null;
 		q.add(initVertex);
 
 		Vertex currentVertex = null, adjVertex = null;
