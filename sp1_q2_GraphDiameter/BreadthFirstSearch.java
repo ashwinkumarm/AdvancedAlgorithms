@@ -19,8 +19,10 @@ public class BreadthFirstSearch {
 	 * Breadth first algorithm is being used to find the diameter for the given
 	 * graph(Tree)
 	 *
-	 * @param cc graph with extra data members
-	 * @param initVertex starting vertex in the graph
+	 * @param cc
+	 *            graph with extra data members
+	 * @param initVertex
+	 *            starting vertex in the graph
 	 * @return farthest Vertex
 	 */
 	static Vertex doBFSAndReturnFarthestNode(CC cc, Vertex initVertex) {

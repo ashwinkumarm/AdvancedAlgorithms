@@ -21,25 +21,27 @@ public class GraphDiameter {
 	/**
 	 * Finds the longest diameter path by running bfs.
 	 *
-	 * @param g graph
+	 * @param g
+	 *            graph
 	 *
 	 */
 	static LinkedList<Graph.Vertex> diameter(Graph g) {
 		CC cc = new CC(g);
 		// runs bfs from the first node in the vertex list
 		Vertex lastVertex1 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, g.v[0]);
-		
+
 		cc = new CC(g);
 		// runs bfs from the above found farthest node to its farthest vertex
 		Vertex lastVertex2 = BreadthFirstSearch.doBFSAndReturnFarthestNode(cc, lastVertex1);
-		
+
 		return getDiameterPath(cc, lastVertex2);
 	}
 
 	/**
 	 * This method finds the diameter path from the given node to its farthest node.
 	 *
-	 * @param cc graph with extra data members
+	 * @param cc
+	 *            graph with extra data members
 	 * @param startVertex
 	 * @return diameter path
 	 */
@@ -74,10 +76,9 @@ public class GraphDiameter {
 		Graph graph = Graph.readGraph(in);
 
 		// if graph is not empty we call the diameter method
-		if (graph.v.length > 0 && graph.n > 0){
-			System.out.println("The longest diameter path in the given graph is "+diameter(graph));
-		}
-		else
+		if (graph.v.length > 0 && graph.n > 0) {
+			System.out.println("The longest diameter path in the given graph is " + diameter(graph));
+		} else
 			System.out.println("Empty Graph");
 	}
 
