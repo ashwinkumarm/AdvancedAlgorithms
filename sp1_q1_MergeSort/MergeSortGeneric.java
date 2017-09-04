@@ -63,8 +63,7 @@ public class MergeSortGeneric<T> {
 	 */
 	private static <T extends Comparable<? super T>> void merge(T[] arr, T[] tmp, int l, int m, int r) {
 		// copies all the element to temporary array
-		for (int i = 0; i <= r; i++)
-			tmp[i] = arr[i];
+		System.arraycopy(arr, l, tmp, l, r - l + 1);
 
 		int i = l, j = m + 1, k = l;
 		// compares the element in the left and right half and adds it to the original

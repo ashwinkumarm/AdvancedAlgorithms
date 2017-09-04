@@ -63,11 +63,12 @@ public class MergeSortInt {
 	 *            rightmost element index
 	 */
 	private static void merge(int[] arr, int[] tmp, int l, int m, int r) {
-		for (int i = 0; i <= r; i++)
-			tmp[i] = arr[i];
+		// copies all the element to temporary array
+		System.arraycopy(arr, l, tmp, l, r - l + 1);
 
 		int i = l, j = m + 1, k = l;
-
+		// compares the element in the left and right half and adds it to the original
+		// array
 		while (i <= m && j <= r) {
 			if (tmp[i] <= tmp[j]) {
 				arr[k] = tmp[i];
@@ -78,6 +79,7 @@ public class MergeSortInt {
 			}
 			k++;
 		}
+		// copies the rest of first half
 		while (i <= m) {
 			arr[k] = tmp[i];
 			k++;
@@ -85,5 +87,4 @@ public class MergeSortInt {
 		}
 
 	}
-
 }
