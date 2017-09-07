@@ -5,17 +5,16 @@ public class Operator {
 	private String associativity;
 	private int precedence;
 
-	
 	Operator(String name, String associativity, int precedence) {
 		this.name = name;
 		this.associativity = associativity;
 		this.precedence = precedence;
-	}	
+	}
 
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getAssociativity() {
 		return associativity;
 	}
