@@ -55,8 +55,12 @@ public class BoundedStack<T> {
 		for (int i = 1; i <= capacity; i++)
 			stack.push(i);
 		// The next push will overflow the stack
-		stack.push(capacity + 1);
-		System.out.println(stack);
+		try {
+			stack.push(capacity + 1);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println(e.getMessage());
+		}
+		System.out.println("The contents of the stack are " + stack);
 	}
 
 }
