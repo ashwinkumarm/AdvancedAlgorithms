@@ -1,6 +1,5 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q1_SetFunctions;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -8,8 +7,6 @@ import java.util.ListIterator;
 public class SetFunctions {
 
 	public static <T extends Comparable<? super T>> void intersect(List<T> l1, List<T> l2, List<T> outList) {
-		Collections.sort(l1);
-		Collections.sort(l2);
 		int i = 0, j = 0;
 		while (i < l1.size() && j < l2.size()) {
 			T data1 = l1.get(i);
@@ -27,8 +24,6 @@ public class SetFunctions {
 	}
 
 	public static <T extends Comparable<? super T>> void union(List<T> l1, List<T> l2, List<T> outList) {
-		Collections.sort(l1);
-		Collections.sort(l2);
 		int i = 0, j = 0;
 		while (i < l1.size() && j < l2.size()) {
 			T data1 = l1.get(i);
@@ -52,8 +47,6 @@ public class SetFunctions {
 	}
 
 	public static <T extends Comparable<? super T>> void difference(List<T> l1, List<T> l2, List<T> outList) {
-		Collections.sort(l1);
-		Collections.sort(l2);
 		int i = 0, j = 0;
 		while (i < l1.size() && j < l2.size()) {
 			T data1 = l1.get(i);
