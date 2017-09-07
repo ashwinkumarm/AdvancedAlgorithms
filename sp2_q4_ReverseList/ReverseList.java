@@ -40,7 +40,27 @@ public class ReverseList {
 		}
 	}
 
+	public static <T> void printReverseIterative(SinglyLinkedList<T> ll) {
+		printReverse(ll.head.next);
+	}
+
 	public static void main(String args[]) {
+		SinglyLinkedList<Integer> ll = getNewList();
+		System.out.print("Reverse List Iterative: ");
+		reverseIterative(ll);
+		printList(ll.head.next);
+
+		ll = getNewList();
+		System.out.print("\nReverse List Recursive: ");
+		reverseRecursive(ll);
+		printList(ll.head.next);
+
+		ll = getNewList();
+		System.out.print("\nPrint Reverse Recursive: ");
+		printReverseRecursive(ll);
+	}
+
+	private static SinglyLinkedList<Integer> getNewList() {
 		SinglyLinkedList<Integer> ll = new SinglyLinkedList<Integer>();
 		ll.add(10);
 		ll.add(15);
@@ -48,30 +68,7 @@ public class ReverseList {
 		ll.add(1);
 		ll.add(2);
 
-		System.out.print("Reverse List Iterative: ");
-		reverseIterative(ll);
-		printList(ll.head.next);
-
-		ll = new SinglyLinkedList<Integer>();
-		ll.add(10);
-		ll.add(15);
-		ll.add(20);
-		ll.add(1);
-		ll.add(2);
-
-		System.out.print("\nReverse List Recursive: ");
-		reverseRecursive(ll);
-		printList(ll.head.next);
-
-		ll = new SinglyLinkedList<Integer>();
-		ll.add(10);
-		ll.add(15);
-		ll.add(20);
-		ll.add(1);
-		ll.add(2);
-
-		System.out.print("\nPrint Reverse Recursive: ");
-		printReverseRecursive(ll);
+		return ll;
 	}
 
 	private static void printList(Entry<Integer> node) {
