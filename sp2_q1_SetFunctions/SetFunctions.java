@@ -47,8 +47,7 @@ public class SetFunctions {
 				data2 = next(itr2);
 			}
 		}
-		data1 = next(itr1);
-		data2 = next(itr2);
+		
 		while (data1 != null) {
 			outList.add(data1);
 			data1 = next(itr1);
@@ -76,7 +75,6 @@ public class SetFunctions {
 				data2 = next(itr2);
 			}
 		}
-		data1 = next(itr1);
 		while (data1 != null) {
 			outList.add(data1);
 			data1 = next(itr1);
@@ -98,10 +96,18 @@ public class SetFunctions {
 		l2.add(8);
 		l2.add(11);
 
+		System.out.println("Elements in List1");
+		for(int e :l1){
+			System.out.print(e + " ");
+		}
+		System.out.println("\nElements in List2");
+		for(int e :l2){
+			System.out.print(e + " ");
+		}
 		List<Integer> outList = new LinkedList<Integer>();
 		intersect(l1, l2, outList);
 		ListIterator<Integer> itr3 = outList.listIterator();
-		System.out.println("Intersection: ");
+		System.out.println("\nIntersection: ");
 		while (itr3.hasNext()) {
 			System.out.print(itr3.next() + " ");
 		}
