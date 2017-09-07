@@ -1,8 +1,6 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q5_BoundedQueue;
 
 import java.util.Arrays;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Scanner;
 
 /**
@@ -11,7 +9,6 @@ import java.util.Scanner;
  * @param <T>
  */
 public class BoundedQueue<T> {
-	Queue<Integer> que = new PriorityQueue<>();
 	private int MINIMUM_CAPACITY = 16;
 	private int front = -1, rear = -1, size = 0;
 	T[] elements;
@@ -40,23 +37,23 @@ public class BoundedQueue<T> {
 	}
 
 	/**
-	 * Inserts the specified element into this queue if it is possible to do so
-	 * immediately without violating capacity restrictions, returning true upon
-	 * success and throwing an IllegalStateException if no space is currently
-	 * available.
-	 *
-	 *
+	 * Inserts the specified element into this queue at rear position if it is possible to do so
+	 * immediately without violating capacity restrictions.
 	 *
 	 * @param element
 	 * @return
 	 */
-	public boolean push(T element) {
+	public boolean offer(T element) {
 		if (size == elements.length)
-			throw new IllegalStateException("Exception : Queue is full");
+			return false;
 
 		rear = (++rear) % elements.length;
 		elements[rear] = element;
-		return false;
+		++size;
+		if (front == -1) {
+			front = rear;
+		}
+		return true;
 	}
 
 	/**
@@ -65,7 +62,7 @@ public class BoundedQueue<T> {
 	 *
 	 * @return
 	 */
-	public T pop() {
+	public T poll() {
 		if (size == 0)
 			return null;
 
@@ -82,7 +79,7 @@ public class BoundedQueue<T> {
 	}
 
 	/**
-	 * Retrieves, but does not remove, the head of this queue, or returns null
+	 * Retrieves, but does not remove, the front of this queue, or returns null
 	 * if this queue is empty.
 	 *
 	 * @return
@@ -95,7 +92,7 @@ public class BoundedQueue<T> {
 	}
 
 	/**
-	 * Tests if this stack has no elements.
+	 * Tests if this queue has no elements.
 	 *
 	 * @return
 	 */
@@ -104,7 +101,7 @@ public class BoundedQueue<T> {
 	}
 
 	/**
-	 * Returns the number of elements in this stack.
+	 * Returns the number of elements in this queue.
 	 *
 	 * @return
 	 */
@@ -112,10 +109,11 @@ public class BoundedQueue<T> {
 		return size;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns a string representation of this Queue, containing the String
+	 * representation of each element.
 	 *
-	 * @see java.lang.Object#toString()
+	 * @return
 	 */
 	@Override
 	public String toString() {
@@ -123,17 +121,23 @@ public class BoundedQueue<T> {
 	}
 
 	/**
+	 * Doubles the queue size if the queue is mostly full (over 90% of the
+	 * capacity), or halves it if the queue is mostly empty (less then 25%
+	 * occupied of the capacity). Returns true if the array has been resized,
+	 * otherwise false.
+	 *
 	 * @param element
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean resize(T element) {
+	public boolean resize() {
 		if (size > 0.9 * elements.length) {
-			elements = (T[]) new Object[MINIMUM_CAPACITY];
-		} else if (size < 0.25 * elements.length) {
-			elements = (T[]) new Object[MINIMUM_CAPACITY];
-		}
-		return false;
+			elements = (T[]) Arrays.copyOf(elements, elements.length * 2);
+			return true;
+		} else if (size < 0.25 * elements.length && elements.length / 2 > MINIMUM_CAPACITY) {
+			elements = (T[]) Arrays.copyOf(elements, elements.length / 2);
+			return true;
+		} else
+			return false;
 	}
 
 	/**
@@ -143,35 +147,36 @@ public class BoundedQueue<T> {
 	 */
 	public static void main(String[] args) {
 		Scanner s = new Scanner(System.in);
-		System.out.println("Enter the size of the stack");
+		System.out.println("Enter the size of the queue");
 		int capacity = s.nextInt();
 		s.close();
 
 		System.out.println("Creating an array based queue with capacity of " + capacity);
-		BoundedQueue<Integer> stack = new BoundedQueue<>(capacity);
+		BoundedQueue<Integer> queue = new BoundedQueue<>(capacity);
 
-		System.out.println("Adding elements into the stack from 1 to " + capacity);
+		System.out.println("Adding elements into the queue from 1 to " + capacity);
 		for (int i = 1; i <= capacity; i++)
-			stack.push(i);
+			queue.offer(i);
 
-		// The next push will overflow the stack
-		System.out.println("Trying to push an extra element into the stack exceeding its capacity");
-		try {
-			stack.push(capacity + 1);
-		} catch (IllegalStateException e) {
-			System.out.println(e.getMessage());
-		}
+		// The next push will overflow the queue
+		System.out.println("Trying to push an extra element into the queue exceeding its capacity");
+		System.out.println("Has the element been added? " + (queue.offer(capacity + 1) ? "Yes" : "No"));
 
-		System.out.println("The contents of the stack are " + stack);
+		System.out.println("The contents of the queue are " + queue);
 
-		System.out.println("The peek element of the stack is " + stack.peek());
-
-		System.out.println("Removing the top element from the stack");
-		System.out.println("Removed " + stack.pop());
+		System.out.println("Calling resize() method to increase the size");
+		System.out.println("Has the queue been resized? " + (queue.resize() ? "Yes" : "No"));
 
 		System.out.println("Adding a new element");
-		stack.push(capacity + 1);
+		queue.offer(capacity + 1);
 
-		System.out.println("The contents of the stack are " + stack);
+		System.out.println("The contents of the queue are " + queue);
+
+		System.out.println("The front element of the queue is " + queue.peek());
+
+		System.out.println("Removing the front element from the queue");
+		System.out.println("Removed " + queue.poll());
+
+		System.out.println("The contents of the queue are " + queue);
 	}
 }
