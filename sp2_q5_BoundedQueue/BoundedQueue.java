@@ -37,8 +37,8 @@ public class BoundedQueue<T> {
 	}
 
 	/**
-	 * Inserts the specified element into this queue at rear position if it is possible to do so
-	 * immediately without violating capacity restrictions.
+	 * Inserts the specified element into this queue at rear position if it is
+	 * possible to do so immediately without violating capacity restrictions.
 	 *
 	 * @param element
 	 * @return
@@ -131,10 +131,14 @@ public class BoundedQueue<T> {
 	 */
 	public boolean resize() {
 		if (size > 0.9 * elements.length) {
-			elements = (T[]) Arrays.copyOf(elements, elements.length * 2);
+			elements = (T[]) Arrays.copyOf(elements, elements.length << 1);
 			return true;
-		} else if (size < 0.25 * elements.length && elements.length / 2 > MINIMUM_CAPACITY) {
-			elements = (T[]) Arrays.copyOf(elements, elements.length / 2);
+		} else if (size < 0.25 * elements.length && elements.length >> 1 >= MINIMUM_CAPACITY) {
+			// elements = (T[]) Arrays.copyOf(elements, elements.length / 2);
+			@SuppressWarnings("unchecked")
+			T[] newArray = (T[]) new Object[elements.length >> 1];
+			for (int i = front, j = 0; i < size; i++, j++)
+				newArray[j] = elements[i % elements.length];
 			return true;
 		} else
 			return false;
