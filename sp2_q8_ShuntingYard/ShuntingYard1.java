@@ -84,7 +84,7 @@ public class ShuntingYard1 {
 	}
 
 	public static void main(String args[]) {
-		String infix = "3+4^2/8!-9";
+		String infix = "( A + B ) * C - ( D - E ) * ( F + G )";
 		System.out.println("Postfix expression: " + infixToPostfix(infix));
 	}
 
