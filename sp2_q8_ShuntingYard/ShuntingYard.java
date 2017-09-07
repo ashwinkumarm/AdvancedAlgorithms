@@ -6,83 +6,70 @@ import java.util.Stack;
 
 public class ShuntingYard {
 
-	private final static HashMap<String, int[]> operatorMap = new HashMap<String, int[]>();
-
-	static class Operator {
-		String symbol;
-
-		public Operator(String symbol, int associativity, int precedence) {
-			this.symbol = symbol;
-			int[] tmp = { associativity, precedence };
-			operatorMap.put(this.symbol, tmp);
-		}
-	}
+	private final static HashMap<String, Operator> operatorMap = new HashMap<String, Operator>();
 
 	private static void initializeOperators() {
-		new Operator("+", 1, 1);
-		new Operator("-", 1, 1);
-		new Operator("*", 1, 2);
-		new Operator("/", 1, 2);
-		new Operator("%", 1, 2);
-		new Operator("^", 2, 3);
-		new Operator("!", 0, 4);
+		operatorMap.put("+", new Operator("+","left",1));
+		operatorMap.put("-", new Operator("-","left",1));
+		operatorMap.put("*", new Operator("*","left",2));
+		operatorMap.put("/", new Operator("/","left",2));
+		operatorMap.put("^", new Operator("^","right",3));
+		operatorMap.put("!", new Operator("!","none",4));
 	}
 
 	public static String infixToPostfix(String infix) {
 		StringBuilder postfix = new StringBuilder();
-		Stack<String> st = new Stack<String>();
-
+		Stack<String> operatorStack = new Stack<String>();
 		initializeOperators();
-		for (String ch : infix.split("")) {
-			if (operatorMap.containsKey(ch)) {
-				while (!st.isEmpty()) {
-					String topOperator = st.peek();
-					if ((!topOperator.equals("(") && isleftAssociative(ch) && comparePrecedence(ch, topOperator) <= 0)
-							|| (!topOperator.equals("(") && !isleftAssociative(ch)
-									&& comparePrecedence(ch, topOperator) < 0))
-						postfix.append(st.pop());
-					else
+		for (String currentToken : infix.split("")) {
+			// checks if its a operator
+			if (operatorMap.containsKey(currentToken)) {
+				while (!operatorStack.isEmpty()) {
+					String topOperator = operatorStack.peek();
+					if ((comparePrecedence(currentToken, topOperator) < 0)
+							|| (isleftAssociative(currentToken) && comparePrecedence(currentToken, topOperator) == 0)){
+						postfix.append(operatorStack.pop());
+					}else{
 						break;
+					}
 				}
-				st.push(ch);
+				operatorStack.push(currentToken);
 			}
 
-			else if (ch.equals("("))
-				st.push(ch);
+			else if (currentToken.equals("("))
+				operatorStack.push(currentToken);
 
-			else if (ch.equals(")")) {
-				while (!st.isEmpty() && !st.peek().equals("(")) {
-					postfix.append(st.pop());
+			else if (currentToken.equals(")")) {
+				while (!operatorStack.isEmpty() && !operatorStack.peek().equals("(")) {
+					postfix.append(operatorStack.pop());
 				}
-				st.pop();
+				operatorStack.pop();
 			}
-
-			else
-				postfix.append(ch);
+			// pushes operand directly to output
+			else{
+				postfix.append(currentToken);
+			}
 		}
-		while (!st.isEmpty())
-			postfix.append(st.pop());
+		while (!operatorStack.isEmpty())
+			postfix.append(operatorStack.pop());
 
 		return postfix.toString();
 	}
 
 	private static boolean isleftAssociative(String op) {
-		return operatorMap.get(op)[0] == 1;
+		return operatorMap.get(op).getAssociativity().equalsIgnoreCase("left");
 	}
 
-	private static int comparePrecedence(String op1, String op2) {
-		int op1Precedence = operatorMap.get(op1)[1];
-		int op2Precedence = operatorMap.get(op2)[1];
-		if (op1Precedence == op2Precedence)
-			return 0;
-		else if (op1Precedence < op2Precedence)
-			return -1;
-		else
+	private static int comparePrecedence(String currentTokenName, String topOperatorName) {
+		if(operatorMap.get(topOperatorName) == null){
 			return 1;
+		}
+		return operatorMap.get(currentTokenName).getPrecedence() - operatorMap.get(topOperatorName).getPrecedence();
+
 	}
 
 	public static void main(String args[]) {
-		String infix = "3+4^2/8!-9";
+		String infix = "(a+b)*(c-d)";
 		System.out.println("Postfix expression: " + infixToPostfix(infix));
 	}
 
