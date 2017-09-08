@@ -1,97 +1,159 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q1_SetFunctions;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * Class SetFunctions
+ * 
+ * <P>
+ * This class performs the set functions like intersection, union and difference
+ * on two Lists
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class SetFunctions {
 
+	/**
+	 * Check whether the list has next element
+	 * 
+	 * @param itr
+	 * @return element or null
+	 */
+	public static <T> T next(ListIterator<T> itr) {
+
+		return itr.hasNext() ? itr.next() : null;
+	}
+
+	/**
+	 * Performs the intersection operation on two sorted lists
+	 * 
+	 * @param l1
+	 * @param l2
+	 * @param outList
+	 */
 	public static <T extends Comparable<? super T>> void intersect(List<T> l1, List<T> l2, List<T> outList) {
-		Collections.sort(l1);
-		Collections.sort(l2);
-		int i = 0, j = 0;
-		while (i < l1.size() && j < l2.size()) {
-			T data1 = l1.get(i);
-			T data2 = l2.get(j);
+
+		ListIterator<T> itr1 = l1.listIterator();
+		ListIterator<T> itr2 = l2.listIterator();
+		T data1 = next(itr1);
+		T data2 = next(itr2);
+		while (data1 != null && data2 != null) {
 			if (data1.compareTo(data2) > 0)
-				j++;
+				data2 = next(itr2);
 			else if (data1.compareTo(data2) < 0)
-				i++;
+				data1 = next(itr1);
 			else {
 				outList.add(data1);
-				i++;
-				j++;
+				data1 = next(itr1);
+				data2 = next(itr2);
 			}
 		}
 	}
 
+	/**
+	 * Performs union operation on two sorted lists
+	 * 
+	 * @param l1
+	 * @param l2
+	 * @param outList
+	 */
 	public static <T extends Comparable<? super T>> void union(List<T> l1, List<T> l2, List<T> outList) {
-		Collections.sort(l1);
-		Collections.sort(l2);
-		int i = 0, j = 0;
-		while (i < l1.size() && j < l2.size()) {
-			T data1 = l1.get(i);
-			T data2 = l2.get(j);
+
+		ListIterator<T> itr1 = l1.listIterator();
+		ListIterator<T> itr2 = l2.listIterator();
+		T data1 = next(itr1);
+		T data2 = next(itr2);
+		while (data1 != null && data2 != null) {
 			if (data1.compareTo(data2) > 0) {
 				outList.add(data2);
-				j++;
+				data2 = next(itr2);
 			} else if (data1.compareTo(data2) < 0) {
 				outList.add(data1);
-				i++;
+				data1 = next(itr1);
 			} else {
 				outList.add(data1);
-				i++;
-				j++;
+				data1 = next(itr1);
+				data2 = next(itr2);
 			}
 		}
-		while (i < l1.size())
-			outList.add(l1.get(i++));
-		while (j < l2.size())
-			outList.add(l2.get(j++));
+		// Add the remaining elements either in list1 or list2 to the outList
+		while (data1 != null) {
+			outList.add(data1);
+			data1 = next(itr1);
+		}
+		while (data2 != null) {
+			outList.add(data2);
+			data2 = next(itr2);
+		}
 	}
 
+	/**
+	 * Performs difference operation on two sorted lists (l1 - l2)
+	 * 
+	 * @param l1
+	 * @param l2
+	 * @param outList
+	 */
 	public static <T extends Comparable<? super T>> void difference(List<T> l1, List<T> l2, List<T> outList) {
-		Collections.sort(l1);
-		Collections.sort(l2);
-		int i = 0, j = 0;
-		while (i < l1.size() && j < l2.size()) {
-			T data1 = l1.get(i);
-			T data2 = l2.get(j);
+
+		ListIterator<T> itr1 = l1.listIterator();
+		ListIterator<T> itr2 = l2.listIterator();
+		T data1 = next(itr1);
+		T data2 = next(itr2);
+		while (data1 != null && data2 != null) {
 			if (data1.compareTo(data2) > 0)
-				j++;
+				data2 = next(itr2);
 			else if (data1.compareTo(data2) < 0) {
 				outList.add(data1);
-				i++;
+				data1 = next(itr1);
 			} else {
-				i++;
-				j++;
+				data1 = next(itr1);
+				data2 = next(itr2);
 			}
 		}
-		while (i < l1.size()) {
-			outList.add(l1.get(i));
-			i++;
+		// Add the remaining elements list1 to the outList
+		while (data1 != null) {
+			outList.add(data1);
+			data1 = next(itr1);
 		}
 	}
 
+	/**
+	 * Main method
+	 * 
+	 * @param args
+	 */
 	public static void main(String args[]) {
+
 		List<Integer> l1 = new LinkedList<Integer>();
-		l1.add(10);
-		l1.add(2);
-		l1.add(7);
 		l1.add(1);
+		l1.add(2);
 		l1.add(3);
+		l1.add(7);
+		l1.add(10);
 
 		List<Integer> l2 = new LinkedList<Integer>();
-		l2.add(11);
 		l2.add(2);
-		l2.add(8);
-		l2.add(4);
 		l2.add(3);
+		l2.add(4);
+		l2.add(8);
+		l2.add(11);
 
+		System.out.println("Elements in List1");
+		for (int e : l1) {
+			System.out.print(e + " ");
+		}
+		System.out.println("\nElements in List2");
+		for (int e : l2) {
+			System.out.print(e + " ");
+		}
 		List<Integer> outList = new LinkedList<Integer>();
 		intersect(l1, l2, outList);
 		ListIterator<Integer> itr3 = outList.listIterator();
+		System.out.println("\nIntersection: ");
 		while (itr3.hasNext()) {
 			System.out.print(itr3.next() + " ");
 		}
@@ -99,7 +161,7 @@ public class SetFunctions {
 		outList = new LinkedList<Integer>();
 		union(l1, l2, outList);
 		itr3 = outList.listIterator();
-		System.out.println();
+		System.out.println("\nUnion: ");
 		while (itr3.hasNext()) {
 			System.out.print(itr3.next() + " ");
 		}
@@ -107,7 +169,7 @@ public class SetFunctions {
 		outList = new LinkedList<Integer>();
 		difference(l1, l2, outList);
 		itr3 = outList.listIterator();
-		System.out.println();
+		System.out.println("\nDifference(l1-l2): ");
 		while (itr3.hasNext()) {
 			System.out.print(itr3.next() + " ");
 		}
