@@ -39,6 +39,7 @@ public class SortableList<T extends Comparable<? super T>> extends SinglyLinkedL
 			tmp.next = head1;
 		} else if (head2 != otherList.tail.next){
 			tmp.next = head2;
+			this.tail = tail2;
 		}
 		this.head = tmpHead;
     }
