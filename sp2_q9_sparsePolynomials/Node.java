@@ -27,7 +27,7 @@ public class Node implements Comparable<Node>{
 
 	@Override
 	public int compareTo(Node n) {
-		return this.exponent - n.coeff;
+		return this.exponent - n.exponent;
 	}
 	
 	@Override
