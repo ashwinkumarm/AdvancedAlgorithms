@@ -7,13 +7,17 @@ import java.util.Scanner;
 
 /**
  * Implements all the functions of the sparse polynomial
+ * 
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
 public class SparsePolynomial {
 
 	/**
-	 * @param itr iterator
+	 * Method to check whether the next element in the polynomial is present or not
+	 * If not, return null
+	 * @param itr
+	 *            iterator
 	 * @return next element or null
 	 */
 	public static <T> T next(Iterator<T> itr) {
@@ -22,9 +26,11 @@ public class SparsePolynomial {
 	}
 
 	/**
-	 * Generates polynomial for the user provided input 
-	 * @param in Scanner object
-	 * @return poly polynomial in the form of linkedList 
+	 * Generates polynomial for the user provided input
+	 * 
+	 * @param in
+	 *            Scanner object
+	 * @return poly polynomial in the form of linkedList
 	 */
 	public static LinkedList<Node> generatePolynomial(Scanner in) {
 		System.out.println("Enter the number of terms in the polynomial");
@@ -39,8 +45,11 @@ public class SparsePolynomial {
 	}
 
 	/**
-	 * @param firstPoly input polynomial
-	 * @param secPoly input polynomial
+	 * Performs the addition of two given polynomials
+	 * @param firstPoly
+	 *            input polynomial
+	 * @param secPoly
+	 *            input polynomial
 	 * @return resultPoly polynomial after adding two polynomials
 	 */
 	public static LinkedList<Node> add(LinkedList<Node> firstPoly, LinkedList<Node> secPoly) {
@@ -69,15 +78,19 @@ public class SparsePolynomial {
 		}
 		while (secPolyNode != null) {
 			resultPoly.add(secPolyNode);
-			secPolyNode = next(firstPolyIterator);
+			secPolyNode = next(secPolyIterator);
 		}
 		return resultPoly;
 
 	}
 
-	/** Multiply two provided polynomials 
-	 * @param firstPoly input polynomial
-	 * @param secPoly input polynomial
+	/**
+	 * Performs the multiplication of two provided polynomials
+	 * 
+	 * @param firstPoly
+	 *            input polynomial
+	 * @param secPoly
+	 *            input polynomial
 	 * @return multiplyResult polynomial after multiplying
 	 */
 	public static LinkedList<Node> multiply(LinkedList<Node> firstPoly, LinkedList<Node> secPoly) {
@@ -101,8 +114,10 @@ public class SparsePolynomial {
 	}
 
 	/**
-	 * merge the common coefficient terms in the polynomial
-	 * @param multiplyResult polynomial after multiplying
+	 * Performs the merging of the common coefficient terms in the polynomial
+	 * 
+	 * @param multiplyResult
+	 *            polynomial after multiplying
 	 * @return resultPoly polynomial after multiplied and merged
 	 */
 	public static LinkedList<Node> mergeCommonTerms(LinkedList<Node> multiplyResult) {
@@ -126,8 +141,11 @@ public class SparsePolynomial {
 
 	/**
 	 * Finds the x^n value
-	 * @param x input value
-	 * @param n exponent
+	 * 
+	 * @param x
+	 *            input value
+	 * @param n
+	 *            exponent
 	 * @return x^n value
 	 */
 	public static long pow(int x, int n) {
@@ -145,10 +163,12 @@ public class SparsePolynomial {
 	}
 
 	/**
-	 * Evaluates the polynomial
+	 * Evaluates the polynomial for the given 'x' value
 	 * 
-	 * @param x input value
-	 * @param poly polynomial to be evaluated
+	 * @param x
+	 *            input value
+	 * @param poly
+	 *            polynomial to be evaluated
 	 * @return op output of the polynomial for the given x
 	 */
 	public static long evaluate(int x, LinkedList<Node> poly) {

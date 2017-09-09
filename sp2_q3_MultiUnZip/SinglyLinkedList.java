@@ -1,4 +1,4 @@
-package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q3_Multizip;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q3_MultiUnZip;
 
 import java.util.ArrayList;
 
@@ -13,10 +13,8 @@ import java.util.ArrayList;
  *
  */
 
-
 import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 import java.util.NoSuchElementException;
 
 public class SinglyLinkedList<T> implements Iterable<T> {
@@ -110,63 +108,68 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		System.out.println();
 	}
 
-	/*
+	/**
 	 * 
-	 *Rearrange the elements of the list by linking the elements that are k elements apart. Implemented by rearranging pointers
-	 *of existing elements without allocating any new elements.
+	 * Rearrange the elements of the list by linking the elements that are k
+	 * elements apart. Implemented by rearranging pointers of existing elements
+	 * without allocating any new elements.
+	 *
+	 * @param k
+	 *            specifies how to weave the list
 	 */
-	public void multizip(int k) {
-		if (size < k+1) { // Too few elements. No change.
+	public void multiUnzip(int k) {
+
+		if (size < k + 1) { // Too few elements. No change.
 			return;
 		}
-        
-        List<Entry<T>> tail = new ArrayList<Entry<T>>(); // tail is the tail of the chain of elements that are k apart
-        List<Entry<T>> heads = new ArrayList<Entry<T>>(); // head is the head of the chain of elements that are k apart
-        
-        tail.add(head.next);
-        int i = 1;
-        
-        // Intialize all the head and tail to firt k elements 
-        // Except that the head elements are initialized excluding the head of the list
-        while (i < k){
-        		tail.add(tail.get(i-1).next);
-        		heads.add(tail.get(i));
-        		i++;
-        }
-        
-        // c is current element to be processed.
-		Entry<T> c = tail.get(k-1).next;
+
+		List<Entry<T>> tail = new ArrayList<Entry<T>>(); // tail is the tail of the chain of elements that are k apart
+		List<Entry<T>> heads = new ArrayList<Entry<T>>(); // head is the head of the chain of elements that are k apart
+
+		tail.add(head.next);
+		int i = 1;
+
+		// Intialize all the head and tail to firt k elements
+		// Except that the head elements are initialized excluding the head of the list
+		while (i < k) {
+			tail.add(tail.get(i - 1).next);
+			heads.add(tail.get(i));
+			i++;
+		}
+
+		// c is current element to be processed.
+		Entry<T> c = tail.get(k - 1).next;
 		i = 0;
 		while (c != null) {
-				tail.get(i%k).next = c;
-				tail.set(i%k, c);
-				c = c.next;
-				i++;
-				}
-		
+			tail.get(i % k).next = c;
+			tail.set(i % k, c);
+			c = c.next;
+			i++;
+		}
+
 		i = 0;
 		// After processing link all the chain of k elements together
-		while(i < k-1){
+		while (i < k - 1) {
 			tail.get(i).next = heads.get(i);
 			i++;
 		}
-		tail.get(i).next = null; 
+		tail.get(i).next = null;
 	}
-	
+
 	public static void main(String[] args) throws NoSuchElementException {
-		
+
 		int n = 10;
 		if (args.length > 0) {
 			n = Integer.parseInt(args[0]);
 		}
-		
+
 		SinglyLinkedList<Integer> lst = new SinglyLinkedList<>();
 		for (int i = 1; i <= n; i++) {
 			lst.add(new Integer(i));
 		}
 		System.out.println("Input List");
 		lst.printList();
-		lst.multizip(3);
+		lst.multiUnzip(3);
 		System.out.println("Output List after multizip");
 		lst.printList();
 	}
