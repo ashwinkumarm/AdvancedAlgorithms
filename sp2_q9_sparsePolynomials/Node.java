@@ -1,10 +1,19 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q9_sparsePolynomials;
 
+/**
+ * Object class for a term in the polynomial
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class Node implements Comparable<Node>{
 
 	int coeff;
 	int exponent;
     
+	/**
+	 * @param coeff
+	 * @param exponent
+	 */
 	Node(int coeff, int exponent){
 		this.coeff = coeff;
 		this.exponent = exponent;
