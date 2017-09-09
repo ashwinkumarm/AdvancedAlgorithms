@@ -2,13 +2,17 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2
 
 import java.util.ArrayList;
 
-/** @author rbk
- *  Singly linked list: for instructional purposes only
- *  Ver 1.0: 2017/08/08
- *  Ver 1.1: 2017/08/30: Fixed error: If last element of list is removed,
- *  "tail" is no longer a valid value.  Subsequently, if items are added
- *  to the list, code would do the wrong thing.
+/**
+ * Class SinglyLinkedList
+ * 
+ * <P>
+ * This class has a method named Multizip which  rearrange the elements of a singly linked list by chaining
+ * together elements that are k apart.
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
  */
+
 
 import java.util.Iterator;
 import java.util.List;
@@ -106,23 +110,31 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		System.out.println();
 	}
 
-
+	/*
+	 * 
+	 *Rearrange the elements of the list by linking the elements that are k elements apart. Implemented by rearranging pointers
+	 *of existing elements without allocating any new elements.
+	 */
 	public void multizip(int k) {
 		if (size < k+1) { // Too few elements. No change.
 			return;
 		}
         
-        List<Entry<T>> tail = new ArrayList<Entry<T>>(); 
-        List<Entry<T>> heads = new ArrayList<Entry<T>>();
+        List<Entry<T>> tail = new ArrayList<Entry<T>>(); // tail is the tail of the chain of elements that are k apart
+        List<Entry<T>> heads = new ArrayList<Entry<T>>(); // head is the head of the chain of elements that are k apart
         
         tail.add(head.next);
         int i = 1;
+        
+        // Intialize all the head and tail to firt k elements 
+        // Except that the head elements are initialized excluding the head of the list
         while (i < k){
         		tail.add(tail.get(i-1).next);
         		heads.add(tail.get(i));
         		i++;
         }
         
+        // c is current element to be processed.
 		Entry<T> c = tail.get(k-1).next;
 		i = 0;
 		while (c != null) {
@@ -133,6 +145,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 				}
 		
 		i = 0;
+		// After processing link all the chain of k elements together
 		while(i < k-1){
 			tail.get(i).next = heads.get(i);
 			i++;
@@ -141,11 +154,12 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	}
 	
 	public static void main(String[] args) throws NoSuchElementException {
+		
 		int n = 10;
 		if (args.length > 0) {
 			n = Integer.parseInt(args[0]);
 		}
-
+		
 		SinglyLinkedList<Integer> lst = new SinglyLinkedList<>();
 		for (int i = 1; i <= n; i++) {
 			lst.add(new Integer(i));
