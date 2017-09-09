@@ -1,4 +1,4 @@
-package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q2_MergeSortSLL;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
 /** @author rbk
  *  Singly linked list: for instructional purposes only
@@ -15,18 +15,25 @@ import java.util.NoSuchElementException;
 public class SinglyLinkedList<T> implements Iterable<T> {
 
 	/** Class Entry holds a single node of the list */
-	static class Entry<T> {
-		T element;
-		Entry<T> next;
+	protected static class Entry<T> {
+		public T element;
+		public Entry<T> next;
 
 		Entry(T x, Entry<T> nxt) {
 			element = x;
 			next = nxt;
 		}
+
+		@Override
+		public String toString() {
+			return "Entry [element=" + element + "]";
+		}
+
 	}
 
 	// Dummy header is used. tail stores reference of tail element of list
-	Entry<T> head, tail;
+	protected Entry<T> head;
+	protected Entry<T> tail;
 	int size;
 
 	public SinglyLinkedList() {
@@ -63,7 +70,8 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		}
 
 		// Removes the current element (retrieved by the most recent next())
-		// Remove can be called only if next has been called and the element has not
+		// Remove can be called only if next has been called and the element has
+		// not
 		// been removed
 		public void remove() {
 			if (!ready) {
@@ -75,7 +83,8 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 				list.tail = prev;
 			}
 			cursor = prev;
-			ready = false; // Calling remove again without calling next will result in exception thrown
+			ready = false; // Calling remove again without calling next will
+							// result in exception thrown
 			size--;
 		}
 	}
@@ -90,9 +99,9 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 	public void printList() {
 		/*
 		 * Code without using implicit iterator in for each loop:
-		 * 
-		 * Entry<T> x = head.next; while(x != null) { System.out.print(x.element + " ");
-		 * x = x.next; }
+		 *
+		 * Entry<T> x = head.next; while(x != null) { System.out.print(x.element
+		 * + " "); x = x.next; }
 		 */
 
 		System.out.print(this.size + ": ");
@@ -102,28 +111,10 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 
 		System.out.println();
 	}
-	
-	public void printListWithoutDummyHeader() {
-		/*
-		 * Code without using implicit iterator in for each loop:
-		 * 
-		 * Entry<T> x = head.next; while(x != null) { System.out.print(x.element + " ");
-		 * x = x.next; }
-		 */
-
-		System.out.print(this.size + ": ");
-		Entry<T> item = this.head;
-		while(item != null){
-			System.out.print(item.element + " ");
-			item = item.next;
-		}
-
-		System.out.println();
-	}
-	
 
 	// Rearrange the elements of the list by linking the elements at even index
-	// followed by the elements at odd index. Implemented by rearranging pointers
+	// followed by the elements at odd index. Implemented by rearranging
+	// pointers
 	// of existing elements without allocating any new elements.
 	public void unzip() {
 		if (size < 3) { // Too few elements. No change.
@@ -136,11 +127,13 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		Entry<T> c = tail1.next;
 		int state = 0;
 
-		// Invariant: tail0 is the tail of the chain of elements with even index.
+		// Invariant: tail0 is the tail of the chain of elements with even
+		// index.
 		// tail1 is the tail of odd index chain.
 		// c is current element to be processed.
 		// state indicates the state of the finite state machine
-		// state = i indicates that the current element is added after taili (i=0,1).
+		// state = i indicates that the current element is added after taili
+		// (i=0,1).
 		while (c != null) {
 			if (state == 0) {
 				tail0.next = c;
@@ -155,6 +148,19 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		}
 		tail0.next = head1;
 		tail1.next = null;
+	}
+
+	@Override
+	public String toString() {
+		Entry<T> curr = head;
+		StringBuilder sb = new StringBuilder();
+		while (curr.next != null) {
+			curr = curr.next;
+			sb.append(curr.element);
+			if (curr.next != null)
+				sb.append(", ");
+		}
+		return sb.toString();
 	}
 
 	public static void main(String[] args) throws NoSuchElementException {
