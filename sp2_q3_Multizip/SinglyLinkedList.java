@@ -111,37 +111,27 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		if (size < k+1) { // Too few elements. No change.
 			return;
 		}
-        int i = 0;
+        
         List<Entry<T>> tail = new ArrayList<Entry<T>>(); 
         List<Entry<T>> heads = new ArrayList<Entry<T>>();
+        
+        tail.add(head.next);
+        int i = 1;
         while (i < k){
-        	if(i == 0){
-        	    tail.add(head.next);
-        	}
-        	else{
         		tail.add(tail.get(i-1).next);
         		heads.add(tail.get(i));
-        	}
-        	i++;
+        		i++;
         }
         
 		Entry<T> c = tail.get(k-1).next;
-		
+		i = 0;
 		while (c != null) {
-			i = 0;
-			while(i < k) {
-				if(c != null){
-					tail.get(i).next = c;
-					tail.set(i, c);
-					c = c.next;
-					i++;
+				tail.get(i%k).next = c;
+				tail.set(i%k, c);
+				c = c.next;
+				i++;
 				}
-				else{
-					break;
-				}
-			}
-
-		}
+		
 		i = 0;
 		while(i < k-1){
 			tail.get(i).next = heads.get(i);
@@ -162,7 +152,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 		}
 		System.out.println("Input List");
 		lst.printList();
-		lst.multizip(4);
+		lst.multizip(3);
 		System.out.println("Output List after multizip");
 		lst.printList();
 	}
