@@ -1,4 +1,4 @@
-package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q9_SparsePolynomials;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q9_SparsePolynomial;
 
 /**
  * Object class for a term in the polynomial
