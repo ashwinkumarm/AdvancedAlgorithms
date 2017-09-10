@@ -91,7 +91,7 @@ public class SortableList<T extends Comparable<? super T>> extends SinglyLinkedL
 	 */
 	public static void main(String[] args) {
 
-		int n = 20, value = 0;
+		int n = 21, value = 0;
 
 		SortableList<Integer> sl = new SortableList<>();
 		Scanner in = new Scanner(System.in);

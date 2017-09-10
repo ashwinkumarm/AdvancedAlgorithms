@@ -3,14 +3,20 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2
 public class StackFrame {
 
 	// Parameters
-	int[] a, tmp;
-	int p, q;
+	boolean childrenAdded;
+	int p, r;
 
-	public StackFrame(int[] a, int[] tmp, int p, int q) {
+	public StackFrame(boolean childrenAdded, int p, int r) {
 		super();
+		this.childrenAdded = childrenAdded;
 		this.p = p;
-		this.q = q;
-		this.a = a;
-		this.tmp = tmp;
+		this.r = r;
 	}
+
+	@Override
+	public String toString() {
+		return "StackFrame [childrenAdded=" + childrenAdded + ", p=" + p + ", r=" + r + "]";
+	}
+
+
 }
