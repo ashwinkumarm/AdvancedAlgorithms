@@ -2,8 +2,8 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2
 
 import java.util.Stack;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q4_ReverseList.SinglyLinkedList;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2_q4_ReverseList.SinglyLinkedList.Entry;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.SinglyLinkedList;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.SinglyLinkedList.Entry;
 
 /**
  * Class ReverseList
