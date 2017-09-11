@@ -7,9 +7,9 @@ public class LP1L1 {
 		Num y = new Num("867576876924692");
 		System.out.println(y.ll);
 		Num z = Num.add(x, y); //Ans should be 867577868167041
-		//System.out.println(z);
+		System.out.println(z);
 		Num a = Num.power(x, 8);
-		//System.out.println(a);
+		System.out.println(a);
 		//z.printList();
 	}
 }

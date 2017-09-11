@@ -98,9 +98,6 @@ public class Num implements Comparable<Num> {
 	}
 
 	static Num add(Num a, Num b) {
-		while (a.ll != null || b.ll != null) {
-
-		}
 		return null;
 	}
 
