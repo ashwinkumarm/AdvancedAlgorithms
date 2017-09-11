@@ -8,37 +8,80 @@ import java.util.LinkedList;
 
 public class Num implements Comparable<Num> {
 
-	static long defaultBase = 10; // This can be changed to what you want it to be.
+	static long defaultBase = 10; // This can be changed to what you want it to
+									// be.
 	long base = defaultBase; // Change as needed
+	boolean isNegative = false;
 	/* Start of Level 1 */
-	LinkedList<Integer> ll = new LinkedList<Integer>();
+	LinkedList<Long> ll = new LinkedList<>();
 	LinkedList<Integer> outList = new LinkedList<Integer>();
-	
+
 	/**
-	 * Converts the string into a linked list 
+	 * Converts the string into a linked list
+	 *
 	 * @param s
 	 */
 	Num(String s) {
-		
-		for(int i=s.length()-1;i>=0;i--) {
-			ll.add(s.charAt(i)-'0');
+		int cursor = 0, numDigits;
+		long baseLength = (long) (Math.log10(base) + 1);
+		final int len = s.length();
+
+		if (len == 0)
+			throw new NumberFormatException("Zero length BigInteger");
+
+		char signChar = s.charAt(0);
+		if (signChar == '+') {
+			cursor = 1;
+		} else if (signChar == '-') {
+			isNegative = true;
+			cursor = 1;
+		}
+		if (cursor == len)
+			throw new NumberFormatException("Zero length BigInteger");
+
+		// Skip leading zeros and compute number of digits in magnitude
+		while (cursor < len && Character.digit(s.charAt(cursor), (int) defaultBase) == 0) {
+			cursor++;
+		}
+
+		if (cursor == len) {
+			ll.add(0L);
+			return;
+		}
+
+		numDigits = len - cursor;
+
+		String group;
+		long groupVal = 0;
+		while (cursor+baseLength < len) {
+			group = s.substring(cursor, (int) (cursor + baseLength));
+			groupVal = Long.parseLong(group);
+			if (groupVal < base) {
+				cursor += baseLength;
+				ll.add(groupVal);
+			} else {
+				group = s.substring(cursor, (int) (cursor += baseLength - 1));
+				groupVal = Long.parseLong(group);
+				ll.add(groupVal);
+			}
 		}
 	}
 
 	/**
 	 * Converts the long integer into a linked list
+	 *
 	 * @param x
 	 */
 	Num(long x) {
-		while(x>0) {
-			ll.add((int) (x%base));
-			x/=base;
+		while (x > 0) {
+			ll.add(x % base);
+			x /= base;
 		}
 	}
 
 	static Num add(Num a, Num b) {
-		while(a.ll!=null || b.ll!=null) {
-			
+		while (a.ll != null || b.ll != null) {
+
 		}
 		return null;
 	}
