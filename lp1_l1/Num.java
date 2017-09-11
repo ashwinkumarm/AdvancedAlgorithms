@@ -14,12 +14,21 @@ public class Num implements Comparable<Num> {
 	LinkedList<Integer> ll = new LinkedList<Integer>();
 	LinkedList<Integer> outList = new LinkedList<Integer>();
 	
+	/**
+	 * Converts the string into a linked list 
+	 * @param s
+	 */
 	Num(String s) {
+		
 		for(int i=s.length()-1;i>=0;i--) {
 			ll.add(s.charAt(i)-'0');
 		}
 	}
 
+	/**
+	 * Converts the long integer into a linked list
+	 * @param x
+	 */
 	Num(long x) {
 		while(x>0) {
 			ll.add((int) (x%base));
