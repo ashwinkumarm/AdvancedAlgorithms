@@ -4,19 +4,33 @@
 //Changed type of base to long: 1:15 PM, 2017-09-08.
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1_l1;
 
+import java.util.LinkedList;
+
 public class Num implements Comparable<Num> {
 
 	static long defaultBase = 10; // This can be changed to what you want it to be.
 	long base = defaultBase; // Change as needed
-
 	/* Start of Level 1 */
+	LinkedList<Integer> ll = new LinkedList<Integer>();
+	LinkedList<Integer> outList = new LinkedList<Integer>();
+	
 	Num(String s) {
+		for(int i=s.length()-1;i>=0;i--) {
+			ll.add(s.charAt(i)-'0');
+		}
 	}
 
 	Num(long x) {
+		while(x>0) {
+			ll.add((int) (x%base));
+			x/=base;
+		}
 	}
 
 	static Num add(Num a, Num b) {
+		while(a.ll!=null || b.ll!=null) {
+			
+		}
 		return null;
 	}
 

@@ -2,8 +2,8 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2
 
 import java.util.Stack;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.SinglyLinkedList;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.SinglyLinkedList.Entry;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.SinglyLinkedList1;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.SinglyLinkedList1.Entry;
 
 /**
  * Class ReverseList
@@ -24,7 +24,7 @@ public class ReverseList {
 	 * 
 	 * @param ll
 	 */
-	public static <T> void reverseRecursive(SinglyLinkedList<T> ll) {
+	public static <T> void reverseRecursive(SinglyLinkedList1<T> ll) {
 
 		ll.tail = ll.head.next;
 		ll.head.next = reverse(ll.tail, null);
@@ -52,7 +52,7 @@ public class ReverseList {
 	 * 
 	 * @param ll
 	 */
-	public static <T> void reverseIterative(SinglyLinkedList<T> ll) {
+	public static <T> void reverseIterative(SinglyLinkedList1<T> ll) {
 
 		Entry<T> prev = null, node = ll.head.next, curr = null;
 		ll.tail = node;
@@ -71,7 +71,7 @@ public class ReverseList {
 	 * 
 	 * @param ll
 	 */
-	public static <T> void printReverseRecursive(SinglyLinkedList<T> ll) {
+	public static <T> void printReverseRecursive(SinglyLinkedList1<T> ll) {
 
 		printReverse(ll.head.next);
 	}
@@ -96,7 +96,7 @@ public class ReverseList {
 	 * 
 	 * @param ll
 	 */
-	public static <T> void printReverseIterative(SinglyLinkedList<T> ll) {
+	public static <T> void printReverseIterative(SinglyLinkedList1<T> ll) {
 
 		Stack<T> st = new Stack<T>();
 		for (T item : ll) {
@@ -114,7 +114,7 @@ public class ReverseList {
 	 */
 	public static void main(String args[]) {
 
-		SinglyLinkedList<Integer> ll = getNewList();
+		SinglyLinkedList1<Integer> ll = getNewList();
 		System.out.print("Reverse List Iterative: ");
 		reverseIterative(ll);
 		printList(ll.head.next);
@@ -138,9 +138,9 @@ public class ReverseList {
 	 * 
 	 * @return Linkedlist
 	 */
-	private static SinglyLinkedList<Integer> getNewList() {
+	private static SinglyLinkedList1<Integer> getNewList() {
 
-		SinglyLinkedList<Integer> ll = new SinglyLinkedList<Integer>();
+		SinglyLinkedList1<Integer> ll = new SinglyLinkedList1<Integer>();
 		ll.add(10);
 		ll.add(15);
 		ll.add(20);

@@ -2,7 +2,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp2
 
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.SinglyLinkedList;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.SinglyLinkedList1;
 
 /**
  * Class SortableList
@@ -13,7 +13,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
-public class SortableList<T extends Comparable<? super T>> extends SinglyLinkedList<T> {
+public class SortableList<T extends Comparable<? super T>> extends SinglyLinkedList1<T> {
 
 	/**
 	 * Merges both the unprocessed lists.
