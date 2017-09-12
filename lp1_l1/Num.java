@@ -12,12 +12,13 @@ public class Num implements Comparable<Num> {
 	// So the base has to be set in a way such that it can divide upto 9 digits
 	static long defaultBase = 100; // This can be changed to what you want it to
 									// be.
-	long base = defaultBase; // Change as needed
+	static long base = defaultBase; // Change as needed
 	boolean isNegative = false;
-	int baseLength = (int) ((base % 10 == 0) ? Math.log10(base) : (Math.log10(base) + 1));
+	static int baseLength = (int) ((base % 10 == 0) ? Math.log10(base) : (Math.log10(base) + 1));
 	/* Start of Level 1 */
-	LinkedList<Long> ll = new LinkedList<>();
-	LinkedList<Long> outList = new LinkedList<>();
+    LinkedList<Long> digits = new LinkedList<>();
+	
+	int numDigits;
 
 	/**
 	 * Converts the string into a linked list
@@ -26,7 +27,7 @@ public class Num implements Comparable<Num> {
 	 */
 	Num(String s) {
 		int cursor = 0;
-		long numDigits;
+		
 		final int len = s.length();
 
 		if (len == 0)
@@ -48,11 +49,10 @@ public class Num implements Comparable<Num> {
 		}
 
 		if (cursor == len) {
-			ll.add(0L);
+			digits.add(0L);
 			return;
 		}
 		numDigits = len - cursor;
-		ll.add(numDigits);
 		String group;
 		long groupVal = 0;
 		int reversePtr = len;
@@ -61,18 +61,18 @@ public class Num implements Comparable<Num> {
 			groupVal = Long.parseLong(group);
 			if (groupVal < base) {
 				reversePtr -= baseLength;
-				ll.add(groupVal);
+				digits.add(groupVal);
 			} else {
 				group = s.substring(reversePtr - baseLength + 1, reversePtr);
 				groupVal = Long.parseLong(group);
 				reversePtr -= baseLength - 1;
-				ll.add(groupVal);
+				digits.add(groupVal);
 			}
 		}
 		if (reversePtr != cursor) {
 			group = s.substring(cursor, reversePtr);
 			groupVal = Long.parseLong(group);
-			ll.add(groupVal);
+			digits.add(groupVal);
 		}
 	}
 
@@ -85,14 +85,132 @@ public class Num implements Comparable<Num> {
 		this(Long.toString(x));
 	}
 
+	
 	static Num add(Num a, Num b) {
-		return null;
+		Num result = new Num("0");
+		result.digits.clear();
+		if(!a.isNegative){
+			if(!b.isNegative){
+				return add(a,b,result);
+			}else{
+				return subtract(a,b,result);
+			}
+		}else{
+			if(!b.isNegative){
+				return subtract(b,a,result);
+			}else{
+				result.isNegative = true;
+				return add(a,b,result);
+			}	
+		}
 	}
 
+	static Num add(Num a, Num b, Num result){
+		long carry = 0;
+		Iterator<Long> aIterator = a.digits.iterator();
+		Iterator<Long> bIterator = b.digits.iterator();
+		while (aIterator.hasNext() && bIterator.hasNext()) {
+			long sum = aIterator.next() + bIterator.next() + carry;
+			if (sum >= defaultBase) {
+				carry = 1;
+				sum -= defaultBase;
+			} else {
+				carry = 0;
+			}
+			result.digits.add(sum);
+		}
+		while (aIterator.hasNext()) {
+			long sum = aIterator.next()  + carry;
+			if (sum >= defaultBase) {
+				carry = 1;
+				sum -= defaultBase;
+			} else {
+				carry = 0;
+			}
+			result.digits.add(sum);
+		}
+		while (bIterator.hasNext()) {
+			long sum =  bIterator.next() + carry;
+			if (sum >= defaultBase) {
+				carry = 1;
+				sum -= defaultBase;
+			} else {
+				carry = 0;
+			}
+			result.digits.add(sum);
+		}
+		if (carry > 0) {
+			result.digits.add(carry);
+		}
+
+		return result;
+		
+	}
 	static Num subtract(Num a, Num b) {
-		return null;
+		Num result = new Num("0");
+		result.digits.clear();
+		if(!a.isNegative){
+			if(!b.isNegative){
+				return subtract(a,b,result);
+			}else{
+				return add(a,b,result);
+			}
+		}else{
+			if(!b.isNegative){
+				result.isNegative = true;
+				return add(a,b,result);
+			}else{
+				return subtract(b,a,result);
+			}
+		}
+	}
+	
+	static Num subtract(Num a, Num b, Num result){
+		if(a.compareMag(b) < 0){
+			result.isNegative = true;
+		}
+		long borrow = 0;
+		result.digits.clear();
+		if(a.compareMag(b) < 0){
+			result.isNegative = true;
+		}
+		Iterator<Long> aIterator = a.digits.iterator();
+		Iterator<Long> bIterator = b.digits.iterator();
+		while (aIterator.hasNext() && bIterator.hasNext()) {
+			long sub = aIterator.next() - bIterator.next() - borrow;
+			if (sub < 0) {
+				borrow = 1;
+				sub += defaultBase;
+			} else {
+				borrow = 0;
+			}
+			result.digits.add(sub);
+		}
+		while (aIterator.hasNext()) {
+			long sub = aIterator.next() -  borrow;
+			if (sub < 0) {
+				borrow = 1;
+				sub += defaultBase;
+			} else {
+				borrow = 0;
+			}
+			result.digits.add(sub);
+		}
+		while (bIterator.hasNext()) {
+			long sub = bIterator.next() -  borrow;
+			if (sub < 0) {
+				borrow = 1;
+				sub += defaultBase;
+			} else {
+				borrow = 0;
+			}
+			result.digits.add(sub);
+		}
+		return result;
 	}
 
+		
+		
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
 		return null;
@@ -127,9 +245,39 @@ public class Num implements Comparable<Num> {
 	// compare "this" to "other": return +1 if this is greater, 0 if equal, -1
 	// otherwise
 	public int compareTo(Num other) {
+		if(this.isNegative == other.isNegative){
+			if(this.isNegative){
+				compareMag(other);
+			}else{
+				compareMag(other);
+			}
+		}else if(this.isNegative){
+			return -1;
+		}else{
+			return 1;
+		}
+		
 		return 0;
 	}
 
+	public int compareMag(Num other){
+		if(this.numDigits > other.numDigits){
+			return 1;
+		}else if(this.numDigits < other.numDigits){
+			return -1;
+		}
+		Iterator<Long> thisIterator = this.digits.descendingIterator();
+		Iterator<Long> otherIterator = this.digits.descendingIterator();
+		while(thisIterator.hasNext()){
+			long thisIteratorValue = thisIterator.next();
+			long otherIteratorValue = otherIterator.next();
+			if(thisIteratorValue != otherIteratorValue ){
+				return thisIteratorValue > otherIteratorValue ? 1: -1;
+			}
+		}
+		
+		return 0;
+	}
 	// Output using the format "base: elements of list ..."
 	// For example, if base=100, and the number stored corresponds to 10965,
 	// then the output is "100: 65 9 1"
@@ -141,7 +289,7 @@ public class Num implements Comparable<Num> {
 		StringBuilder sb = new StringBuilder();
 		if (isNegative == true)
 			sb.append('-');
-		Iterator<Long> iterator = ll.descendingIterator();
+		Iterator<Long> iterator = digits.descendingIterator();
 		while (iterator.hasNext()) {
 			sb.append(iterator.next().toString());
 		}
