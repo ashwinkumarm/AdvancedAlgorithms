@@ -40,15 +40,14 @@ public class Num implements Comparable<Num> {
 			throw new NumberFormatException("Zero length BigInteger");
 
 		// Skip leading zeros and compute number of digits in magnitude
-		// while (cursor < len && Character.digit(s.charAt(cursor), (int) defaultBase)
-		// == 0) {
-		// cursor++;
-		// }
-		//
-		// if (cursor == len) {
-		// ll.add(0L);
-		// return;
-		// }
+		while (cursor < len && s.charAt(cursor) == '0') {
+			cursor++;
+		}
+
+		if (cursor == len) {
+			ll.add(0L);
+			return;
+		}
 
 		// numDigits = len - cursor;
 
@@ -74,27 +73,7 @@ public class Num implements Comparable<Num> {
 	 * @param x
 	 */
 	Num(long x) {
-		int cursor = 0;
-		int len = (int) (Math.log10(x) + 1);
-
-		if (len == 0)
-			throw new NumberFormatException("Zero length LongInteger");
-
-		String s = Long.toString(x);
-		String group;
-		long groupVal = 0;
-		int reversePtr = len;
-		while (reversePtr - baseLength >= cursor) {
-			group = s.substring((int) (reversePtr - baseLength), reversePtr);
-			groupVal = Long.parseLong(group);
-			reversePtr -= baseLength;
-			ll.add(groupVal);
-		}
-		if (reversePtr != cursor) {
-			group = s.substring(cursor, reversePtr);
-			groupVal = Long.parseLong(group);
-			ll.add(groupVal);
-		}
+		this(Long.toString(x));
 	}
 
 	static Num add(Num a, Num b) {

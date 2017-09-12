@@ -11,5 +11,6 @@ public class LP1L1 {
 		Num a = Num.power(x, 8);
 		System.out.println(a);
 		//z.printList();
+		System.out.println(34020>>>10);
 	}
 }
