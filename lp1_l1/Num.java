@@ -4,15 +4,17 @@
 //Changed type of base to long: 1:15 PM, 2017-09-08.
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1_l1;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
-	static long defaultBase = 10; // This can be changed to what you want it to be.
+	static long defaultBase = 10; // This can be changed to what you want it to
+									// be.
 	long base = defaultBase; // Change as needed
 	boolean isNegative = false;
-	int baseLength = (int) (Math.log10(base) + 1);
+	int baseLength = (int) ((base % 10 == 0) ? Math.log10(base) : (Math.log10(base) + 1));
 	/* Start of Level 1 */
 	LinkedList<Long> ll = new LinkedList<>();
 	LinkedList<Long> outList = new LinkedList<>();
@@ -61,7 +63,7 @@ public class Num implements Comparable<Num> {
 			} else {
 				group = s.substring(reversePtr - baseLength + 1, reversePtr);
 				groupVal = Long.parseLong(group);
-				reversePtr -= baseLength + 1;
+				reversePtr -= baseLength - 1;
 				ll.add(groupVal);
 			}
 		}
@@ -134,7 +136,14 @@ public class Num implements Comparable<Num> {
 
 	// Return number to a string in base 10
 	public String toString() {
-		return null;
+		StringBuilder sb = new StringBuilder();
+		if (isNegative == true)
+			sb.append('-');
+		Iterator<Long> iterator = ll.descendingIterator();
+		while (iterator.hasNext()) {
+			sb.append(iterator.next().toString());
+		}
+		return sb.toString();
 	}
 
 	public long base() {
