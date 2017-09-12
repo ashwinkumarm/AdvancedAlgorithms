@@ -10,7 +10,7 @@ import java.util.LinkedList;
 public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
-	static long defaultBase = 10; // This can be changed to what you want it to
+	static long defaultBase = 100; // This can be changed to what you want it to
 									// be.
 	long base = defaultBase; // Change as needed
 	boolean isNegative = false;
@@ -26,6 +26,7 @@ public class Num implements Comparable<Num> {
 	 */
 	Num(String s) {
 		int cursor = 0;
+		long numDigits;
 		final int len = s.length();
 
 		if (len == 0)
@@ -50,7 +51,8 @@ public class Num implements Comparable<Num> {
 			ll.add(0L);
 			return;
 		}
-
+		numDigits = len - cursor;
+		ll.add(numDigits);
 		String group;
 		long groupVal = 0;
 		int reversePtr = len;
