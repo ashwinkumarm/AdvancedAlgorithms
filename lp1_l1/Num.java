@@ -168,6 +168,9 @@ public class Num implements Comparable<Num> {
 	static Num subtract(Num a, Num b, Num result){
 		if(a.compareMag(b) < 0){
 			result.isNegative = true;
+			Num t = a;
+			a = b;
+			b = t;
 		}
 		long borrow = 0;
 		result.digits.clear();
