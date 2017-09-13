@@ -1,4 +1,4 @@
-package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Graph implements Iterable<Graph.Vertex> {
 	Vertex[] v; // vertices of graph
-	int n; // number of verices in the graph
+	public int n; // number of verices in the graph
 	boolean directed; // true if graph is directed, false otherwise
 
 	/**
@@ -15,12 +15,13 @@ public class Graph implements Iterable<Graph.Vertex> {
 	 */
 
 	public static class Vertex implements Iterable<Edge> {
-		int name; // name of the vertex
-		List<Edge> adj, revAdj; // adjacency list; use LinkedList or ArrayList
+		public int name; // name of the vertex
+		public List<Edge> adj, revAdj; // adjacency list; use LinkedList or
+										// ArrayList
 
 		/**
 		 * Constructor for the vertex
-		 * 
+		 *
 		 * @param n
 		 *            : int - name of the vertex
 		 */
@@ -60,13 +61,13 @@ public class Graph implements Iterable<Graph.Vertex> {
 	 */
 
 	public static class Edge {
-		Vertex from; // head vertex
-		Vertex to; // tail vertex
-		int weight;// weight of edge
+		public Vertex from; // head vertex
+		public Vertex to; // tail vertex
+		public int weight;// weight of edge
 
 		/**
 		 * Constructor for Edge
-		 * 
+		 *
 		 * @param u
 		 *            : Vertex - Vertex from which edge starts
 		 * @param v
@@ -81,17 +82,17 @@ public class Graph implements Iterable<Graph.Vertex> {
 		}
 
 		/**
-		 * Method to find the other end end of an edge, given a vertex reference This
-		 * method is used for undirected graphs
-		 * 
+		 * Method to find the other end end of an edge, given a vertex reference
+		 * This method is used for undirected graphs
+		 *
 		 * @param u
 		 *            : Vertex
 		 * @return : Vertex - other end of edge
 		 */
 		public Vertex otherEnd(Vertex u) {
 			assert from == u || to == u;
-			// if the vertex u is the head of the arc, then return the tail else return the
-			// head
+			// if the vertex u is the head of the arc, then return the tail else
+			// return the head
 			if (from == u) {
 				return to;
 			} else {
@@ -113,7 +114,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 
 	/**
 	 * Constructor for Graph
-	 * 
+	 *
 	 * @param n
 	 *            : int - number of vertices
 	 */
@@ -128,7 +129,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 
 	/**
 	 * Find vertex no. n
-	 * 
+	 *
 	 * @param n
 	 *            : int
 	 */
@@ -138,7 +139,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 
 	/**
 	 * Method to add an edge to the graph
-	 * 
+	 *
 	 * @param a
 	 *            : int - one end of edge
 	 * @param b
@@ -175,7 +176,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 
 	// read an undirected graph using the Scanner interface
 	public static Graph readGraph(Scanner in) {
-		return readGraph(in, true);
+		return readGraph(in, false);
 	}
 
 	public static Graph readGraph(Scanner in, boolean directed) {

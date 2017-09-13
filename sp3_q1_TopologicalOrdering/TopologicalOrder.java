@@ -8,40 +8,38 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.CC.CCVertex;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
 public class TopologicalOrder {
 	public static List<Graph.Vertex> toplogicalOrder1(Graph g) throws Exception {
-		CC cc = new CC(g);
+		TopoGraph topoGraph = new TopoGraph(g);
 		int topNum = 0;
 		Queue<Graph.Vertex> q = new LinkedList<Graph.Vertex>();
 		List<Graph.Vertex> topList = new ArrayList<Graph.Vertex>();
 
-		for (Graph.Vertex u : g.v) {
-			cc.getCCVertex(u).inDegree = u.revAdj.size();
-			if (cc.getCCVertex(u).inDegree == 0)
+		for (Graph.Vertex u : g) {
+			topoGraph.getVertex(u).inDegree = u.revAdj.size();
+			if (topoGraph.getVertex(u).inDegree == 0)
 				q.add(u);
 		}
-		
+
 		Graph.Vertex u = null;
 		while (!q.isEmpty()) {
 			u = q.remove();
-			cc.getCCVertex(u).top = ++topNum;
+			topoGraph.getVertex(u).top = ++topNum;
 			topList.add(u);
 			for (Graph.Edge e : u.adj) {
-				CCVertex v = cc.getCCVertex(e.to);
-				v.inDegree--;
-				if(v.inDegree == 0) {
-					q.add(cc.getVertex(v));
+				if (topoGraph.reduceInDegree(e.to) == 0) {
+					q.add(u);
 				}
 			}
 		}
-		if(topNum != g.v.length)
+		if (topNum != g.n)
 			throw new IllegalStateException("Exception: Not a DAG");
 		return topList;
 	}
 
-	public static void main(String args[]) throws FileNotFoundException,IllegalStateException{
+	public static void main(String args[]) throws FileNotFoundException, IllegalStateException {
 		Scanner in;
 		if (args.length > 0) {
 			File inputFile = new File(args[0]);
@@ -52,8 +50,8 @@ public class TopologicalOrder {
 		// passing the scanner object to graph class to construct the graph
 		Graph graph = Graph.readGraph(in);
 
-		// if graph is not empty we call the diameter method
-		if (graph.v.length > 0 && graph.n > 0) {
+		// if graph is not empty we call the topological sort method
+		if (graph.n > 0) {
 			try {
 				System.out.println("The Topological Order of the given graph is " + toplogicalOrder1(graph));
 			} catch (Exception e) {
