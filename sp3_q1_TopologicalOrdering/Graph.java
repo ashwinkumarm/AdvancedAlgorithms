@@ -175,7 +175,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 
 	// read an undirected graph using the Scanner interface
 	public static Graph readGraph(Scanner in) {
-		return readGraph(in, false);
+		return readGraph(in, true);
 	}
 
 	public static Graph readGraph(Scanner in, boolean directed) {
