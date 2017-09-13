@@ -6,11 +6,12 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
-	static long defaultBase = 100; // This can be changed to what you want it to
+	static long defaultBase = 1000; // This can be changed to what you want it to
 									// be.
 	static long base = defaultBase; // Change as needed
 	boolean isNegative = false;
@@ -215,9 +216,69 @@ public class Num implements Comparable<Num> {
 		
 		
 	// Implement Karatsuba algorithm for excellence credit
-	static Num product(Num a, Num b) {
-		return null;
+	static long product(Num a, Num b) {
+		ListIterator<Long> itr1 = a.digits.listIterator();
+		ListIterator<Long> itr2 = b.digits.listIterator();
+		long result = 0;
+
+		String multiplierString = "";
+		for (int i = 0; i <= baseLength; i++)
+			if (i == 0)
+				multiplierString += '1';
+			else
+				multiplierString += '0';
+		long multiplier = Long.parseLong(multiplierString);
+		long units1 = 1, units2, data;
+
+		while (itr1.hasNext()) {
+			data = itr1.next();
+			units2 = 1;
+			while (itr2.hasNext()) {
+				result += karatsubaMultiplication(data, itr2.next())*units2*units1;
+				units2 *= multiplier;
+			}
+			units1 *= multiplier;
+			itr2 = b.digits.listIterator();
+		}
+		return result;
 	}
+
+	static long karatsubaMultiplication(Long a, Long b) {
+		String s1 = Long.toString(a);
+		String s2 = Long.toString(b);
+
+		int m = Math.max(s1.length(), s2.length());
+		int m2 = m / 2;
+		if (m2 == 0)
+			return 0;
+		if (m2 == 1)
+			return a * b;
+
+		String[] partition1 = strCopy(m2, s1);
+		String[] partition2 = strCopy(m2, s2);
+		long low1 = Long.parseLong(partition1[0]);
+		long high1 = Long.parseLong(partition1[1]);
+		long low2 = Long.parseLong(partition2[0]);
+		long high2 = Long.parseLong(partition2[1]);
+
+		long z0 = karatsubaMultiplication(low1, low2);
+		long z1 = karatsubaMultiplication(low1 + high1, low2 + high2);
+		long z2 = karatsubaMultiplication(high1, high2);
+		return z0 * (1 << m) + (z1 - z2 - z0) * (1 << m2) + z2;
+	}
+
+	public static String[] strCopy(int index, String string) {
+		String first = "", last = "";
+		int actualIndex = string.length() - index;
+		for (int i = 0; i < actualIndex; i++) {
+			first += string.charAt(i);
+		}
+		for (int i = actualIndex; i < string.length(); i++) {
+			last += string.charAt(i);
+		}
+		return new String[] { first, last };
+	}
+
 
 	// Use divide and conquer
 	static Num power(Num a, long n) {
