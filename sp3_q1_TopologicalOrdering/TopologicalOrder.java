@@ -44,15 +44,16 @@ public class TopologicalOrder {
 
 		Iterator<Graph.Vertex> it = g.iterator();
 		DFSFinishTimeOrderGraph dfsTopoGraph = new DFSFinishTimeOrderGraph(g);
-		List<Graph.Vertex> decFinList = new ArrayList<Graph.Vertex>();
+		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>();
+		Graph.Vertex u;
 		while (it.hasNext()) {
-			Graph.Vertex u = it.next();
+			u = it.next();
 			if (!dfsTopoGraph.seen(u)) {
 				DFSFinishTimeOrderGraph.componentNo++;
-				dfsTopoGraph.dfsVisit(u, decFinList);
+				dfsTopoGraph.dfsVisit(u, decFinishList);
 			}
 		}
-		return decFinList;
+		return decFinishList;
 
 	}
 

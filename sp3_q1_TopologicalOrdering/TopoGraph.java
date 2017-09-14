@@ -7,12 +7,14 @@ public class TopoGraph extends GraphAlgorithm<TopoGraph.TopoVertex> {
 
 	class TopoVertex {
 		Graph.Vertex element;
-		int inDegree, top;
-
+		Graph.Vertex parent;
+		int inDegree, top,cno,disTime, finishTime;
+		boolean seen;
+		
 		TopoVertex(Graph.Vertex u) {
 			element = u;
-			inDegree = 0;
 			top = -1;
+			seen = false;
 		}
 	}
 
