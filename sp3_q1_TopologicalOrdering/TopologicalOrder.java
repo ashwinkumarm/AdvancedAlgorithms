@@ -3,11 +3,12 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Queue;
 import java.util.Scanner;
-
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
 public class TopologicalOrder {
@@ -39,6 +40,22 @@ public class TopologicalOrder {
 		return topList;
 	}
 
+	public static List<Graph.Vertex> toplogicalOrder2(Graph g) {
+		
+		Iterator<Graph.Vertex> it = g.iterator();
+		DFSFinishTimeOrderGraph dfsTopoGraph = new DFSFinishTimeOrderGraph(g);
+		List<Graph.Vertex> decFinList = new ArrayList<Graph.Vertex>();
+		while(it.hasNext()){
+			Graph.Vertex u = it.next();
+			if(!dfsTopoGraph.seen(u)){
+				DFSFinishTimeOrderGraph.componentNo++;
+				dfsTopoGraph.dfsVisit(u, decFinList);
+			}
+		}
+		return decFinList; 
+		
+	}
+	
 	public static void main(String args[]) throws FileNotFoundException, IllegalStateException {
 		Scanner in;
 		if (args.length > 0) {
@@ -54,6 +71,7 @@ public class TopologicalOrder {
 		if (graph.n > 0) {
 			try {
 				System.out.println("The Topological Order of the given graph is " + toplogicalOrder1(graph));
+				System.out.println("The DFS decreasing finish-time order of the given graph  " + toplogicalOrder2(graph));
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
