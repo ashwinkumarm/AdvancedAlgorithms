@@ -208,68 +208,70 @@ public class Num implements Comparable<Num> {
 	}
 
 	// Implement Karatsuba algorithm for excellence credit
-	static Num product(Num a, Num b) {
-		ListIterator<Long> itr1 = a.digits.listIterator();
-		ListIterator<Long> itr2 = b.digits.listIterator();
-		long result = 0;
+		static long product(Num a, Num b) {
+			String num1 = a.toString();
+			String num2 = b.toString();
+			
+			return karatsubaMultiplication(num1, num2);
+		}
 
-		String multiplierString = "";
-		for (int i = 0; i <= baseLength; i++)
-			if (i == 0)
-				multiplierString += '1';
-			else
-				multiplierString += '0';
-		long multiplier = Long.parseLong(multiplierString);
-		long units1 = 1, units2, data;
+		static long karatsubaMultiplication(String a, String b) {
+			int len1 = a.length();
+			int len2 = b.length();
+			int m = Math.min(len1,len2);
+			
+			if (m == 0)
+				return 0;
+			if (m == 1)
+				return (a.charAt(0)-'0') * (b.charAt(0)-'0');
+			
+			int m2 = m / 2;
 
-		while (itr1.hasNext()) {
-			data = itr1.next();
-			units2 = 1;
-			while (itr2.hasNext()) {
-				result += karatsubaMultiplication(data, itr2.next()) * units2 * units1;
-				units2 *= multiplier;
+			String low1 = a.substring(0, m2);
+			String high1 = a.substring(m2, len1);
+			String high2 = b.substring(0, m2);
+			String low2 = b.substring(m2, len2);
+			
+			long z0 = karatsubaMultiplication(low1, low2);
+			long z1 = karatsubaMultiplication(addStrings(low1, high1), addStrings(low2, high2));
+			long z2 = karatsubaMultiplication(high1, high2);
+			return z0 * (1 << m) + (z1 - z2 - z0) * (1 << m2) + z2;
+		}
+
+		private static String addStrings(String num1, String num2) {
+			int len1 = num1.length();
+			int len2 = num2.length();
+			int i=len1-1,j=len2-1,sum=0,carry=0;
+			int firstOperand,secondOperand;
+			String result="";
+			while(i>=0 && j>=0) {
+				firstOperand = num1.charAt(i--)-'0';
+				secondOperand = num2.charAt(j--)-'0';
+				
+				sum = (firstOperand ^ secondOperand ^ carry);
+				result = String.valueOf(sum) + result;
+				
+				carry = (firstOperand&secondOperand) | (secondOperand&carry) | (firstOperand&carry);
 			}
-			units1 *= multiplier;
-			itr2 = b.digits.listIterator();
+			
+			while(i>=0) {
+				firstOperand = num1.charAt(i--)-'0';
+				sum = firstOperand^carry;
+				result = String.valueOf(sum) + result;
+				carry = firstOperand & carry;
+			}
+			while(j>=0) {
+				secondOperand = num2.charAt(j--)-'0';
+				sum = secondOperand^carry;
+				result = String.valueOf(sum) + result;
+				carry = secondOperand & carry;
+			}
+			
+			if(carry!=0)
+				result = '1' + result;
+			return result;
 		}
-		return new Num(0L);
-	}
 
-	static long karatsubaMultiplication(Long a, Long b) {
-		String s1 = Long.toString(a);
-		String s2 = Long.toString(b);
-
-		int m = Math.max(s1.length(), s2.length());
-		int m2 = m / 2;
-		if (m2 == 0)
-			return 0;
-		if (m2 == 1)
-			return a * b;
-
-		String[] partition1 = strCopy(m2, s1);
-		String[] partition2 = strCopy(m2, s2);
-		long low1 = Long.parseLong(partition1[0]);
-		long high1 = Long.parseLong(partition1[1]);
-		long low2 = Long.parseLong(partition2[0]);
-		long high2 = Long.parseLong(partition2[1]);
-
-		long z0 = karatsubaMultiplication(low1, low2);
-		long z1 = karatsubaMultiplication(low1 + high1, low2 + high2);
-		long z2 = karatsubaMultiplication(high1, high2);
-		return z0 * (1 << m) + (z1 - z2 - z0) * (1 << m2) + z2;
-	}
-
-	public static String[] strCopy(int index, String string) {
-		String first = "", last = "";
-		int actualIndex = string.length() - index;
-		for (int i = 0; i < actualIndex; i++) {
-			first += string.charAt(i);
-		}
-		for (int i = actualIndex; i < string.length(); i++) {
-			last += string.charAt(i);
-		}
-		return new String[] { first, last };
-	}
 
 	// Use divide and conquer
 	static Num power(Num a, long n) {
