@@ -11,14 +11,18 @@ import java.util.ListIterator;
 public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
-	static long defaultBase = 1000; // This can be changed to what you want it to
-									// be.
+	static long defaultBase = 1000;
 	static long base = defaultBase; // Change as needed
+	static Num baseInNum = new Num(base);
+	static Num TEN = new Num(10L);
+	static Num ZERO = new Num(0L);
+	static long ZERO_LONG = 0L;
+	static long ONE_LONG = 1L;
 	boolean isNegative = false;
 	static int baseLength = (int) ((base % 10 == 0) ? Math.log10(base) : (Math.log10(base) + 1));
 	/* Start of Level 1 */
-    LinkedList<Long> digits = new LinkedList<>();
-	
+	LinkedList<Long> digits = new LinkedList<>();
+
 	int numDigits;
 
 	/**
@@ -28,7 +32,7 @@ public class Num implements Comparable<Num> {
 	 */
 	Num(String s) {
 		int cursor = 0;
-		
+
 		final int len = s.length();
 
 		if (len == 0)
@@ -54,26 +58,13 @@ public class Num implements Comparable<Num> {
 			return;
 		}
 		numDigits = len - cursor;
-		String group;
-		long groupVal = 0;
-		int reversePtr = len;
-		while (reversePtr - baseLength >= cursor) {
-			group = s.substring(reversePtr - baseLength, reversePtr);
-			groupVal = Long.parseLong(group);
-			if (groupVal < base) {
-				reversePtr -= baseLength;
-				digits.add(groupVal);
-			} else {
-				group = s.substring(reversePtr - baseLength + 1, reversePtr);
-				groupVal = Long.parseLong(group);
-				reversePtr -= baseLength - 1;
-				digits.add(groupVal);
-			}
-		}
-		if (reversePtr != cursor) {
-			group = s.substring(cursor, reversePtr);
-			groupVal = Long.parseLong(group);
-			digits.add(groupVal);
+		Num numInBaseTen = new Num(s.charAt(cursor));
+		for (int i = cursor + 1; i < len; i++)
+			numInBaseTen = add(product(numInBaseTen, TEN), new Num(s.charAt(i)));
+
+		while (numInBaseTen.compareTo(ZERO) != 0) {
+			mod(numInBaseTen, baseInNum);
+			numInBaseTen = divide(numInBaseTen, baseInNum);
 		}
 	}
 
@@ -83,30 +74,32 @@ public class Num implements Comparable<Num> {
 	 * @param x
 	 */
 	Num(long x) {
-		this(Long.toString(x));
-	}
-
-	
-	static Num add(Num a, Num b) {
-		Num result = new Num("0");
-		result.digits.clear();
-		if(!a.isNegative){
-			if(!b.isNegative){
-				return add(a,b,result);
-			}else{
-				return subtract(a,b,result);
-			}
-		}else{
-			if(!b.isNegative){
-				return subtract(b,a,result);
-			}else{
-				result.isNegative = true;
-				return add(a,b,result);
-			}	
+		while (x != ZERO_LONG) {
+			digits.add(x % base);
+			x /= base;
 		}
 	}
 
-	static Num add(Num a, Num b, Num result){
+	static Num add(Num a, Num b) {
+		Num result = new Num("0");
+		result.digits.clear();
+		if (!a.isNegative) {
+			if (!b.isNegative) {
+				return add(a, b, result);
+			} else {
+				return subtract(a, b, result);
+			}
+		} else {
+			if (!b.isNegative) {
+				return subtract(b, a, result);
+			} else {
+				result.isNegative = true;
+				return add(a, b, result);
+			}
+		}
+	}
+
+	static Num add(Num a, Num b, Num result) {
 		long carry = 0;
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
@@ -121,7 +114,7 @@ public class Num implements Comparable<Num> {
 			result.digits.add(sum);
 		}
 		while (aIterator.hasNext()) {
-			long sum = aIterator.next()  + carry;
+			long sum = aIterator.next() + carry;
 			if (sum >= defaultBase) {
 				carry = 1;
 				sum -= defaultBase;
@@ -131,7 +124,7 @@ public class Num implements Comparable<Num> {
 			result.digits.add(sum);
 		}
 		while (bIterator.hasNext()) {
-			long sum =  bIterator.next() + carry;
+			long sum = bIterator.next() + carry;
 			if (sum >= defaultBase) {
 				carry = 1;
 				sum -= defaultBase;
@@ -145,29 +138,30 @@ public class Num implements Comparable<Num> {
 		}
 
 		return result;
-		
+
 	}
+
 	static Num subtract(Num a, Num b) {
 		Num result = new Num("0");
 		result.digits.clear();
-		if(!a.isNegative){
-			if(!b.isNegative){
-				return subtract(a,b,result);
-			}else{
-				return add(a,b,result);
+		if (!a.isNegative) {
+			if (!b.isNegative) {
+				return subtract(a, b, result);
+			} else {
+				return add(a, b, result);
 			}
-		}else{
-			if(!b.isNegative){
+		} else {
+			if (!b.isNegative) {
 				result.isNegative = true;
-				return add(a,b,result);
-			}else{
-				return subtract(b,a,result);
+				return add(a, b, result);
+			} else {
+				return subtract(b, a, result);
 			}
 		}
 	}
-	
-	static Num subtract(Num a, Num b, Num result){
-		if(a.compareMag(b) < 0){
+
+	static Num subtract(Num a, Num b, Num result) {
+		if (a.compareMag(b) < 0) {
 			result.isNegative = true;
 			Num t = a;
 			a = b;
@@ -175,7 +169,7 @@ public class Num implements Comparable<Num> {
 		}
 		long borrow = 0;
 		result.digits.clear();
-		if(a.compareMag(b) < 0){
+		if (a.compareMag(b) < 0) {
 			result.isNegative = true;
 		}
 		Iterator<Long> aIterator = a.digits.iterator();
@@ -191,7 +185,7 @@ public class Num implements Comparable<Num> {
 			result.digits.add(sub);
 		}
 		while (aIterator.hasNext()) {
-			long sub = aIterator.next() -  borrow;
+			long sub = aIterator.next() - borrow;
 			if (sub < 0) {
 				borrow = 1;
 				sub += defaultBase;
@@ -201,7 +195,7 @@ public class Num implements Comparable<Num> {
 			result.digits.add(sub);
 		}
 		while (bIterator.hasNext()) {
-			long sub = bIterator.next() -  borrow;
+			long sub = bIterator.next() - borrow;
 			if (sub < 0) {
 				borrow = 1;
 				sub += defaultBase;
@@ -213,10 +207,8 @@ public class Num implements Comparable<Num> {
 		return result;
 	}
 
-		
-		
 	// Implement Karatsuba algorithm for excellence credit
-	static long product(Num a, Num b) {
+	static Num product(Num a, Num b) {
 		ListIterator<Long> itr1 = a.digits.listIterator();
 		ListIterator<Long> itr2 = b.digits.listIterator();
 		long result = 0;
@@ -234,13 +226,13 @@ public class Num implements Comparable<Num> {
 			data = itr1.next();
 			units2 = 1;
 			while (itr2.hasNext()) {
-				result += karatsubaMultiplication(data, itr2.next())*units2*units1;
+				result += karatsubaMultiplication(data, itr2.next()) * units2 * units1;
 				units2 *= multiplier;
 			}
 			units1 *= multiplier;
 			itr2 = b.digits.listIterator();
 		}
-		return result;
+		return new Num(0L);
 	}
 
 	static long karatsubaMultiplication(Long a, Long b) {
@@ -279,10 +271,19 @@ public class Num implements Comparable<Num> {
 		return new String[] { first, last };
 	}
 
-
 	// Use divide and conquer
 	static Num power(Num a, long n) {
-		return null;
+		if (n == ZERO_LONG)
+			return new Num(ONE_LONG);
+		else if (n == ONE_LONG)
+			return a;
+		else {
+			Num s = power(a, n / 2);
+			if (n % 2 == 0)
+				return product(s, s);
+			else
+				return product(product(s, s), a);
+		}
 	}
 	/* End of Level 1 */
 
@@ -309,39 +310,40 @@ public class Num implements Comparable<Num> {
 	// compare "this" to "other": return +1 if this is greater, 0 if equal, -1
 	// otherwise
 	public int compareTo(Num other) {
-		if(this.isNegative == other.isNegative){
-			if(this.isNegative){
+		if (this.isNegative == other.isNegative) {
+			if (this.isNegative) {
 				compareMag(other);
-			}else{
+			} else {
 				compareMag(other);
 			}
-		}else if(this.isNegative){
+		} else if (this.isNegative) {
 			return -1;
-		}else{
+		} else {
 			return 1;
 		}
-		
+
 		return 0;
 	}
 
-	public int compareMag(Num other){
-		if(this.numDigits > other.numDigits){
+	public int compareMag(Num other) {
+		if (this.numDigits > other.numDigits) {
 			return 1;
-		}else if(this.numDigits < other.numDigits){
+		} else if (this.numDigits < other.numDigits) {
 			return -1;
 		}
 		Iterator<Long> thisIterator = this.digits.descendingIterator();
 		Iterator<Long> otherIterator = this.digits.descendingIterator();
-		while(thisIterator.hasNext()){
+		while (thisIterator.hasNext()) {
 			long thisIteratorValue = thisIterator.next();
 			long otherIteratorValue = otherIterator.next();
-			if(thisIteratorValue != otherIteratorValue ){
-				return thisIteratorValue > otherIteratorValue ? 1: -1;
+			if (thisIteratorValue != otherIteratorValue) {
+				return thisIteratorValue > otherIteratorValue ? 1 : -1;
 			}
 		}
-		
+
 		return 0;
 	}
+
 	// Output using the format "base: elements of list ..."
 	// For example, if base=100, and the number stored corresponds to 10965,
 	// then the output is "100: 65 9 1"
