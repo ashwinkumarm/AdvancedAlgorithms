@@ -11,12 +11,14 @@ public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
 
-	static long defaultBase = 10; // This can be changed to what you want it to
+	static long defaultBase = 20; // This can be changed to what you want it to
 									// be.
 	static long base = defaultBase; // Change as needed
 	static Num baseInNum = new Num(base);
 	static Num TEN = new Num(10L);
 	static Num ZERO = new Num(0L);
+	static Num ONE = new Num(1L);
+	static Num TWO = new Num(2L);
 	static long ZERO_LONG = 0L;
 	static long ONE_LONG = 1L;
 	boolean isNegative = false;
@@ -27,12 +29,20 @@ public class Num implements Comparable<Num> {
 	int numDigits;
 
 	/**
+	 * @param s
+	 */
+	Num(String s) {
+		this(s, defaultBase);
+	}
+
+	/**
 	 * Converts the string into a linked list
 	 *
 	 * @param s
 	 */
-	Num(String s) {
+	Num(String s, long userBase) {
 		int cursor = 0;
+		base = userBase;
 
 		final int len = s.length();
 
@@ -70,11 +80,22 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
+	 * @param x
+	 */
+	Num(long x) {
+		this(x, defaultBase);
+	}
+
+	/**
 	 * Converts the long integer into a linked list
 	 *
 	 * @param x
 	 */
-	Num(long x) {
+	Num(long x, long userBase) {
+		if (x == ZERO_LONG) {
+			digits.add(0L);
+			return;
+		}
 		while (x != ZERO_LONG) {
 			digits.add(x % base);
 			x /= base;
@@ -102,9 +123,9 @@ public class Num implements Comparable<Num> {
 		Iterator<Long> bIterator = b.digits.iterator();
 		while (aIterator.hasNext() && bIterator.hasNext()) {
 			long sum = aIterator.next() + bIterator.next() + carry;
-			if (sum >= defaultBase) {
+			if (sum >= base) {
 				carry = 1;
-				sum -= defaultBase;
+				sum -= base;
 			} else {
 				carry = 0;
 			}
@@ -112,9 +133,9 @@ public class Num implements Comparable<Num> {
 		}
 		while (aIterator.hasNext()) {
 			long sum = aIterator.next() + carry;
-			if (sum >= defaultBase) {
+			if (sum >= base) {
 				carry = 1;
-				sum -= defaultBase;
+				sum -= base;
 			} else {
 				carry = 0;
 			}
@@ -122,9 +143,9 @@ public class Num implements Comparable<Num> {
 		}
 		while (bIterator.hasNext()) {
 			long sum = bIterator.next() + carry;
-			if (sum >= defaultBase) {
+			if (sum >= base) {
 				carry = 1;
-				sum -= defaultBase;
+				sum -= base;
 			} else {
 				carry = 0;
 			}
@@ -262,28 +283,43 @@ public class Num implements Comparable<Num> {
 	/* Start of Level 2 */
 	static Num divide(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
-		if(b.digits.size() == 1 && b.digits.get(0) == 0){
-			 throw new ArithmeticException("denominator is zero");
+		if (b.compareTo(ZERO) == 0) {
+			throw new ArithmeticException("denominator is zero");
 		}
-		if(b.compareMag(a) > 0){
-			if(b.isNegative == a.isNegative){
-				return result;	
-			}else{
+		if (b.compareMag(a) > 0) {
+			if (b.isNegative == a.isNegative) {
+				return result;
+			} else {
 				result.isNegative = true;
 				return result;
-			}	
+			}
 		}
+
 		Num X = new Num(ONE_LONG);
 		int cmp = product(X, b).compareMag(a);
-		int cmp2 = product(add(X,new Num(1)),b).compareMag(a);
-		while(cmp2 < 0 ){
-			X = add(X,new Num(ONE_LONG));
+		int cmp2 = product(add(X, new Num(1)), b).compareMag(a);
+		while (cmp == -1 && cmp2 == 1) {
+			X = add(X, new Num(ONE_LONG));
 		}
+
+		/*-Num p = ONE, x = ZERO;
+		// TODO: CHeck a/2
+		Num r = a;
+		while (p.compareTo(r) != 1) {
+			x = divide(add(p, r), TWO);
+			if (product(x, b).compareMag(a) == 1)
+				p = add(x, ONE);
+			else if (product(add(x, ONE), b).compareMag(a) == -1)
+				r = subtract(x, ONE);
+			else
+				break;
+		}*/
+
 		return X;
 	}
 
 	static Num mod(Num a, Num b) {
-		//Num mod = subtract(a, b)
+		// Num mod = subtract(a, b)
 		return null;
 	}
 
@@ -301,19 +337,20 @@ public class Num implements Comparable<Num> {
 	// compare "this" to "other": return +1 if this is greater, 0 if equal, -1
 	// otherwise
 	public int compareTo(Num other) {
+		int magnitude = 0;
 		if (this.isNegative == other.isNegative) {
 			if (this.isNegative) {
-				compareMag(other);
+				magnitude = compareMag(other);
 			} else {
-				compareMag(other);
+				magnitude = compareMag(other);
 			}
 		} else if (this.isNegative) {
-			return -1;
+			magnitude = -1;
 		} else {
-			return 1;
+			magnitude = 1;
 		}
 
-		return 0;
+		return magnitude;
 	}
 
 	public int compareMag(Num this,Num other) {
@@ -346,10 +383,15 @@ public class Num implements Comparable<Num> {
 		StringBuilder sb = new StringBuilder();
 		if (isNegative == true)
 			sb.append('-');
-		Iterator<Long> iterator = digits.descendingIterator();
-		while (iterator.hasNext()) {
-			sb.append(iterator.next().toString());
-		}
+		Iterator<Long> iterator = digits.iterator();
+		Num sum = new Num(0L, 10L);
+		long i = 0;
+		while (iterator.hasNext())
+			sum = add(sum, new Num((long) (iterator.next() * Math.pow(base, i++)), 10L));
+
+		Iterator<Long> iteratorBaseTen = digits.descendingIterator();
+		while (iteratorBaseTen.hasNext())
+			sb.append(iteratorBaseTen.next().toString());
 		return sb.toString();
 	}
 
