@@ -6,19 +6,24 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
+
 	static long defaultBase = 100; // This can be changed to what you want it to
 									// be.
 	static long base = defaultBase; // Change as needed
+	static Num baseInNum = new Num(base);
+	static Num TEN = new Num(10L);
+	static Num ZERO = new Num(0L);
+	static long ZERO_LONG = 0L;
+	static long ONE_LONG = 1L;
 	boolean isNegative = false;
 	static int baseLength = (int) ((base % 10 == 0) ? Math.log10(base) : (Math.log10(base) + 1));
 	/* Start of Level 1 */
-    LinkedList<Long> digits = new LinkedList<>();
-	
+	LinkedList<Long> digits = new LinkedList<>();
+
 	int numDigits;
 
 	/**
@@ -28,7 +33,7 @@ public class Num implements Comparable<Num> {
 	 */
 	Num(String s) {
 		int cursor = 0;
-		
+
 		final int len = s.length();
 
 		if (len == 0)
@@ -54,26 +59,13 @@ public class Num implements Comparable<Num> {
 			return;
 		}
 		numDigits = len - cursor;
-		String group;
-		long groupVal = 0;
-		int reversePtr = len;
-		while (reversePtr - baseLength >= cursor) {
-			group = s.substring(reversePtr - baseLength, reversePtr);
-			groupVal = Long.parseLong(group);
-			if (groupVal < base) {
-				reversePtr -= baseLength;
-				digits.add(groupVal);
-			} else {
-				group = s.substring(reversePtr - baseLength + 1, reversePtr);
-				groupVal = Long.parseLong(group);
-				reversePtr -= baseLength - 1;
-				digits.add(groupVal);
-			}
-		}
-		if (reversePtr != cursor) {
-			group = s.substring(cursor, reversePtr);
-			groupVal = Long.parseLong(group);
-			digits.add(groupVal);
+		Num numInBaseTen = new Num(s.charAt(cursor));
+		for (int i = cursor + 1; i < len; i++)
+			numInBaseTen = add(product(numInBaseTen, TEN), new Num(s.charAt(i)));
+
+		while (numInBaseTen.compareTo(ZERO) != 0) {
+			mod(numInBaseTen, baseInNum);
+			numInBaseTen = divide(numInBaseTen, baseInNum);
 		}
 	}
 
@@ -83,10 +75,12 @@ public class Num implements Comparable<Num> {
 	 * @param x
 	 */
 	Num(long x) {
-		this(Long.toString(x));
+		while (x != ZERO_LONG) {
+			digits.add(x % base);
+			x /= base;
+		}
 	}
 
-	
 	static Num add(Num a, Num b) {
 		Num result = new Num("0");
 		result.digits.clear();
@@ -102,7 +96,7 @@ public class Num implements Comparable<Num> {
 		
 	}
 
-	static Num add(Num a, Num b, Num result){
+	static Num add(Num a, Num b, Num result) {
 		long carry = 0;
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
@@ -117,7 +111,7 @@ public class Num implements Comparable<Num> {
 			result.digits.add(sum);
 		}
 		while (aIterator.hasNext()) {
-			long sum = aIterator.next()  + carry;
+			long sum = aIterator.next() + carry;
 			if (sum >= defaultBase) {
 				carry = 1;
 				sum -= defaultBase;
@@ -127,7 +121,7 @@ public class Num implements Comparable<Num> {
 			result.digits.add(sum);
 		}
 		while (bIterator.hasNext()) {
-			long sum =  bIterator.next() + carry;
+			long sum = bIterator.next() + carry;
 			if (sum >= defaultBase) {
 				carry = 1;
 				sum -= defaultBase;
@@ -141,8 +135,9 @@ public class Num implements Comparable<Num> {
 		}
 
 		return result;
-		
+
 	}
+
 	static Num subtract(Num a, Num b) {
 		Num result = new Num("0");
 		result.digits.clear();
@@ -161,7 +156,6 @@ public class Num implements Comparable<Num> {
 		
 		long borrow = 0;
 		result.digits.clear();
-		
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
 		while (aIterator.hasNext() && bIterator.hasNext()) {
@@ -175,7 +169,7 @@ public class Num implements Comparable<Num> {
 			result.digits.add(sub);
 		}
 		while (aIterator.hasNext()) {
-			long sub = aIterator.next() -  borrow;
+			long sub = aIterator.next() - borrow;
 			if (sub < 0) {
 				borrow = 1;
 				sub += defaultBase;
@@ -185,7 +179,7 @@ public class Num implements Comparable<Num> {
 			result.digits.add(sub);
 		}
 		while (bIterator.hasNext()) {
-			long sub = bIterator.next() -  borrow;
+			long sub = bIterator.next() - borrow;
 			if (sub < 0) {
 				borrow = 1;
 				sub += defaultBase;
@@ -197,76 +191,85 @@ public class Num implements Comparable<Num> {
 		return result;
 	}
 
-		
-		
 	// Implement Karatsuba algorithm for excellence credit
-	static long product(Num a, Num b) {
-		ListIterator<Long> itr1 = a.digits.listIterator();
-		ListIterator<Long> itr2 = b.digits.listIterator();
-		long result = 0;
+		static Num product(Num a, Num b) {
+			String num1 = a.toString();
+			String num2 = b.toString();
 
-		String multiplierString = "";
-		for (int i = 0; i <= baseLength; i++)
-			if (i == 0)
-				multiplierString += '1';
-			else
-				multiplierString += '0';
-		long multiplier = Long.parseLong(multiplierString);
-		long units1 = 1, units2, data;
+			return new Num(karatsubaMultiplication(num1, num2));
+		}
 
-		while (itr1.hasNext()) {
-			data = itr1.next();
-			units2 = 1;
-			while (itr2.hasNext()) {
-				result += karatsubaMultiplication(data, itr2.next())*units2*units1;
-				units2 *= multiplier;
+		static long karatsubaMultiplication(String a, String b) {
+			int len1 = a.length();
+			int len2 = b.length();
+			int m = Math.min(len1,len2);
+
+			if (m == 0)
+				return 0;
+			if (m == 1)
+				return (a.charAt(0)-'0') * (b.charAt(0)-'0');
+
+			int m2 = m / 2;
+
+			String low1 = a.substring(0, m2);
+			String high1 = a.substring(m2, len1);
+			String high2 = b.substring(0, m2);
+			String low2 = b.substring(m2, len2);
+
+			long z0 = karatsubaMultiplication(low1, low2);
+			long z1 = karatsubaMultiplication(addStrings(low1, high1), addStrings(low2, high2));
+			long z2 = karatsubaMultiplication(high1, high2);
+			return z0 * (1 << m) + (z1 - z2 - z0) * (1 << m2) + z2;
+		}
+
+		private static String addStrings(String num1, String num2) {
+			int len1 = num1.length();
+			int len2 = num2.length();
+			int i=len1-1,j=len2-1,sum=0,carry=0;
+			int firstOperand,secondOperand;
+			String result="";
+			while(i>=0 && j>=0) {
+				firstOperand = num1.charAt(i--)-'0';
+				secondOperand = num2.charAt(j--)-'0';
+
+				sum = (firstOperand ^ secondOperand ^ carry);
+				result = String.valueOf(sum) + result;
+
+				carry = (firstOperand&secondOperand) | (secondOperand&carry) | (firstOperand&carry);
 			}
-			units1 *= multiplier;
-			itr2 = b.digits.listIterator();
+
+			while(i>=0) {
+				firstOperand = num1.charAt(i--)-'0';
+				sum = firstOperand^carry;
+				result = String.valueOf(sum) + result;
+				carry = firstOperand & carry;
+			}
+			while(j>=0) {
+				secondOperand = num2.charAt(j--)-'0';
+				sum = secondOperand^carry;
+				result = String.valueOf(sum) + result;
+				carry = secondOperand & carry;
+			}
+
+			if(carry!=0)
+				result = '1' + result;
+			return result;
 		}
-		return result;
-	}
-
-	static long karatsubaMultiplication(Long a, Long b) {
-		String s1 = Long.toString(a);
-		String s2 = Long.toString(b);
-
-		int m = Math.max(s1.length(), s2.length());
-		int m2 = m / 2;
-		if (m2 == 0)
-			return 0;
-		if (m2 == 1)
-			return a * b;
-
-		String[] partition1 = strCopy(m2, s1);
-		String[] partition2 = strCopy(m2, s2);
-		long low1 = Long.parseLong(partition1[0]);
-		long high1 = Long.parseLong(partition1[1]);
-		long low2 = Long.parseLong(partition2[0]);
-		long high2 = Long.parseLong(partition2[1]);
-
-		long z0 = karatsubaMultiplication(low1, low2);
-		long z1 = karatsubaMultiplication(low1 + high1, low2 + high2);
-		long z2 = karatsubaMultiplication(high1, high2);
-		return z0 * (1 << m) + (z1 - z2 - z0) * (1 << m2) + z2;
-	}
-
-	public static String[] strCopy(int index, String string) {
-		String first = "", last = "";
-		int actualIndex = string.length() - index;
-		for (int i = 0; i < actualIndex; i++) {
-			first += string.charAt(i);
-		}
-		for (int i = actualIndex; i < string.length(); i++) {
-			last += string.charAt(i);
-		}
-		return new String[] { first, last };
-	}
 
 
 	// Use divide and conquer
 	static Num power(Num a, long n) {
-		return null;
+		if (n == ZERO_LONG)
+			return new Num(ONE_LONG);
+		else if (n == ONE_LONG)
+			return a;
+		else {
+			Num s = power(a, n / 2);
+			if (n % 2 == 0)
+				return product(s, s);
+			else
+				return product(product(s, s), a);
+		}
 	}
 	/* End of Level 1 */
 
@@ -293,39 +296,40 @@ public class Num implements Comparable<Num> {
 	// compare "this" to "other": return +1 if this is greater, 0 if equal, -1
 	// otherwise
 	public int compareTo(Num other) {
-		if(this.isNegative == other.isNegative){
-			if(this.isNegative){
+		if (this.isNegative == other.isNegative) {
+			if (this.isNegative) {
 				compareMag(other);
-			}else{
+			} else {
 				compareMag(other);
 			}
-		}else if(this.isNegative){
+		} else if (this.isNegative) {
 			return -1;
-		}else{
+		} else {
 			return 1;
 		}
-		
+
 		return 0;
 	}
 
 	public int compareMag(Num this, Num other){
 		if(this.numDigits > other.numDigits){
 			return 1;
-		}else if(this.numDigits < other.numDigits){
+		} else if (this.numDigits < other.numDigits) {
 			return -1;
 		}
 		Iterator<Long> thisIterator = this.digits.descendingIterator();
 		Iterator<Long> otherIterator = other.digits.descendingIterator();
-		while(thisIterator.hasNext()){
+		while (thisIterator.hasNext()) {
 			long thisIteratorValue = thisIterator.next();
 			long otherIteratorValue = otherIterator.next();
-			if(thisIteratorValue != otherIteratorValue ){
-				return thisIteratorValue > otherIteratorValue ? 1: -1;
+			if (thisIteratorValue != otherIteratorValue) {
+				return thisIteratorValue > otherIteratorValue ? 1 : -1;
 			}
 		}
-		
+
 		return 0;
 	}
+
 	// Output using the format "base: elements of list ..."
 	// For example, if base=100, and the number stored corresponds to 10965,
 	// then the output is "100: 65 9 1"
