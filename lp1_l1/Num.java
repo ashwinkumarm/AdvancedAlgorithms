@@ -6,7 +6,6 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
@@ -208,30 +207,30 @@ public class Num implements Comparable<Num> {
 	}
 
 	// Implement Karatsuba algorithm for excellence credit
-		static long product(Num a, Num b) {
+		static Num product(Num a, Num b) {
 			String num1 = a.toString();
 			String num2 = b.toString();
-			
-			return karatsubaMultiplication(num1, num2);
+
+			return new Num(karatsubaMultiplication(num1, num2));
 		}
 
 		static long karatsubaMultiplication(String a, String b) {
 			int len1 = a.length();
 			int len2 = b.length();
 			int m = Math.min(len1,len2);
-			
+
 			if (m == 0)
 				return 0;
 			if (m == 1)
 				return (a.charAt(0)-'0') * (b.charAt(0)-'0');
-			
+
 			int m2 = m / 2;
 
 			String low1 = a.substring(0, m2);
 			String high1 = a.substring(m2, len1);
 			String high2 = b.substring(0, m2);
 			String low2 = b.substring(m2, len2);
-			
+
 			long z0 = karatsubaMultiplication(low1, low2);
 			long z1 = karatsubaMultiplication(addStrings(low1, high1), addStrings(low2, high2));
 			long z2 = karatsubaMultiplication(high1, high2);
@@ -247,13 +246,13 @@ public class Num implements Comparable<Num> {
 			while(i>=0 && j>=0) {
 				firstOperand = num1.charAt(i--)-'0';
 				secondOperand = num2.charAt(j--)-'0';
-				
+
 				sum = (firstOperand ^ secondOperand ^ carry);
 				result = String.valueOf(sum) + result;
-				
+
 				carry = (firstOperand&secondOperand) | (secondOperand&carry) | (firstOperand&carry);
 			}
-			
+
 			while(i>=0) {
 				firstOperand = num1.charAt(i--)-'0';
 				sum = firstOperand^carry;
@@ -266,7 +265,7 @@ public class Num implements Comparable<Num> {
 				result = String.valueOf(sum) + result;
 				carry = secondOperand & carry;
 			}
-			
+
 			if(carry!=0)
 				result = '1' + result;
 			return result;
