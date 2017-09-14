@@ -11,7 +11,7 @@ public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
 
-	static long defaultBase = 100; // This can be changed to what you want it to
+	static long defaultBase = 10; // This can be changed to what you want it to
 									// be.
 	static long base = defaultBase; // Change as needed
 	static Num baseInNum = new Num(base);
@@ -84,16 +84,16 @@ public class Num implements Comparable<Num> {
 	static Num add(Num a, Num b) {
 		Num result = new Num("0");
 		result.digits.clear();
-		if(a.isNegative == b.isNegative){
+		if (a.isNegative == b.isNegative) {
 			result.isNegative = a.isNegative;
-			return add(a,b,result);
-		}else{
+			return add(a, b, result);
+		} else {
 			int cmp = a.compareMag(b);
-			Num resultMag = (cmp > 0 ? subtract(a,b,result):subtract(b,a,result));
-			resultMag.isNegative = cmp > 0 ? a.isNegative :  b.isNegative;
+			Num resultMag = (cmp > 0 ? subtract(a, b, result) : subtract(b, a, result));
+			resultMag.isNegative = cmp > 0 ? a.isNegative : b.isNegative;
 			return resultMag;
 		}
-		
+
 	}
 
 	static Num add(Num a, Num b, Num result) {
@@ -141,19 +141,19 @@ public class Num implements Comparable<Num> {
 	static Num subtract(Num a, Num b) {
 		Num result = new Num("0");
 		result.digits.clear();
-		if(a.isNegative != b.isNegative){
+		if (a.isNegative != b.isNegative) {
 			result.isNegative = a.isNegative;
-			return add(a,b,result);
-		}else{
+			return add(a, b, result);
+		} else {
 			int cmp = a.compareMag(b);
-			Num resultMag = (cmp > 0 ? subtract(a,b,result) : subtract(b,a,result));
-			resultMag.isNegative = (cmp > 0 ? a.isNegative:!a.isNegative);
+			Num resultMag = (cmp > 0 ? subtract(a, b, result) : subtract(b, a, result));
+			resultMag.isNegative = (cmp > 0 ? a.isNegative : !a.isNegative);
 			return resultMag;
 		}
 	}
-	
-	static Num subtract(Num a, Num b, Num result){
-		
+
+	static Num subtract(Num a, Num b, Num result) {
+
 		long borrow = 0;
 		result.digits.clear();
 		Iterator<Long> aIterator = a.digits.iterator();
@@ -191,71 +191,57 @@ public class Num implements Comparable<Num> {
 		return result;
 	}
 
+	static String makeEqualLength(String str1, String str2) {
+		int len1 = str1.length();
+		int len2 = str2.length();
+		if (len1 < len2) {
+			for (int i = 0; i < len2 - len1; i++)
+				str1 = '0' + str1;
+			return str1;
+		} else if (len1 > len2) {
+			for (int i = 0; i < len1 - len2; i++)
+				str2 = '0' + str2;
+			return str2;
+		}
+		return null;
+	}
+
 	// Implement Karatsuba algorithm for excellence credit
-		static Num product(Num a, Num b) {
-			String num1 = a.toString();
-			String num2 = b.toString();
+	static Num product(Num a, Num b) {
+		String num1 = a.toString();
+		String num2 = b.toString();
 
-			return new Num(karatsubaMultiplication(num1, num2));
-		}
+		return new Num(karatsubaMultiplication(num1, num2));
+	}
 
-		static long karatsubaMultiplication(String a, String b) {
-			int len1 = a.length();
-			int len2 = b.length();
-			int m = Math.min(len1,len2);
+	static long karatsubaMultiplication(String a, String b) {
+		int len1 = a.length();
+		int len2 = b.length();
+		int m = Math.max(len1, len2);
 
-			if (m == 0)
-				return 0;
-			if (m == 1)
-				return (a.charAt(0)-'0') * (b.charAt(0)-'0');
+		if (len1 < len2)
+			a = makeEqualLength(a, b);
+		else if (len2 < len1)
+			b = makeEqualLength(a, b);
 
-			int m2 = m / 2;
+		if (m == 0)
+			return 0;
+		if (m == 1)
+			return (a.charAt(0) - '0') * (b.charAt(0) - '0');
 
-			String low1 = a.substring(0, m2);
-			String high1 = a.substring(m2, len1);
-			String high2 = b.substring(0, m2);
-			String low2 = b.substring(m2, len2);
+		int m2 = m / 2;
 
-			long z0 = karatsubaMultiplication(low1, low2);
-			long z1 = karatsubaMultiplication(addStrings(low1, high1), addStrings(low2, high2));
-			long z2 = karatsubaMultiplication(high1, high2);
-			return z0 * (1 << m) + (z1 - z2 - z0) * (1 << m2) + z2;
-		}
+		String low1 = a.substring(0, m2);
+		String high1 = a.substring(m2, m);
+		String low2 = b.substring(0, m2);
+		String high2 = b.substring(m2, m);
 
-		private static String addStrings(String num1, String num2) {
-			int len1 = num1.length();
-			int len2 = num2.length();
-			int i=len1-1,j=len2-1,sum=0,carry=0;
-			int firstOperand,secondOperand;
-			String result="";
-			while(i>=0 && j>=0) {
-				firstOperand = num1.charAt(i--)-'0';
-				secondOperand = num2.charAt(j--)-'0';
-
-				sum = (firstOperand ^ secondOperand ^ carry);
-				result = String.valueOf(sum) + result;
-
-				carry = (firstOperand&secondOperand) | (secondOperand&carry) | (firstOperand&carry);
-			}
-
-			while(i>=0) {
-				firstOperand = num1.charAt(i--)-'0';
-				sum = firstOperand^carry;
-				result = String.valueOf(sum) + result;
-				carry = firstOperand & carry;
-			}
-			while(j>=0) {
-				secondOperand = num2.charAt(j--)-'0';
-				sum = secondOperand^carry;
-				result = String.valueOf(sum) + result;
-				carry = secondOperand & carry;
-			}
-
-			if(carry!=0)
-				result = '1' + result;
-			return result;
-		}
-
+		long z0 = karatsubaMultiplication(low1, low2);
+		long z1 = karatsubaMultiplication(Long.toString(Long.parseLong(low1) + Long.parseLong(high1)),
+				Long.toString(Long.parseLong(low2) + Long.parseLong(high2)));
+		long z2 = karatsubaMultiplication(high1, high2);
+		return (long) (z0 * (Math.pow(base, 2 * (m - m2))) + (z1 - z2 - z0) * (Math.pow(base, m - m2)) + z2);
+	}
 
 	// Use divide and conquer
 	static Num power(Num a, long n) {
@@ -311,8 +297,8 @@ public class Num implements Comparable<Num> {
 		return 0;
 	}
 
-	public int compareMag(Num this, Num other){
-		if(this.numDigits > other.numDigits){
+	public int compareMag(Num this,Num other) {
+		if (this.numDigits > other.numDigits) {
 			return 1;
 		} else if (this.numDigits < other.numDigits) {
 			return -1;
