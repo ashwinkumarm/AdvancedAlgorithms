@@ -275,12 +275,11 @@ public class Num implements Comparable<Num> {
 		}
 		Num X = new Num(ONE_LONG);
 		int cmp = product(X, b).compareMag(a);
-		if(cmp < 0){
-			
+		int cmp2 = product(add(X,new Num(1)),b).compareMag(a);
+		while(cmp2 < 0 ){
+			X = add(X,new Num(ONE_LONG));
 		}
-		
-		
-		return null;
+		return X;
 	}
 
 	static Num mod(Num a, Num b) {
