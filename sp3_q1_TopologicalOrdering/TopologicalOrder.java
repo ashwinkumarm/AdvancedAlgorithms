@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Queue;
 import java.util.Scanner;
+
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
 public class TopologicalOrder {
@@ -41,7 +41,7 @@ public class TopologicalOrder {
 	}
 
 	public static List<Graph.Vertex> toplogicalOrder2(Graph g) {
-		
+
 		Iterator<Graph.Vertex> it = g.iterator();
 		DFSFinishTimeOrderGraph dfsTopoGraph = new DFSFinishTimeOrderGraph(g);
 		List<Graph.Vertex> decFinList = new ArrayList<Graph.Vertex>();
@@ -52,10 +52,10 @@ public class TopologicalOrder {
 				dfsTopoGraph.dfsVisit(u, decFinList);
 			}
 		}
-		return decFinList; 
-		
+		return decFinList;
+
 	}
-	
+
 	public static void main(String args[]) throws FileNotFoundException, IllegalStateException {
 		Scanner in;
 		if (args.length > 0) {

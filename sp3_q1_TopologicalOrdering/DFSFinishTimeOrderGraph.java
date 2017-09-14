@@ -4,16 +4,13 @@ import java.util.List;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class DFSFinishTimeOrderGraph extends GraphAlgorithm<DFSFinishTimeOrderGraph.DFSVertex> {
 	public static final int INFINITY = Integer.MAX_VALUE;
 
 	public static int componentNo, time;
 	public static int topNum;
-	
+
 	// Class to store information about a vertex in this algorithm
 	public static class DFSVertex {
 		Graph.Vertex element;
@@ -23,7 +20,7 @@ public class DFSFinishTimeOrderGraph extends GraphAlgorithm<DFSFinishTimeOrderGr
 		int componentNo;
 		int finishTime;
 		int top;
-		
+
 
 		DFSVertex(Graph.Vertex u) {
 			element = u;
@@ -49,7 +46,7 @@ public class DFSFinishTimeOrderGraph extends GraphAlgorithm<DFSFinishTimeOrderGr
 	}
 
 	public void dfsVisit(Graph.Vertex u, List<Graph.Vertex> decFinList){
-		
+
 		DFSVertex bv = getVertex(u);
 		bv.seen = true;
 		bv.startTime = ++time;
@@ -66,13 +63,13 @@ public class DFSFinishTimeOrderGraph extends GraphAlgorithm<DFSFinishTimeOrderGr
 		bv.top = topNum--;
 		decFinList.add(0, u);
 	}
-	
-	
+
+
 	void setParent(Graph.Vertex u, Graph.Vertex v){
 		DFSVertex bv = getVertex(v);
 		bv.parent = u;
 	}
-	
+
 	public boolean seen(Graph.Vertex u) {
 		return getVertex(u).seen;
 	}
