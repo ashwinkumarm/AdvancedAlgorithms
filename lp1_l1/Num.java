@@ -11,7 +11,7 @@ import java.util.ListIterator;
 public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
-	static long defaultBase = 1000; // This can be changed to what you want it to
+	static long defaultBase = 100; // This can be changed to what you want it to
 									// be.
 	static long base = defaultBase; // Change as needed
 	boolean isNegative = false;
@@ -90,20 +90,16 @@ public class Num implements Comparable<Num> {
 	static Num add(Num a, Num b) {
 		Num result = new Num("0");
 		result.digits.clear();
-		if(!a.isNegative){
-			if(!b.isNegative){
-				return add(a,b,result);
-			}else{
-				return subtract(a,b,result);
-			}
+		if(a.isNegative == b.isNegative){
+			result.isNegative = a.isNegative;
+			return add(a,b,result);
 		}else{
-			if(!b.isNegative){
-				return subtract(b,a,result);
-			}else{
-				result.isNegative = true;
-				return add(a,b,result);
-			}	
+			int cmp = a.compareMag(b);
+			Num resultMag = (cmp > 0 ? subtract(a,b,result):subtract(b,a,result));
+			resultMag.isNegative = cmp > 0 ? a.isNegative :  b.isNegative;
+			return resultMag;
 		}
+		
 	}
 
 	static Num add(Num a, Num b, Num result){
@@ -150,34 +146,22 @@ public class Num implements Comparable<Num> {
 	static Num subtract(Num a, Num b) {
 		Num result = new Num("0");
 		result.digits.clear();
-		if(!a.isNegative){
-			if(!b.isNegative){
-				return subtract(a,b,result);
-			}else{
-				return add(a,b,result);
-			}
+		if(a.isNegative != b.isNegative){
+			result.isNegative = a.isNegative;
+			return add(a,b,result);
 		}else{
-			if(!b.isNegative){
-				result.isNegative = true;
-				return add(a,b,result);
-			}else{
-				return subtract(b,a,result);
-			}
+			int cmp = a.compareMag(b);
+			Num resultMag = (cmp > 0 ? subtract(a,b,result) : subtract(b,a,result));
+			resultMag.isNegative = (cmp > 0 ? a.isNegative:!a.isNegative);
+			return resultMag;
 		}
 	}
 	
 	static Num subtract(Num a, Num b, Num result){
-		if(a.compareMag(b) < 0){
-			result.isNegative = true;
-			Num t = a;
-			a = b;
-			b = t;
-		}
+		
 		long borrow = 0;
 		result.digits.clear();
-		if(a.compareMag(b) < 0){
-			result.isNegative = true;
-		}
+		
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
 		while (aIterator.hasNext() && bIterator.hasNext()) {
@@ -324,14 +308,14 @@ public class Num implements Comparable<Num> {
 		return 0;
 	}
 
-	public int compareMag(Num other){
+	public int compareMag(Num this, Num other){
 		if(this.numDigits > other.numDigits){
 			return 1;
 		}else if(this.numDigits < other.numDigits){
 			return -1;
 		}
 		Iterator<Long> thisIterator = this.digits.descendingIterator();
-		Iterator<Long> otherIterator = this.digits.descendingIterator();
+		Iterator<Long> otherIterator = other.digits.descendingIterator();
 		while(thisIterator.hasNext()){
 			long thisIteratorValue = thisIterator.next();
 			long otherIteratorValue = otherIterator.next();
