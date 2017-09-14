@@ -261,10 +261,30 @@ public class Num implements Comparable<Num> {
 
 	/* Start of Level 2 */
 	static Num divide(Num a, Num b) {
+		Num result = new Num(ZERO_LONG);
+		if(b.digits.size() == 1 && b.digits.get(0) == 0){
+			 throw new ArithmeticException("denominator is zero");
+		}
+		if(b.compareMag(a) > 0){
+			if(b.isNegative == a.isNegative){
+				return result;	
+			}else{
+				result.isNegative = true;
+				return result;
+			}	
+		}
+		Num X = new Num(ONE_LONG);
+		int cmp = product(X, b).compareMag(a);
+		if(cmp < 0){
+			
+		}
+		
+		
 		return null;
 	}
 
 	static Num mod(Num a, Num b) {
+		//Num mod = subtract(a, b)
 		return null;
 	}
 

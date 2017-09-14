@@ -45,9 +45,9 @@ public class TopologicalOrder {
 		Iterator<Graph.Vertex> it = g.iterator();
 		DFSFinishTimeOrderGraph dfsTopoGraph = new DFSFinishTimeOrderGraph(g);
 		List<Graph.Vertex> decFinList = new ArrayList<Graph.Vertex>();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			Graph.Vertex u = it.next();
-			if(!dfsTopoGraph.seen(u)){
+			if (!dfsTopoGraph.seen(u)) {
 				DFSFinishTimeOrderGraph.componentNo++;
 				dfsTopoGraph.dfsVisit(u, decFinList);
 			}
@@ -71,7 +71,8 @@ public class TopologicalOrder {
 		if (graph.n > 0) {
 			try {
 				System.out.println("The Topological Order of the given graph is " + toplogicalOrder1(graph));
-				System.out.println("The DFS decreasing finish-time order of the given graph  " + toplogicalOrder2(graph));
+				System.out
+						.println("The DFS decreasing finish-time order of the given graph  " + toplogicalOrder2(graph));
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
