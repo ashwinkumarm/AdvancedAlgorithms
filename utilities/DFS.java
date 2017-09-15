@@ -1,82 +1,104 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
+
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
 public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
-	public static final int INFINITY = Integer.MAX_VALUE;
+	
+	public static int cno, time;
 
 	// Class to store information about a vertex in this algorithm
 	static class DFSVertex {
-		boolean seen;
+		
+		Graph.Vertex element;
 		Graph.Vertex parent;
-		int distance; // distance of vertex from source
+		int cno, startTime, finishTime;
+		GraphVertexColor visitStatus;
 
 		DFSVertex(Graph.Vertex u) {
-			seen = false;
+			element = u;
 			parent = null;
-			distance = INFINITY;
+			visitStatus = GraphVertexColor.WHITE;
 		}
+
 	}
 
-	Graph.Vertex src;
-
-	public DFS(Graph g, Graph.Vertex src) {
+	public DFS(Graph g) {
 		super(g);
-		this.src = src;
 		node = new DFSVertex[g.size()];
 		// Create array for storing vertex properties
 		for (Graph.Vertex u : g) {
 			node[u.getName()] = new DFSVertex(u);
 		}
-		// Set source to be at distance 0
-		getVertex(src).distance = 0;
+		cno = 0;
+		time = 0;
 	}
-
-	// reinitialize allows running DFS many times, with different sources
-	void reinitialize(Graph.Vertex newSource) {
-		src = newSource;
-		for (Graph.Vertex u : g) {
-			DFSVertex bu = getVertex(u);
-			bu.seen = false;
-			bu.parent = null;
-			bu.distance = INFINITY;
-		}
-		getVertex(src).distance = 0;
-	}
-
-	void dfs() {
-		Queue<Graph.Vertex> q = new LinkedList<>();
-		q.add(src);
-		while (!q.isEmpty()) {
-			Graph.Vertex u = q.remove();
-			for (Graph.Edge e : u) {
-				Graph.Vertex v = e.otherEnd(u);
-				if (!seen(v)) {
-					visit(u, v);
-					q.add(v);
-				}
+	
+	public void dfsVisit(Graph.Vertex u) {
+		
+		visit(u);
+		for (Graph.Edge e : u) {
+			Graph.Vertex v = e.otherEnd(u);
+			if (getVertexStatus(v) == GraphVertexColor.WHITE) {
+				setParent(u, v); 
+				dfsVisit(v);
 			}
 		}
+		setVertexStatus(u, GraphVertexColor.BLACK);
+		setFinishTime(u);
+	
+	}
+	
+	public boolean dfsVisitAndIsDAG(Graph.Vertex u, List<Graph.Vertex> decFinList){
+		
+		visit(u);
+		for (Graph.Edge e : u) {
+			Graph.Vertex v = e.otherEnd(u);
+			if (getVertexStatus(v) == GraphVertexColor.WHITE) {
+				setParent(u, v); 
+				if(!dfsVisitAndIsDAG(v,decFinList)){
+					return false;
+				}
+			}
+			else if(getVertexStatus(v) == GraphVertexColor.GREY){
+				return false;
+			}
+		}
+		setVertexStatus(u, GraphVertexColor.BLACK);
+		setFinishTime(u);
+		decFinList.add(0, u);
+		return true;
 	}
 
-	boolean seen(Graph.Vertex u) {
-		return getVertex(u).seen;
+	public void visit(Graph.Vertex u){
+		setVertexStatus(u, GraphVertexColor.GREY);
+		setCno(u);
+		setStartTime(u);
+	}
+	
+	public void setParent(Graph.Vertex u, Graph.Vertex v){
+		getVertex(v).parent = u;
+	}
+	
+	public void setCno(Graph.Vertex u){
+		getVertex(u).cno = cno;
+	}
+	
+	public void setFinishTime(Graph.Vertex u){
+		getVertex(u).finishTime = ++time;
+	}
+	
+	public void setStartTime(Graph.Vertex u){
+		getVertex(u).startTime = ++time;
+	}
+	
+	public void setVertexStatus(Graph.Vertex u, GraphVertexColor visitStatus){
+		getVertex(u).visitStatus = visitStatus;
+	}
+	
+	public GraphVertexColor getVertexStatus(Graph.Vertex u){
+		 return getVertex(u).visitStatus;
 	}
 
-	Graph.Vertex getParent(Graph.Vertex u) {
-		return getVertex(u).parent;
-	}
-
-	int distance(Graph.Vertex u) {
-		return getVertex(u).distance;
-	}
-
-	// Visit a node v from u
-	void visit(Graph.Vertex u, Graph.Vertex v) {
-		DFSVertex bv = getVertex(v);
-		bv.seen = true;
-		bv.parent = u;
-		bv.distance = distance(u) + 1;
-	}
 }
