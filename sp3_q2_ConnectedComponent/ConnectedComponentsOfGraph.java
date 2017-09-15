@@ -28,7 +28,7 @@ public class ConnectedComponentsOfGraph {
 	
 	public static int stronglyConnectedComponents(Graph g) {
 
-		int cno;
+		int cno = 0;
 		Iterator<Graph.Vertex> it = g.iterator();
 		DFS dfsTopoGraph = new DFS(g);
 		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>();
@@ -49,8 +49,13 @@ public class ConnectedComponentsOfGraph {
 				dfsTopoReversedGraph.dfsVisit(v,decFinishList2);
 			}
 		}
-		cno = DFS.cno;
+		
+		if(decFinishList2.size() == g.size()){
+			cno = DFS.cno;
+			return cno;
+		}
 		return cno;
+		
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -67,7 +72,14 @@ public class ConnectedComponentsOfGraph {
 
 		// if graph is not empty we call the topological sort method
 		if (graph.n > 0) {
-			System.out.println("No of Strongly connected components in a given graph: " + stronglyConnectedComponents(graph));
+			
+			int cno = stronglyConnectedComponents(graph);
+			if(cno > 0){
+				System.out.println("No of Strongly connected components in a given graph: " + cno);
+			} else {
+				System.out.println("The given graph is not Strongly connected");
+			}
+			
 		} else
 			System.out.println("Empty Graph");
 
