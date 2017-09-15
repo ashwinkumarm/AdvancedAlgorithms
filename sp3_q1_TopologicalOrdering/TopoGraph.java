@@ -8,7 +8,7 @@ public class TopoGraph extends GraphAlgorithm<TopoGraph.TopoVertex> {
 	class TopoVertex {
 		Graph.Vertex element;
 		Graph.Vertex parent;
-		int inDegree, top,cno,disTime, finishTime;
+		int inDegree, top;
 		boolean seen;
 		
 		TopoVertex(Graph.Vertex u) {

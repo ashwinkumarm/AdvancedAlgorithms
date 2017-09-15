@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphVertexColor;
 
 public class TopologicalOrder {
 	public static List<Graph.Vertex> toplogicalOrder1(Graph g) throws Exception {
@@ -43,18 +45,19 @@ public class TopologicalOrder {
 	public static List<Graph.Vertex> toplogicalOrder2(Graph g) {
 
 		Iterator<Graph.Vertex> it = g.iterator();
-		DFSFinishTimeOrderGraph dfsTopoGraph = new DFSFinishTimeOrderGraph(g);
+		DFS dfsTopoGraph = new DFS(g);
 		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>();
 		Graph.Vertex u;
 		while (it.hasNext()) {
 			u = it.next();
-			if (!dfsTopoGraph.seen(u)) {
-				DFSFinishTimeOrderGraph.componentNo++;
-				dfsTopoGraph.dfsVisit(u, decFinishList);
+			if (dfsTopoGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
+				DFS.cno++;
+				if(!dfsTopoGraph.dfsVisitAndIsDAG(u, decFinishList)){
+					throw new IllegalStateException("Exception: Not a DAG");
+				}
 			}
 		}
 		return decFinishList;
-
 	}
 
 	public static void main(String args[]) throws FileNotFoundException, IllegalStateException {
@@ -72,8 +75,7 @@ public class TopologicalOrder {
 		if (graph.n > 0) {
 			try {
 				System.out.println("The Topological Order of the given graph is " + toplogicalOrder1(graph));
-				System.out
-						.println("The DFS decreasing finish-time order of the given graph  " + toplogicalOrder2(graph));
+				System.out.println("The DFS finish-time in decreasing order of the given graph  " + toplogicalOrder2(graph));
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
