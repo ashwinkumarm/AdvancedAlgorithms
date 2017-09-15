@@ -53,26 +53,28 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	}
 
 	void dfs(Graph.Vertex u, List<Graph.Edge> bridgeList, Set<Graph.Vertex> cutVertexSet) {
-		getVertex(u).seen = true;
-		getVertex(u).dis = getVertex(u).low = ++time;
+		DFSVertex du = getVertex(u);
+		du.seen = true;
+		du.dis = du.low = ++time;
 		for (Graph.Edge e : u) {
 			Graph.Vertex v = e.otherEnd(u);
+			DFSVertex dv = getVertex(v);
 			if (!seen(v)) {
 				visit(u, v);
 				dfs(v, bridgeList, cutVertexSet);
 
-				getVertex(u).low = Math.min(getVertex(u).low, getVertex(v).low);
+				du.low = Math.min(du.low, dv.low);
 
-				if (getVertex(v).low >= getVertex(u).dis || (getVertex(u).parent==null && u.adj.size()>=2)) {
-					getVertex(u).cutVertex = true;
+				if (dv.low >= du.dis || (du.parent==null && u.adj.size()>=2)) {
+					du.cutVertex = true;
 					cutVertexSet.add(u);
-					if(getVertex(u).cutVertex && getVertex(v).cutVertex)
+					if(du.low>=du.dis && dv.low>=dv.dis)
 						bridgeList.add(e);
 				}
 			}
 
 			else if (v != getParent(u)) { //Back Edge
-				getVertex(u).low = Math.min(getVertex(u).low, getVertex(v).dis);
+				du.low = Math.min(du.low, dv.dis);
 			}
 		}
 	}
