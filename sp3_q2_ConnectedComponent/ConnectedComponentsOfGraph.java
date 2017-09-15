@@ -18,8 +18,9 @@ public class ConnectedComponentsOfGraph {
 		
 		Graph reversedGraph = new Graph(g.size());
 		for (Graph.Vertex vertex : g) {
-			 reversedGraph.getVertex(vertex.getName()).adj = vertex.revAdj;
-			 reversedGraph.getVertex(vertex.getName()).revAdj = vertex.adj;
+			for (Graph.Edge edge : vertex.revAdj) {
+				reversedGraph.addEdge(edge.to, edge.from, edge.weight);
+			}
 		}
 		return reversedGraph;
 		
