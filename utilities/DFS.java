@@ -35,18 +35,19 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		time = 0;
 	}
 	
-	public void dfsVisit(Graph.Vertex u) {
+	public void dfsVisit(Graph.Vertex u, List<Graph.Vertex> decFinList){
 		
 		visit(u);
 		for (Graph.Edge e : u) {
 			Graph.Vertex v = e.otherEnd(u);
 			if (getVertexStatus(v) == GraphVertexColor.WHITE) {
 				setParent(u, v); 
-				dfsVisit(v);
+				dfsVisit(v, decFinList);
 			}
 		}
 		setVertexStatus(u, GraphVertexColor.BLACK);
 		setFinishTime(u);
+		decFinList.add(0, u);
 	
 	}
 	

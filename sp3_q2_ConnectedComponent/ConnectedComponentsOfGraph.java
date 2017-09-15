@@ -37,15 +37,16 @@ public class ConnectedComponentsOfGraph {
 			u = it.next();
 			if (dfsTopoGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
 				DFS.cno++;
-				dfsTopoGraph.dfsVisit(u);
+				dfsTopoGraph.dfsVisit(u, decFinishList);
 			}
 		}
 		
 		DFS dfsTopoReversedGraph = new DFS(reverseGraph(g));
+		List<Graph.Vertex> decFinishList2 = new LinkedList<Graph.Vertex>();
 		for (Graph.Vertex v : decFinishList) {
 			if (dfsTopoReversedGraph.getVertexStatus(v) == GraphVertexColor.WHITE) {
 				DFS.cno++;
-				dfsTopoReversedGraph.dfsVisit(v);
+				dfsTopoReversedGraph.dfsVisit(v,decFinishList2);
 			}
 		}
 		cno = DFS.cno;

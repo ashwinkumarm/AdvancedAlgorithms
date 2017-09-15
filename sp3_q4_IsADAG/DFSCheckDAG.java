@@ -22,7 +22,7 @@ public class DFSCheckDAG {
 		Graph.Vertex u;
 		while (it.hasNext()) {
 			u = it.next();
-			if (dfsTopoGraph.getVertexStatus(u) != GraphVertexColor.WHITE) {
+			if (dfsTopoGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
 				DFS.cno++;
 				if(!dfsTopoGraph.dfsVisitAndIsDAG(u, decFinishList)){
 					return false;
