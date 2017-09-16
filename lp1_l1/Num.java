@@ -21,6 +21,7 @@ public class Num implements Comparable<Num> {
 	static Num TWO = new Num(2L);
 	static long ZERO_LONG = 0L;
 	static long ONE_LONG = 1L;
+	static long TEN_LONG = 10L;
 	boolean isNegative = false;
 	static int baseLength = (int) ((base % 10 == 0) ? Math.log10(base) : (Math.log10(base) + 1));
 	/* Start of Level 1 */
@@ -65,7 +66,6 @@ public class Num implements Comparable<Num> {
 		}
 
 		if (cursor == len) {
-			digits.add(0L);
 			return;
 		}
 		numDigits = len - cursor;
@@ -92,22 +92,22 @@ public class Num implements Comparable<Num> {
 	 * @param x
 	 */
 	Num(long x, long userBase) {
-		if (x == ZERO_LONG) {
-			digits.add(0L);
-			return;
-		}
 		while (x != ZERO_LONG) {
-			digits.add(x % base);
-			x /= base;
+			digits.add(x % userBase);
+			x /= userBase;
 		}
 	}
 
 	static Num add(Num a, Num b) {
+		return add(a, b, base);
+	}
+
+	static Num add(Num a, Num b, long baseForAdd) {
 		Num result = new Num("0");
 		result.digits.clear();
 		if (a.isNegative == b.isNegative) {
 			result.isNegative = a.isNegative;
-			return add(a, b, result);
+			return add(a, b, result, baseForAdd);
 		} else {
 			int cmp = a.compareMag(b);
 			Num resultMag = (cmp > 0 ? subtract(a, b, result) : subtract(b, a, result));
@@ -117,15 +117,15 @@ public class Num implements Comparable<Num> {
 
 	}
 
-	static Num add(Num a, Num b, Num result) {
+	static Num add(Num a, Num b, Num result, long baseForAdd) {
 		long carry = 0;
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
 		while (aIterator.hasNext() && bIterator.hasNext()) {
 			long sum = aIterator.next() + bIterator.next() + carry;
-			if (sum >= base) {
+			if (sum >= baseForAdd) {
 				carry = 1;
-				sum -= base;
+				sum -= baseForAdd;
 			} else {
 				carry = 0;
 			}
@@ -133,9 +133,9 @@ public class Num implements Comparable<Num> {
 		}
 		while (aIterator.hasNext()) {
 			long sum = aIterator.next() + carry;
-			if (sum >= base) {
+			if (sum >= baseForAdd) {
 				carry = 1;
-				sum -= base;
+				sum -= baseForAdd;
 			} else {
 				carry = 0;
 			}
@@ -143,9 +143,9 @@ public class Num implements Comparable<Num> {
 		}
 		while (bIterator.hasNext()) {
 			long sum = bIterator.next() + carry;
-			if (sum >= base) {
+			if (sum >= baseForAdd) {
 				carry = 1;
-				sum -= base;
+				sum -= baseForAdd;
 			} else {
 				carry = 0;
 			}
@@ -164,7 +164,7 @@ public class Num implements Comparable<Num> {
 		result.digits.clear();
 		if (a.isNegative != b.isNegative) {
 			result.isNegative = a.isNegative;
-			return add(a, b, result);
+			return add(a, b, result, base);
 		} else {
 			int cmp = a.compareMag(b);
 			Num resultMag = (cmp > 0 ? subtract(a, b, result) : subtract(b, a, result));
@@ -227,12 +227,45 @@ public class Num implements Comparable<Num> {
 		return null;
 	}
 
+	static Num leftShift(Num a, long N) {
+		while (N > 0) {
+			a.digits.addLast(ZERO_LONG);
+			N--;
+		}
+		return a;
+	}
+	
+	static Num rightShift(Num a, long N) {
+		Iterator<Long> aIterator = a.digits.iterator();
+		while (N > 0 && aIterator.hasNext()) {
+			aIterator.remove();
+			aIterator.next();
+			N--;
+		}
+		return a;
+	}
+	
+	
+	
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
 		String num1 = a.toString();
 		String num2 = b.toString();
 
 		return new Num(karatsubaMultiplication(num1, num2));
+	}
+	
+	static Num karatsubaMultiplication(Num a, Num b){
+		
+		long len1 = a.digits.size();
+		long len2 = b.digits.size();
+		long m = Math.max(len1, len2);
+		
+		m = (m/2) + (m%2);
+		
+		
+		return a;
+
 	}
 
 	static long karatsubaMultiplication(String a, String b) {
@@ -281,6 +314,33 @@ public class Num implements Comparable<Num> {
 	/* End of Level 1 */
 
 	/* Start of Level 2 */
+
+	static Num divideByTwo(Num a) {
+		Num result = new Num(ZERO_LONG);
+
+		if (a.digits.isEmpty())
+			return result;
+
+		Iterator<Long> iterator = a.digits.descendingIterator();
+		long digit, div, carry = 0;
+		boolean msd = true;
+
+		while (iterator.hasNext()) {
+			digit = iterator.next();
+			if ((div = digit / 2) == 0) {
+				if (msd != true)
+					result.digits.addFirst(carry);
+				carry = base / 2;
+			} else {
+				result.digits.addFirst(carry + div);
+				carry = (digit % 2 == 0) ? 0 : base / 2;
+			}
+			msd = false;
+		}
+
+		return result;
+	}
+
 	static Num divide(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
 		if (b.compareTo(ZERO) == 0) {
@@ -295,14 +355,13 @@ public class Num implements Comparable<Num> {
 			}
 		}
 
-		Num X = new Num(ONE_LONG);
-		int cmp = product(X, b).compareMag(a);
-		int cmp2 = product(add(X, new Num(1)), b).compareMag(a);
-		while (cmp == -1 && cmp2 == 1) {
-			X = add(X, new Num(ONE_LONG));
-		}
+		/*
+		 * Num X = new Num(ONE_LONG); int cmp = product(X, b).compareMag(a); int
+		 * cmp2 = product(add(X, new Num(1)), b).compareMag(a); while (cmp == -1
+		 * && cmp2 == 1) { X = add(X, new Num(ONE_LONG)); }
+		 */
 
-		/*-Num p = ONE, x = ZERO;
+		Num p = ONE, x = ZERO;
 		// TODO: CHeck a/2
 		Num r = a;
 		while (p.compareTo(r) != 1) {
@@ -313,9 +372,9 @@ public class Num implements Comparable<Num> {
 				r = subtract(x, ONE);
 			else
 				break;
-		}*/
+		}
 
-		return X;
+		return x;
 	}
 
 	static Num mod(Num a, Num b) {
@@ -387,9 +446,9 @@ public class Num implements Comparable<Num> {
 		Num sum = new Num(0L, 10L);
 		long i = 0;
 		while (iterator.hasNext())
-			sum = add(sum, new Num((long) (iterator.next() * Math.pow(base, i++)), 10L));
+			sum = add(sum, new Num((long) (iterator.next() * Math.pow(base, i++)), TEN_LONG), TEN_LONG);
 
-		Iterator<Long> iteratorBaseTen = digits.descendingIterator();
+		Iterator<Long> iteratorBaseTen = sum.digits.descendingIterator();
 		while (iteratorBaseTen.hasNext())
 			sb.append(iteratorBaseTen.next().toString());
 		return sb.toString();
