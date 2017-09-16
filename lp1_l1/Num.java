@@ -11,7 +11,7 @@ public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
 
-	static long defaultBase = 20; // This can be changed to what you want it to
+	static long defaultBase = 10; // This can be changed to what you want it to
 									// be.
 	static long base = defaultBase; // Change as needed
 	static Num baseInNum = new Num(base);
@@ -26,8 +26,6 @@ public class Num implements Comparable<Num> {
 	static int baseLength = (int) ((base % 10 == 0) ? Math.log10(base) : (Math.log10(base) + 1));
 	/* Start of Level 1 */
 	LinkedList<Long> digits = new LinkedList<>();
-
-	int numDigits;
 
 	/**
 	 * @param s
@@ -68,7 +66,6 @@ public class Num implements Comparable<Num> {
 		if (cursor == len) {
 			return;
 		}
-		numDigits = len - cursor;
 		Num numInBaseTen = new Num(s.charAt(cursor));
 		for (int i = cursor + 1; i < len; i++)
 			numInBaseTen = add(product(numInBaseTen, TEN), new Num(s.charAt(i)));
@@ -234,7 +231,7 @@ public class Num implements Comparable<Num> {
 		}
 		return a;
 	}
-	
+
 	static Num rightShift(Num a, long N) {
 		Iterator<Long> aIterator = a.digits.iterator();
 		while (N > 0 && aIterator.hasNext()) {
@@ -244,9 +241,7 @@ public class Num implements Comparable<Num> {
 		}
 		return a;
 	}
-	
-	
-	
+
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
 		String num1 = a.toString();
@@ -254,16 +249,15 @@ public class Num implements Comparable<Num> {
 
 		return new Num(karatsubaMultiplication(num1, num2));
 	}
-	
-	static Num karatsubaMultiplication(Num a, Num b){
-		
+
+	static Num karatsubaMultiplication(Num a, Num b) {
+
 		long len1 = a.digits.size();
 		long len2 = b.digits.size();
 		long m = Math.max(len1, len2);
-		
-		m = (m/2) + (m%2);
-		
-		
+
+		m = (m / 2) + (m % 2);
+
 		return a;
 
 	}
@@ -330,7 +324,7 @@ public class Num implements Comparable<Num> {
 			if ((div = digit / 2) == 0) {
 				if (msd != true)
 					result.digits.addFirst(carry);
-				carry = base / 2;
+				carry = (digit % 2 == 0) ? 0 : base / 2;
 			} else {
 				result.digits.addFirst(carry + div);
 				carry = (digit % 2 == 0) ? 0 : base / 2;
@@ -346,35 +340,20 @@ public class Num implements Comparable<Num> {
 		if (b.compareTo(ZERO) == 0) {
 			throw new ArithmeticException("denominator is zero");
 		}
-		if (b.compareMag(a) > 0) {
-			if (b.isNegative == a.isNegative) {
-				return result;
-			} else {
-				result.isNegative = true;
-				return result;
-			}
-		}
 
-		/*
-		 * Num X = new Num(ONE_LONG); int cmp = product(X, b).compareMag(a); int
-		 * cmp2 = product(add(X, new Num(1)), b).compareMag(a); while (cmp == -1
-		 * && cmp2 == 1) { X = add(X, new Num(ONE_LONG)); }
-		 */
-
-		Num p = ONE, x = ZERO;
-		// TODO: CHeck a/2
-		Num r = a;
+		Num p = ONE;
+		Num r = divideByTwo(a);
 		while (p.compareTo(r) != 1) {
-			x = divide(add(p, r), TWO);
-			if (product(x, b).compareMag(a) == 1)
-				p = add(x, ONE);
-			else if (product(add(x, ONE), b).compareMag(a) == -1)
-				r = subtract(x, ONE);
+			result = divideByTwo(add(p, r));
+			if (product(result, b).compareMag(a) == 1)
+				r = subtract(result, ONE);
+			else if (product(add(result, ONE), b).compareMag(a) != 1)
+				p = add(result, ONE);
 			else
 				break;
 		}
 
-		return x;
+		return result;
 	}
 
 	static Num mod(Num a, Num b) {
@@ -413,9 +392,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	public int compareMag(Num this,Num other) {
-		if (this.numDigits > other.numDigits) {
+		if (this.digits.size() > other.digits.size()) {
 			return 1;
-		} else if (this.numDigits < other.numDigits) {
+		} else if (this.digits.size() < other.digits.size()) {
 			return -1;
 		}
 		Iterator<Long> thisIterator = this.digits.descendingIterator();
@@ -456,5 +435,9 @@ public class Num implements Comparable<Num> {
 
 	public long base() {
 		return base;
+	}
+
+	public boolean isZero() {
+		return digits.size() == 0;
 	}
 }
