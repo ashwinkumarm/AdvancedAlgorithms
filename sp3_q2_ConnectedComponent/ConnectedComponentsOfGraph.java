@@ -17,9 +17,12 @@ public class ConnectedComponentsOfGraph {
 	public static Graph reverseGraph(Graph g){
 		
 		Graph reversedGraph = new Graph(g.size());
+		reversedGraph.setDirected(true);
 		for (Graph.Vertex vertex : g) {
 			for (Graph.Edge edge : vertex.revAdj) {
-				reversedGraph.addEdge(edge.to, edge.from, edge.weight);
+				Graph.Vertex to = reversedGraph.getVertex(Integer.parseInt(edge.to.toString()));
+				Graph.Vertex from = reversedGraph.getVertex(Integer.parseInt(edge.from.toString()));
+				reversedGraph.addEdge(to, from, edge.weight);
 			}
 		}
 		return reversedGraph;
@@ -41,12 +44,14 @@ public class ConnectedComponentsOfGraph {
 			}
 		}
 		
-		DFS dfsTopoReversedGraph = new DFS(reverseGraph(g));
+		Graph reversedGraph = reverseGraph(g);
+		DFS dfsTopoReversedGraph = new DFS(reversedGraph);
 		List<Graph.Vertex> decFinishList2 = new LinkedList<Graph.Vertex>();
-		for (Graph.Vertex v : decFinishList) {
-			if (dfsTopoReversedGraph.getVertexStatus(v) == GraphVertexColor.WHITE) {
+		for (Graph.Vertex  v : decFinishList) {
+			Graph.Vertex rv = reversedGraph.getVertex(Integer.parseInt(v.toString()));
+			if (dfsTopoReversedGraph.getVertexStatus(rv) == GraphVertexColor.WHITE) {
 				DFS.cno++;
-				dfsTopoReversedGraph.dfsVisit(v,decFinishList2);
+				dfsTopoReversedGraph.dfsVisit(rv,decFinishList2);
 			}
 		}
 		
@@ -68,7 +73,7 @@ public class ConnectedComponentsOfGraph {
 			in = new Scanner(System.in);
 		}
 		// passing the scanner object to graph class to construct the graph
-		Graph graph = Graph.readGraph(in);
+		Graph graph = Graph.readDirectedGraph(in);
 
 		// if graph is not empty we call the topological sort method
 		if (graph.n > 0) {

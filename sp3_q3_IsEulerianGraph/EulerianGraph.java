@@ -35,7 +35,7 @@ public class EulerianGraph {
 			in = new Scanner(System.in);
 		}
 		// passing the scanner object to graph class to construct the graph
-		Graph graph = Graph.readGraph(in);
+		Graph graph = Graph.readDirectedGraph(in);
 
 		// if graph is not empty we call the topological sort method
 		if (graph.n > 0) {

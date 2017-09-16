@@ -10,6 +10,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 	public int n; // number of verices in the graph
 	boolean directed; // true if graph is directed, false otherwise
 
+
 	/**
 	 * Nested class to represent a vertex of a graph
 	 */
@@ -162,6 +163,14 @@ public class Graph implements Iterable<Graph.Vertex> {
 		return n;
 	}
 
+	public boolean isDirected() {
+		return directed;
+	}
+
+	public void setDirected(boolean directed) {
+		this.directed = directed;
+	}
+	
 	/**
 	 * Method to create iterator for vertices of graph
 	 */
