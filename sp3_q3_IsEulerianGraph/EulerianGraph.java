@@ -10,13 +10,19 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 public class EulerianGraph {
 	
 	public static boolean testEulerian(Graph g) {
+
 		if(ConnectedComponentsOfGraph.stronglyConnectedComponents(g) == 0){
 			return false;
 		}
-		//if( indegree of vertex != outdegree of vertex){
-			//return false;
-		//}
-		
+
+		for (Graph.Vertex v : g) {
+			int indegree = v.revAdj.size();
+			int outdegree = v.adj.size();
+			
+			if(indegree != outdegree){
+				return false;
+			}
+		}	
 		return true;  
 	}
 	
