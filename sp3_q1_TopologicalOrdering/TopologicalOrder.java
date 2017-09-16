@@ -14,6 +14,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphVertexColor;
 
 public class TopologicalOrder {
+	
 	public static List<Graph.Vertex> toplogicalOrder1(Graph g) throws Exception {
 		TopoGraph topoGraph = new TopoGraph(g);
 		int topNum = 0;
@@ -33,7 +34,7 @@ public class TopologicalOrder {
 			topList.add(u);
 			for (Graph.Edge e : u.adj) {
 				if (topoGraph.reduceInDegree(e.to) == 0) {
-					q.add(u);
+					q.add(e.to);
 				}
 			}
 		}

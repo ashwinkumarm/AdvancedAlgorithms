@@ -226,7 +226,7 @@ public class Num implements Comparable<Num> {
 
 	static Num leftShift(Num a, long N) {
 		while (N > 0) {
-			a.digits.addLast(ZERO_LONG);
+			a.digits.add(ZERO_LONG);
 			N--;
 		}
 		return a;
@@ -235,8 +235,8 @@ public class Num implements Comparable<Num> {
 	static Num rightShift(Num a, long N) {
 		Iterator<Long> aIterator = a.digits.iterator();
 		while (N > 0 && aIterator.hasNext()) {
-			aIterator.remove();
 			aIterator.next();
+			aIterator.remove();
 			N--;
 		}
 		return a;
@@ -244,20 +244,35 @@ public class Num implements Comparable<Num> {
 
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
-		String num1 = a.toString();
-		String num2 = b.toString();
+		return karatsubaMultiplication(a, b);
+	}
 
-		return new Num(karatsubaMultiplication(num1, num2));
+	static Num multiply(Num a, Num b) {
+		return a;
 	}
 
 	static Num karatsubaMultiplication(Num a, Num b) {
 
-		long len1 = a.digits.size();
-		long len2 = b.digits.size();
+		long len1 = a.getNumberOfDigits();
+		long len2 = b.getNumberOfDigits();
 		long m = Math.max(len1, len2);
+
+		if (m >= 5) {
+			return multiply(a, b);
+		}
 
 		m = (m / 2) + (m % 2);
 
+		Num aHigh = rightShift(a, m);
+		Num aLow = subtract(a, leftShift(aHigh, m));
+		Num bHigh = rightShift(b, m);
+		Num bLow = subtract(b, leftShift(bHigh, m));
+
+		Num abLow = karatsubaMultiplication(aLow, bLow);
+		Num abHigh = karatsubaMultiplication(aHigh, bHigh);
+		Num abcd = karatsubaMultiplication(add(aLow, aHigh), add(bLow, bHigh));
+
+		// add(leftShift(abHigh,2*m),add(leftShift(subtract(subtract(abcd,abHigh),abLow),m),abLow))
 		return a;
 
 	}
@@ -392,9 +407,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	public int compareMag(Num this,Num other) {
-		if (this.digits.size() > other.digits.size()) {
+		if (this.getNumberOfDigits() > other.getNumberOfDigits()) {
 			return 1;
-		} else if (this.digits.size() < other.digits.size()) {
+		} else if (this.getNumberOfDigits() < other.getNumberOfDigits()) {
 			return -1;
 		}
 		Iterator<Long> thisIterator = this.digits.descendingIterator();
@@ -439,5 +454,9 @@ public class Num implements Comparable<Num> {
 
 	public boolean isZero() {
 		return digits.size() == 0;
+	}
+
+	public int getNumberOfDigits() {
+		return digits.size();
 	}
 }
