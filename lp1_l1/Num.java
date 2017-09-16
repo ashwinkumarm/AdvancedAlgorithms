@@ -89,6 +89,10 @@ public class Num implements Comparable<Num> {
 	 * @param x
 	 */
 	Num(long x, long userBase) {
+		if (x < 0) {
+			isNegative = true;
+			x = -x;
+		}
 		while (x != ZERO_LONG) {
 			digits.add(x % userBase);
 			x /= userBase;
@@ -244,7 +248,7 @@ public class Num implements Comparable<Num> {
 
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
-		return karatsubaMultiplication(a, b);
+		return new Num(karatsubaMultiplication(a.toString(), b.toString()));
 	}
 
 	static Num multiply(Num a, Num b) {
@@ -324,7 +328,7 @@ public class Num implements Comparable<Num> {
 
 	/* Start of Level 2 */
 
-	static Num divideByTwo(Num a) {
+	static Num divideMagnitudeByTwo(Num a) {
 		Num result = new Num(ZERO_LONG);
 
 		if (a.digits.isEmpty())
@@ -352,14 +356,16 @@ public class Num implements Comparable<Num> {
 
 	static Num divide(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
-		if (b.compareTo(ZERO) == 0) {
+		if (b.isZero())
 			throw new ArithmeticException("denominator is zero");
-		}
+
+		if (b.compareMag(a) == 1)
+			return result;
 
 		Num p = ONE;
-		Num r = divideByTwo(a);
+		Num r = divideMagnitudeByTwo(a);
 		while (p.compareTo(r) != 1) {
-			result = divideByTwo(add(p, r));
+			result = divideMagnitudeByTwo(add(p, r));
 			if (product(result, b).compareMag(a) == 1)
 				r = subtract(result, ONE);
 			else if (product(add(result, ONE), b).compareMag(a) != 1)
@@ -368,12 +374,15 @@ public class Num implements Comparable<Num> {
 				break;
 		}
 
+		if (a.isNegative != b.isNegative)
+			result.isNegative = true;
+
 		return result;
 	}
 
 	static Num mod(Num a, Num b) {
-		// Num mod = subtract(a, b)
-		return null;
+		Num mod = subtract(a, product(divide(a, b), b));
+		return mod;
 	}
 
 	// Use divide and conquer
@@ -434,6 +443,8 @@ public class Num implements Comparable<Num> {
 	// Return number to a string in base 10
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		if (isZero())
+			return "0";
 		if (isNegative == true)
 			sb.append('-');
 		Iterator<Long> iterator = digits.iterator();
