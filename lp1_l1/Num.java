@@ -227,12 +227,45 @@ public class Num implements Comparable<Num> {
 		return null;
 	}
 
+	static Num leftShift(Num a, long N) {
+		while (N > 0) {
+			a.digits.addLast(ZERO_LONG);
+			N--;
+		}
+		return a;
+	}
+	
+	static Num rightShift(Num a, long N) {
+		Iterator<Long> aIterator = a.digits.iterator();
+		while (N > 0 && aIterator.hasNext()) {
+			aIterator.remove();
+			aIterator.next();
+			N--;
+		}
+		return a;
+	}
+	
+	
+	
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
 		String num1 = a.toString();
 		String num2 = b.toString();
 
 		return new Num(karatsubaMultiplication(num1, num2));
+	}
+	
+	static Num karatsubaMultiplication(Num a, Num b){
+		
+		long len1 = a.digits.size();
+		long len2 = b.digits.size();
+		long m = Math.max(len1, len2);
+		
+		m = (m/2) + (m%2);
+		
+		
+		return a;
+
 	}
 
 	static long karatsubaMultiplication(String a, String b) {
