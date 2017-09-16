@@ -248,40 +248,40 @@ public class Num implements Comparable<Num> {
 
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
-		return karatsubaMultiplication(a, b);
+		return new Num(karatsubaMultiplication(a.toString(), b.toString()));
 	}
 
-	static Num multiply(Num a, Num b){
+	static Num multiply(Num a, Num b) {
 		Num product = new Num(ZERO_LONG);
-		while(!a.isZero()){
+		while (!a.isZero()) {
 			product = add(product, b);
-			a = subtract(a,new Num(ONE_LONG));
+			a = subtract(a, new Num(ONE_LONG));
 		}
 		return product;
 	}
-	
-	static Num karatsubaMultiplication(Num a, Num b){
-		
+
+	static Num karatsubaMultiplication(Num a, Num b) {
+
 		long len1 = a.digits.size();
 		long len2 = b.digits.size();
 		long m = Math.max(len1, len2);
-		
-		if(m <= 2){
-			return multiply(a,b);
+
+		if (m <= 2) {
+			return multiply(a, b);
 		}
-		
-		m = (m/2) + (m%2);
-		
+
+		m = (m / 2) + (m % 2);
+
 		Num aHigh = rightShift(a, m);
-		Num aLow = subtract(a, leftShift(aHigh,m));
+		Num aLow = subtract(a, leftShift(aHigh, m));
 		Num bHigh = rightShift(b, m);
-		Num bLow = subtract(b, leftShift(bHigh,m));
-		
-		Num abLow = karatsubaMultiplication(aLow,bLow);
-		Num abHigh = karatsubaMultiplication(aHigh,bHigh);
-		Num abcd = karatsubaMultiplication(add(aLow,aHigh),add(bLow,bHigh));
-		
-		return add(leftShift(abHigh,2*m),add(leftShift(subtract(subtract(abcd,abHigh),abLow),m),abLow));
+		Num bLow = subtract(b, leftShift(bHigh, m));
+
+		Num abLow = karatsubaMultiplication(aLow, bLow);
+		Num abHigh = karatsubaMultiplication(aHigh, bHigh);
+		Num abcd = karatsubaMultiplication(add(aLow, aHigh), add(bLow, bHigh));
+
+		return add(leftShift(abHigh, 2 * m), add(leftShift(subtract(subtract(abcd, abHigh), abLow), m), abLow));
 	}
 
 	static long karatsubaMultiplication(String a, String b) {
@@ -391,10 +391,23 @@ public class Num implements Comparable<Num> {
 	}
 
 	// Use divide and conquer
+	/**
+	 * s = shift(n) by base B a^n = (a^s)^base * x^a0
+	 *
+	 * @param a
+	 * @param n
+	 * @return
+	 */
 	static Num power(Num a, Num n) {
-		return null;
+		long a0 = n.digits.getFirst();
+		Num s = rightShift(n, ONE_LONG);
+		return product(power(power(a, s), base), power(a, a0));
 	}
 
+	/**
+	 * @param a
+	 * @return
+	 */
 	static Num squareRoot(Num a) {
 		Num result = new Num(ZERO_LONG);
 		if (a.isZero())
