@@ -399,9 +399,12 @@ public class Num implements Comparable<Num> {
 	 * @return
 	 */
 	static Num power(Num a, Num n) {
-		long a0 = n.digits.getFirst();
-		Num s = rightShift(n, ONE_LONG);
-		return product(power(power(a, s), base), power(a, a0));
+		if (!n.isZero()) {
+			long a0 = n.digits.getFirst();
+			Num s = rightShift(n, ONE_LONG);
+			return product(power(power(a, s), base), power(a, a0));
+		}
+		return ONE;
 	}
 
 	/**
@@ -475,6 +478,10 @@ public class Num implements Comparable<Num> {
 	// For example, if base=100, and the number stored corresponds to 10965,
 	// then the output is "100: 65 9 1"
 	void printList() {
+		System.out.print(base + ": ");
+		Iterator<Long> iterator = digits.iterator();
+		while (iterator.hasNext())
+			System.out.print(iterator.next()+ " ");
 	}
 
 	// Return number to a string in base 10
