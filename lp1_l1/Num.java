@@ -161,13 +161,14 @@ public class Num implements Comparable<Num> {
 	}
 
 	static Num subtract(Num a, Num b) {
-		Num result = new Num("0");
-		result.digits.clear();
+		Num result = new Num(ZERO_LONG);
 		if (a.isNegative != b.isNegative) {
 			result.isNegative = a.isNegative;
 			return add(a, b, result, base);
 		} else {
 			int cmp = a.compareMag(b);
+			if (cmp == 0)
+				return result;
 			Num resultMag = (cmp > 0 ? subtract(a, b, result) : subtract(b, a, result));
 			resultMag.isNegative = (cmp > 0 ? a.isNegative : !a.isNegative);
 			return resultMag;
@@ -177,7 +178,6 @@ public class Num implements Comparable<Num> {
 	static Num subtract(Num a, Num b, Num result) {
 
 		long borrow = 0;
-		result.digits.clear();
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
 		while (aIterator.hasNext() && bIterator.hasNext()) {
@@ -362,6 +362,11 @@ public class Num implements Comparable<Num> {
 		if (b.compareMag(a) == 1)
 			return result;
 
+		if (a.isNegative != b.isNegative)
+			result.isNegative = true;
+		if (b.compareMag(a) == 0)
+			return new Num(ONE_LONG);
+
 		Num p = ONE;
 		Num r = divideMagnitudeByTwo(a);
 		while (p.compareTo(r) != 1) {
@@ -373,9 +378,6 @@ public class Num implements Comparable<Num> {
 			else
 				break;
 		}
-
-		if (a.isNegative != b.isNegative)
-			result.isNegative = true;
 
 		return result;
 	}
@@ -391,7 +393,26 @@ public class Num implements Comparable<Num> {
 	}
 
 	static Num squareRoot(Num a) {
-		return null;
+		Num result = new Num(ZERO_LONG);
+		if (a.isZero())
+			return result;
+
+		if (a.isNegative)
+			throw new NumberFormatException("Number is Negative. This method returns only positive square roots.");
+
+		Num p = ONE;
+		Num r = divideMagnitudeByTwo(a);
+		while (p.compareTo(r) != 1) {
+			result = divideMagnitudeByTwo(add(p, r));
+			if (product(result, result).compareMag(a) == 1)
+				r = subtract(result, ONE);
+			else if (product(add(result, ONE), add(result, ONE)).compareMag(a) != 1)
+				p = add(result, ONE);
+			else
+				break;
+		}
+
+		return result;
 	}
 	/* End of Level 2 */
 
