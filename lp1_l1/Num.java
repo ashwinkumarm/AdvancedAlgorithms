@@ -11,7 +11,7 @@ public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
 
-	static long defaultBase = 20; // This can be changed to what you want it to
+	static long defaultBase = 10; // This can be changed to what you want it to
 									// be.
 	static long base = defaultBase; // Change as needed
 	static Num baseInNum = new Num(base);
@@ -229,7 +229,7 @@ public class Num implements Comparable<Num> {
 
 	static Num leftShift(Num a, long N) {
 		while (N > 0) {
-			a.digits.addLast(ZERO_LONG);
+			a.digits.add(ZERO_LONG);
 			N--;
 		}
 		return a;
@@ -238,8 +238,8 @@ public class Num implements Comparable<Num> {
 	static Num rightShift(Num a, long N) {
 		Iterator<Long> aIterator = a.digits.iterator();
 		while (N > 0 && aIterator.hasNext()) {
-			aIterator.remove();
 			aIterator.next();
+			aIterator.remove();
 			N--;
 		}
 		return a;
@@ -249,10 +249,11 @@ public class Num implements Comparable<Num> {
 	
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
-		String num1 = a.toString();
-		String num2 = b.toString();
-
-		return new Num(karatsubaMultiplication(num1, num2));
+		return karatsubaMultiplication(a, b);
+	}
+	
+	static Num multiply(Num a, Num b){
+		return a;
 	}
 	
 	static Num karatsubaMultiplication(Num a, Num b){
@@ -261,9 +262,24 @@ public class Num implements Comparable<Num> {
 		long len2 = b.digits.size();
 		long m = Math.max(len1, len2);
 		
+		if(m >= 5){
+			return multiply(a,b);
+		}
+		
 		m = (m/2) + (m%2);
 		
+		Num aHigh = rightShift(a, m);
+		Num aLow = subtract(a, leftShift(aHigh,m));
+		Num bHigh = rightShift(b, m);
+		Num bLow = subtract(b, leftShift(bHigh,m));
 		
+		Num abLow = karatsubaMultiplication(aLow,bLow);
+		Num abHigh = karatsubaMultiplication(aHigh,bHigh);
+		Num abcd = karatsubaMultiplication(add(aLow,aHigh),add(bLow,bHigh));
+		
+		
+		
+		//add(leftShift(abHigh,2*m),add(leftShift(subtract(subtract(abcd,abHigh),abLow),m),abLow))
 		return a;
 
 	}
