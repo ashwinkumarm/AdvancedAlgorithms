@@ -248,37 +248,40 @@ public class Num implements Comparable<Num> {
 
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
-		return new Num(karatsubaMultiplication(a.toString(), b.toString()));
+		return karatsubaMultiplication(a, b);
 	}
 
-	static Num multiply(Num a, Num b) {
-		return a;
-	}
-
-	static Num karatsubaMultiplication(Num a, Num b) {
-
-		long len1 = a.getNumberOfDigits();
-		long len2 = b.getNumberOfDigits();
-		long m = Math.max(len1, len2);
-
-		if (m >= 5) {
-			return multiply(a, b);
+	static Num multiply(Num a, Num b){
+		Num product = new Num(ZERO_LONG);
+		while(!a.isZero()){
+			product = add(product, b);
+			a = subtract(a,new Num(ONE_LONG));
 		}
-
-		m = (m / 2) + (m % 2);
-
+		return product;
+	}
+	
+	static Num karatsubaMultiplication(Num a, Num b){
+		
+		long len1 = a.digits.size();
+		long len2 = b.digits.size();
+		long m = Math.max(len1, len2);
+		
+		if(m <= 2){
+			return multiply(a,b);
+		}
+		
+		m = (m/2) + (m%2);
+		
 		Num aHigh = rightShift(a, m);
-		Num aLow = subtract(a, leftShift(aHigh, m));
+		Num aLow = subtract(a, leftShift(aHigh,m));
 		Num bHigh = rightShift(b, m);
-		Num bLow = subtract(b, leftShift(bHigh, m));
-
-		Num abLow = karatsubaMultiplication(aLow, bLow);
-		Num abHigh = karatsubaMultiplication(aHigh, bHigh);
-		Num abcd = karatsubaMultiplication(add(aLow, aHigh), add(bLow, bHigh));
-
-		// add(leftShift(abHigh,2*m),add(leftShift(subtract(subtract(abcd,abHigh),abLow),m),abLow))
-		return a;
-
+		Num bLow = subtract(b, leftShift(bHigh,m));
+		
+		Num abLow = karatsubaMultiplication(aLow,bLow);
+		Num abHigh = karatsubaMultiplication(aHigh,bHigh);
+		Num abcd = karatsubaMultiplication(add(aLow,aHigh),add(bLow,bHigh));
+		
+		return add(leftShift(abHigh,2*m),add(leftShift(subtract(subtract(abcd,abHigh),abLow),m),abLow));
 	}
 
 	static long karatsubaMultiplication(String a, String b) {
