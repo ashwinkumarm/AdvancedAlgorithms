@@ -27,8 +27,6 @@ public class Num implements Comparable<Num> {
 	/* Start of Level 1 */
 	LinkedList<Long> digits = new LinkedList<>();
 
-	int numDigits;
-
 	/**
 	 * @param s
 	 */
@@ -68,7 +66,6 @@ public class Num implements Comparable<Num> {
 		if (cursor == len) {
 			return;
 		}
-		numDigits = len - cursor;
 		Num numInBaseTen = new Num(s.charAt(cursor));
 		for (int i = cursor + 1; i < len; i++)
 			numInBaseTen = add(product(numInBaseTen, TEN), new Num(s.charAt(i)));
@@ -92,6 +89,10 @@ public class Num implements Comparable<Num> {
 	 * @param x
 	 */
 	Num(long x, long userBase) {
+		if (x < 0) {
+			isNegative = true;
+			x = -x;
+		}
 		while (x != ZERO_LONG) {
 			digits.add(x % userBase);
 			x /= userBase;
@@ -160,13 +161,14 @@ public class Num implements Comparable<Num> {
 	}
 
 	static Num subtract(Num a, Num b) {
-		Num result = new Num("0");
-		result.digits.clear();
+		Num result = new Num(ZERO_LONG);
 		if (a.isNegative != b.isNegative) {
 			result.isNegative = a.isNegative;
 			return add(a, b, result, base);
 		} else {
 			int cmp = a.compareMag(b);
+			if (cmp == 0)
+				return result;
 			Num resultMag = (cmp > 0 ? subtract(a, b, result) : subtract(b, a, result));
 			resultMag.isNegative = (cmp > 0 ? a.isNegative : !a.isNegative);
 			return resultMag;
@@ -176,7 +178,6 @@ public class Num implements Comparable<Num> {
 	static Num subtract(Num a, Num b, Num result) {
 
 		long borrow = 0;
-		result.digits.clear();
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
 		while (aIterator.hasNext() && bIterator.hasNext()) {
@@ -234,7 +235,7 @@ public class Num implements Comparable<Num> {
 		}
 		return a;
 	}
-	
+
 	static Num rightShift(Num a, long N) {
 		Iterator<Long> aIterator = a.digits.iterator();
 		while (N > 0 && aIterator.hasNext()) {
@@ -244,44 +245,43 @@ public class Num implements Comparable<Num> {
 		}
 		return a;
 	}
-	
-	
-	
+
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
-		return karatsubaMultiplication(a, b);
+		return new Num(karatsubaMultiplication(a.toString(), b.toString()));
 	}
-	
-	static Num multiply(Num a, Num b){
-		return a;
+
+	static Num multiply(Num a, Num b) {
+		Num product = new Num(ZERO_LONG);
+		while (!a.isZero()) {
+			product = add(product, b);
+			a = subtract(a, new Num(ONE_LONG));
+		}
+		return product;
 	}
-	
-	static Num karatsubaMultiplication(Num a, Num b){
-		
+
+	static Num karatsubaMultiplication(Num a, Num b) {
+
 		long len1 = a.digits.size();
 		long len2 = b.digits.size();
 		long m = Math.max(len1, len2);
-		
-		if(m >= 5){
-			return multiply(a,b);
-		}
-		
-		m = (m/2) + (m%2);
-		
-		Num aHigh = rightShift(a, m);
-		Num aLow = subtract(a, leftShift(aHigh,m));
-		Num bHigh = rightShift(b, m);
-		Num bLow = subtract(b, leftShift(bHigh,m));
-		
-		Num abLow = karatsubaMultiplication(aLow,bLow);
-		Num abHigh = karatsubaMultiplication(aHigh,bHigh);
-		Num abcd = karatsubaMultiplication(add(aLow,aHigh),add(bLow,bHigh));
-		
-		
-		
-		//add(leftShift(abHigh,2*m),add(leftShift(subtract(subtract(abcd,abHigh),abLow),m),abLow))
-		return a;
 
+		if (m <= 2) {
+			return multiply(a, b);
+		}
+
+		m = (m / 2) + (m % 2);
+
+		Num aHigh = rightShift(a, m);
+		Num aLow = subtract(a, leftShift(aHigh, m));
+		Num bHigh = rightShift(b, m);
+		Num bLow = subtract(b, leftShift(bHigh, m));
+
+		Num abLow = karatsubaMultiplication(aLow, bLow);
+		Num abHigh = karatsubaMultiplication(aHigh, bHigh);
+		Num abcd = karatsubaMultiplication(add(aLow, aHigh), add(bLow, bHigh));
+
+		return add(leftShift(abHigh, 2 * m), add(leftShift(subtract(subtract(abcd, abHigh), abLow), m), abLow));
 	}
 
 	static long karatsubaMultiplication(String a, String b) {
@@ -331,7 +331,7 @@ public class Num implements Comparable<Num> {
 
 	/* Start of Level 2 */
 
-	static Num divideByTwo(Num a) {
+	static Num divideMagnitudeByTwo(Num a) {
 		Num result = new Num(ZERO_LONG);
 
 		if (a.digits.isEmpty())
@@ -346,7 +346,7 @@ public class Num implements Comparable<Num> {
 			if ((div = digit / 2) == 0) {
 				if (msd != true)
 					result.digits.addFirst(carry);
-				carry = base / 2;
+				carry = (digit % 2 == 0) ? 0 : base / 2;
 			} else {
 				result.digits.addFirst(carry + div);
 				carry = (digit % 2 == 0) ? 0 : base / 2;
@@ -359,52 +359,79 @@ public class Num implements Comparable<Num> {
 
 	static Num divide(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
-		if (b.compareTo(ZERO) == 0) {
+		if (b.isZero())
 			throw new ArithmeticException("denominator is zero");
-		}
-		if (b.compareMag(a) > 0) {
-			if (b.isNegative == a.isNegative) {
-				return result;
-			} else {
-				result.isNegative = true;
-				return result;
-			}
-		}
 
-		/*
-		 * Num X = new Num(ONE_LONG); int cmp = product(X, b).compareMag(a); int
-		 * cmp2 = product(add(X, new Num(1)), b).compareMag(a); while (cmp == -1
-		 * && cmp2 == 1) { X = add(X, new Num(ONE_LONG)); }
-		 */
+		if (b.compareMag(a) == 1)
+			return result;
 
-		Num p = ONE, x = ZERO;
-		// TODO: CHeck a/2
-		Num r = a;
+		if (a.isNegative != b.isNegative)
+			result.isNegative = true;
+		if (b.compareMag(a) == 0)
+			return new Num(ONE_LONG);
+
+		Num p = ONE;
+		Num r = divideMagnitudeByTwo(a);
 		while (p.compareTo(r) != 1) {
-			x = divide(add(p, r), TWO);
-			if (product(x, b).compareMag(a) == 1)
-				p = add(x, ONE);
-			else if (product(add(x, ONE), b).compareMag(a) == -1)
-				r = subtract(x, ONE);
+			result = divideMagnitudeByTwo(add(p, r));
+			if (product(result, b).compareMag(a) == 1)
+				r = subtract(result, ONE);
+			else if (product(add(result, ONE), b).compareMag(a) != 1)
+				p = add(result, ONE);
 			else
 				break;
 		}
 
-		return x;
+		return result;
 	}
 
 	static Num mod(Num a, Num b) {
-		// Num mod = subtract(a, b)
-		return null;
+		Num mod = subtract(a, product(divide(a, b), b));
+		return mod;
 	}
 
 	// Use divide and conquer
+	/**
+	 * s = shift(n) by base B a^n = (a^s)^base * x^a0
+	 *
+	 * @param a
+	 * @param n
+	 * @return
+	 */
 	static Num power(Num a, Num n) {
-		return null;
+		if (!n.isZero()) {
+			long a0 = n.digits.getFirst();
+			Num s = rightShift(n, ONE_LONG);
+			return product(power(power(a, s), base), power(a, a0));
+		}
+		return ONE;
 	}
 
+	/**
+	 * @param a
+	 * @return
+	 */
 	static Num squareRoot(Num a) {
-		return null;
+		Num result = new Num(ZERO_LONG);
+		if (a.isZero())
+			return result;
+
+		if (a.isNegative)
+			throw new NumberFormatException("Number is Negative. This method returns only positive square roots.");
+
+		Num p = ONE;
+		Num r = divideMagnitudeByTwo(a);
+		while (p.compareTo(r) != 1) {
+			result = divideMagnitudeByTwo(add(p, r));
+			if (product(result, result).compareMag(a) == 1)
+				r = subtract(result, ONE);
+			else if (product(add(result, ONE), add(result, ONE)).compareMag(a) != 1)
+				p = add(result, ONE);
+			else
+				break;
+		}
+
+		return result;
 	}
 	/* End of Level 2 */
 
@@ -429,9 +456,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	public int compareMag(Num this,Num other) {
-		if (this.numDigits > other.numDigits) {
+		if (this.getNumberOfDigits() > other.getNumberOfDigits()) {
 			return 1;
-		} else if (this.numDigits < other.numDigits) {
+		} else if (this.getNumberOfDigits() < other.getNumberOfDigits()) {
 			return -1;
 		}
 		Iterator<Long> thisIterator = this.digits.descendingIterator();
@@ -451,11 +478,17 @@ public class Num implements Comparable<Num> {
 	// For example, if base=100, and the number stored corresponds to 10965,
 	// then the output is "100: 65 9 1"
 	void printList() {
+		System.out.print(base + ": ");
+		Iterator<Long> iterator = digits.iterator();
+		while (iterator.hasNext())
+			System.out.print(iterator.next()+ " ");
 	}
 
 	// Return number to a string in base 10
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		if (isZero())
+			return "0";
 		if (isNegative == true)
 			sb.append('-');
 		Iterator<Long> iterator = digits.iterator();
@@ -472,5 +505,13 @@ public class Num implements Comparable<Num> {
 
 	public long base() {
 		return base;
+	}
+
+	public boolean isZero() {
+		return digits.size() == 0;
+	}
+
+	public int getNumberOfDigits() {
+		return digits.size();
 	}
 }
