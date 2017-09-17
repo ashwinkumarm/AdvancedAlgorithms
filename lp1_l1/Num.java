@@ -11,7 +11,7 @@ public class Num implements Comparable<Num> {
 	// Long can store only upto 9 digits
 	// So the base has to be set in a way such that it can divide upto 9 digits
 
-	static long defaultBase = 10; // This can be changed to what you want it to
+	static long defaultBase = 20; // This can be changed to what you want it to
 									// be.
 	static long base = defaultBase; // Change as needed
 	static Num baseInNum = new Num(base);
@@ -43,12 +43,14 @@ public class Num implements Comparable<Num> {
 		int cursor = 0;
 		base = userBase;
 
-		final int len = s.length();
+		char[] inputDigits = s.toCharArray();
+
+		final int len = inputDigits.length;
 
 		if (len == 0)
-			throw new NumberFormatException("Zero length BigInteger");
+			throw new NumberFormatException("Zero length Num");
 
-		char signChar = s.charAt(0);
+		char signChar = inputDigits[0];
 		if (signChar == '+') {
 			cursor = 1;
 		} else if (signChar == '-') {
@@ -56,24 +58,21 @@ public class Num implements Comparable<Num> {
 			cursor = 1;
 		}
 		if (cursor == len)
-			throw new NumberFormatException("Zero length BigInteger");
+			throw new NumberFormatException("Zero length Num");
 
 		// Skip leading zeros and compute number of digits in magnitude
-		while (cursor < len && s.charAt(cursor) == '0') {
+		while (cursor < len && inputDigits[cursor] == '0') {
 			cursor++;
 		}
 
 		if (cursor == len) {
 			return;
 		}
-		Num numInBaseTen = new Num(s.charAt(cursor));
-		for (int i = cursor + 1; i < len; i++)
-			numInBaseTen = add(product(numInBaseTen, TEN), new Num(s.charAt(i)));
 
-		while (numInBaseTen.compareTo(ZERO) != 0) {
-			mod(numInBaseTen, baseInNum);
-			numInBaseTen = divide(numInBaseTen, baseInNum);
-		}
+		Num num = new Num(ZERO_LONG);
+		for (int i = cursor; i < len; i++)
+			num = add(product(num, TEN), new Num(Character.getNumericValue(inputDigits[i])));
+		this.digits = num.digits;
 	}
 
 	/**
@@ -212,10 +211,10 @@ public class Num implements Comparable<Num> {
 		}
 		return trimZero(result);
 	}
-	
-	static Num trimZero(Num a){
+
+	static Num trimZero(Num a) {
 		Iterator<Long> aIterator = a.digits.descendingIterator();
-		while(aIterator.hasNext() && aIterator.next() == 0){
+		while (aIterator.hasNext() && aIterator.next() == 0) {
 			aIterator.remove();
 		}
 		return a;
@@ -239,7 +238,7 @@ public class Num implements Comparable<Num> {
 	static Num leftShift(Num a, long N) {
 		Num dupA = copyNum(a);
 		while (N > 0) {
-			dupA.digits.add(0,ZERO_LONG);
+			dupA.digits.add(0, ZERO_LONG);
 			N--;
 		}
 		return dupA;
@@ -255,12 +254,12 @@ public class Num implements Comparable<Num> {
 		}
 		return dupA;
 	}
-	
-	static Num copyNum(Num a){
+
+	static Num copyNum(Num a) {
 		Num ta = new Num(ZERO_LONG);
 		ta.digits.clear();
 		Iterator<Long> aIterator = a.digits.iterator();
-		while(aIterator.hasNext()){
+		while (aIterator.hasNext()) {
 			ta.digits.add(aIterator.next());
 		}
 		return ta;
@@ -273,6 +272,12 @@ public class Num implements Comparable<Num> {
 
 	static Num multiply(Num a, Num b) {
 		Num product = new Num(ZERO_LONG);
+		if (a.getNumberOfDigits() > b.getNumberOfDigits()) {
+			Num c = a;
+			a = b;
+			b = c;
+
+		}
 		while (!a.isZero()) {
 			product = add(product, b);
 			a = subtract(a, new Num(ONE_LONG));
@@ -282,8 +287,8 @@ public class Num implements Comparable<Num> {
 
 	static Num karatsubaMultiplication(Num a, Num b) {
 
-		long len1 = a.digits.size();
-		long len2 = b.digits.size();
+		long len1 = a.getNumberOfDigits();
+		long len2 = b.getNumberOfDigits();
 		long m = Math.min(len1, len2);
 
 		if (m <= 1) {
@@ -501,7 +506,7 @@ public class Num implements Comparable<Num> {
 		System.out.print(base + ": ");
 		Iterator<Long> iterator = digits.iterator();
 		while (iterator.hasNext())
-			System.out.print(iterator.next()+ " ");
+			System.out.print(iterator.next() + " ");
 	}
 
 	// Return number to a string in base 10
