@@ -16,6 +16,8 @@ public class LP1L3 {
 	private static final String MOD = "%";
 	private static final String POWER = "^";
 	private static final String SQUARE_ROOT = "|";
+	private static final String SEMI_COLON = ";";
+	private static final String EQUAL = "=";
 
 	// private static HashMap<String, Num> variableMap1 = new HashMap<>();
 	private static Num[] variableMap = new Num[26];
@@ -86,28 +88,30 @@ public class LP1L3 {
 	}
 
 	private static void readExpression(Scanner in) {
-
+		int index = -1;
 		String variable = null;
 		ArrayList<String> expression = new ArrayList<>();
 
 		while (in.hasNext()) {
 			String word = in.next();
 
-			if (word.equals(";"))
+			if (word.equals(SEMI_COLON))
 				break;
 
-			else if (word.equals("=")) {
+			else if (word.equals(EQUAL)) {
 				String word1;
 				while (in.hasNext()) {
 					word1 = in.next();
-					if (!word1.equals(";"))
+					if (!word1.equals(SEMI_COLON))
 						expression.add(word1);
 					else {
-						int index = variable.charAt(0) - 'a';
+						index = variable.charAt(0) - 'a';
 						if (expression.size() == 1) {
 							variableMap[index] = new Num(Long.parseLong(expression.get(0)));
+							System.out.print("\n"+variableMap[index]);
 						} else {
 							variableMap[index] = postfixEvaluation(expression);
+							System.out.print("\n"+variableMap[index]);
 						}
 						break;
 					}
@@ -117,7 +121,8 @@ public class LP1L3 {
 				variable = word;
 			}
 		}
-		System.out.println(variableMap[variable.charAt(0) - 'a']);
+		variableMap[index].printList();
+		in.close();
 	}
 
 	public static void main(String[] args) {
