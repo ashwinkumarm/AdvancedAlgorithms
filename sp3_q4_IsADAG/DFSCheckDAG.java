@@ -31,14 +31,14 @@ public class DFSCheckDAG {
 	public static boolean isDAG(Graph g) { 
 		
 		Iterator<Graph.Vertex> it = g.iterator();
-		DFS dfsTopoGraph = new DFS(g);
+		DFS dfsGraph = new DFS(g);
 		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>();
 		Graph.Vertex u;
 		while (it.hasNext()) {
 			u = it.next();
-			if (dfsTopoGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
+			if (dfsGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
 				DFS.cno++;
-				if(!dfsTopoGraph.dfsVisitAndIsDAG(u, decFinishList)){
+				if(!dfsGraph.dfsVisitAndIsDAG(u, decFinishList)){
 					return false;
 				}
 			}

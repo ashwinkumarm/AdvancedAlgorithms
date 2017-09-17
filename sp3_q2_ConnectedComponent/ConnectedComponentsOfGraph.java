@@ -21,74 +21,52 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class ConnectedComponentsOfGraph {
 
-	/** 
-	 * This method reverses the edges of the given graph
-	 * 
-	 * @param g
-	 * @return reversedGraph
-	 */
-	
-	public static Graph reverseGraph(Graph g){
-		
-		Graph reversedGraph = new Graph(g.size());
-		reversedGraph.setDirected(true);
-		for (Graph.Vertex vertex : g) {
-			for (Graph.Edge edge : vertex.revAdj) {
-				Graph.Vertex to = reversedGraph.getVertex(Integer.parseInt(edge.to.toString()));
-				Graph.Vertex from = reversedGraph.getVertex(Integer.parseInt(edge.from.toString()));
-				reversedGraph.addEdge(to, from, edge.weight);
-			}
-		}
-		return reversedGraph;
-		
-	}
-	
 	/**
-	 * This method runs DFS on the given graph and get the list of vertices 
-	 * in the decreasing order of their finish time and reverse's the graph and again run DFS
-	 * on the reversed graph in the order of the decreasing finish time of vertices
-	 * from the original graph 
+	 * This method runs DFS on the given graph and get the list of vertices in the
+	 * decreasing order of their finish time and reverse's the graph and again run
+	 * DFS on the reversed graph in the order of the decreasing finish time of
+	 * vertices from the original graph
 	 * 
 	 * @param g
 	 * @return cno
 	 */
-	
+
 	public static int stronglyConnectedComponents(Graph g) {
 
 		int cno = 0; // no of components
 		Iterator<Graph.Vertex> it = g.iterator();
-		DFS dfsTopoGraph = new DFS(g);
+		DFS dfsGraph = new DFS(g);
 		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>();
 		Graph.Vertex u;
 		while (it.hasNext()) {
 			u = it.next();
-			if (dfsTopoGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
+			if (dfsGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
 				DFS.cno++;
-				dfsTopoGraph.dfsVisit(u, decFinishList);
+				dfsGraph.dfsVisit(u, decFinishList);
 			}
 		}
-		
-		Graph reversedGraph = reverseGraph(g);
-		DFS dfsTopoReversedGraph = new DFS(reversedGraph);
+
+		DFS.cno = 0;
+		dfsGraph.reinitialize(g);
 		List<Graph.Vertex> decFinishList2 = new LinkedList<Graph.Vertex>();
-		for (Graph.Vertex  v : decFinishList) {
-			Graph.Vertex rv = reversedGraph.getVertex(Integer.parseInt(v.toString()));
-			if (dfsTopoReversedGraph.getVertexStatus(rv) == GraphVertexColor.WHITE) {
+		for (Graph.Vertex v : decFinishList) {
+			if (dfsGraph.getVertexStatus(v) == GraphVertexColor.WHITE) {
 				DFS.cno++;
-				dfsTopoReversedGraph.dfsVisit(rv,decFinishList2);
+				dfsGraph.dfsVisitReverse(v, decFinishList2);
 			}
 		}
-		
-		if(decFinishList2.size() == g.size()){ // if not all vertices are processed then the graph is not strongly connected
+
+		if (decFinishList2.size() == g.size()) { // if not all vertices are processed then the graph is not strongly
+													// connected
 			cno = DFS.cno;
 			return cno;
 		}
 		return cno;
-		
+
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
-		
+
 		Scanner in;
 		if (args.length > 0) {
 			File inputFile = new File(args[0]);
@@ -101,14 +79,14 @@ public class ConnectedComponentsOfGraph {
 
 		// if graph is not empty we call the topological sort method
 		if (graph.n > 0) {
-			
+
 			int cno = stronglyConnectedComponents(graph);
-			if(cno > 0){
-				System.out.println("No of Strongly connected components in a given graph: " + cno);
+			if (cno > 0) {
+				System.out.println("\nNumber of strongly connected components in a given graph: " + cno);
 			} else {
-				System.out.println("The given graph is not Strongly connected");
+				System.out.println("The given graph is not strongly connected");
 			}
-			
+
 		} else
 			System.out.println("Empty Graph");
 
