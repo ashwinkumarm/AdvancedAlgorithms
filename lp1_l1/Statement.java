@@ -1,15 +1,13 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1_l1;
 
-import java.util.ArrayList;
-
 public class Statement {
 
 	String var;
 	Num value = null;
 
-	public Statement(String variable, ArrayList<String> expression) {
+	public Statement(String variable, String value) {
 		var = variable;
-		value = new Num(Long.parseLong(expression.get(0)));
+		this.value = new Num(Long.parseLong(value));
 	}
 	
 	public Statement(String variable, Num value) {
