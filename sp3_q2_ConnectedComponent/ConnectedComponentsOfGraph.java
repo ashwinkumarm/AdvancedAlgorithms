@@ -1,5 +1,13 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q2_ConnectedComponent;
 
+/**
+ * This class checks if the given directed graph is strongly connected or not and returns the number 
+ * of components in the graph
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
@@ -13,6 +21,12 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class ConnectedComponentsOfGraph {
 
+	/** 
+	 * This method reverses the edges of the given graph
+	 * 
+	 * @param g
+	 * @return reversedGraph
+	 */
 	
 	public static Graph reverseGraph(Graph g){
 		
@@ -29,9 +43,19 @@ public class ConnectedComponentsOfGraph {
 		
 	}
 	
+	/**
+	 * This method runs DFS on the given graph and get the list of vertices 
+	 * in the decreasing order of their finish time and reverse's the graph and again run DFS
+	 * on the reversed graph in the order of the decreasing finish time of vertices
+	 * from the original graph 
+	 * 
+	 * @param g
+	 * @return cno
+	 */
+	
 	public static int stronglyConnectedComponents(Graph g) {
 
-		int cno = 0;
+		int cno = 0; // no of components
 		Iterator<Graph.Vertex> it = g.iterator();
 		DFS dfsTopoGraph = new DFS(g);
 		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>();
@@ -55,7 +79,7 @@ public class ConnectedComponentsOfGraph {
 			}
 		}
 		
-		if(decFinishList2.size() == g.size()){
+		if(decFinishList2.size() == g.size()){ // if not all vertices are processed then the graph is not strongly connected
 			cno = DFS.cno;
 			return cno;
 		}

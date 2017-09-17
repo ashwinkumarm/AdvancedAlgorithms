@@ -1,5 +1,12 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q3_IsEulerianGraph;
 
+/**
+ * This class checks if a given directed graph has an eulerian tour or not
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -9,12 +16,22 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class EulerianGraph {
 	
+	/**
+	 * This method checks two conditions to determine whether or not the given graph
+	 * is eulerian or not 
+	 *  
+	 * @param g
+	 * @return boolean
+	 */
+	
 	public static boolean testEulerian(Graph g) {
 
+		//check whether the given graph is strongly connected or not
 		if(ConnectedComponentsOfGraph.stronglyConnectedComponents(g) == 0){
 			return false;
 		}
 
+		// check if indegree == outdegree at every vertex 
 		for (Graph.Vertex v : g) {
 			int indegree = v.revAdj.size();
 			int outdegree = v.adj.size();

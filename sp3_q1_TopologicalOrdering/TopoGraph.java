@@ -1,5 +1,12 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering;
 
+/**
+ * Graph class customized to do topological ordering by removing the indegree edges 
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
+
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
 

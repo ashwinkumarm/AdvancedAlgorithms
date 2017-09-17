@@ -1,5 +1,12 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG;
 
+/**
+ * This class checks whether if a directed graph has a cycle or not 
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
@@ -13,6 +20,13 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class DFSCheckDAG {
 
+	/**
+	 * This method runs DFS on the given graph checks if a vertex already in the recursion 
+	 * stack is being visited again
+	 * 
+	 * @param g
+	 * @return boolean
+	 */
 	
 	public static boolean isDAG(Graph g) { 
 		

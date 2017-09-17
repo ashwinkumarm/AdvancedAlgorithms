@@ -1,12 +1,19 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
+/**
+ * Graph class customized to do DFS
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
+
 import java.util.List;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
 public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	
-	public static int cno, time;
+	public static int cno, time; 
 
 	// Class to store information about a vertex in this algorithm
 	static class DFSVertex {
@@ -14,8 +21,8 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		Graph.Vertex element;
 		Graph.Vertex parent;
 		int cno, startTime, finishTime;
-		GraphVertexColor visitStatus;
-
+		//status of a vertex i.e. WHITE = not visited, GREY = visiting, BLACK = visited
+		GraphVertexColor visitStatus; 
 		DFSVertex(Graph.Vertex u) {
 			element = u;
 			parent = null;
@@ -34,10 +41,16 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		cno = 0;
 		time = 0;
 	}
-	
+	/**
+	 * DFS algorithm which keeps track of the vertex start and finish time
+	 * and stores the visited vertices to the start of the list passed in the parameter
+	 * 
+	 * @param u
+	 * @param decFinList
+	 */
 	public void dfsVisit(Graph.Vertex u, List<Graph.Vertex> decFinList){
 		
-		visit(u);
+		visit(u); 
 		for (Graph.Edge e : u) {
 			Graph.Vertex v = e.otherEnd(u);
 			if (getVertexStatus(v) == GraphVertexColor.WHITE) {
@@ -51,6 +64,15 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	
 	}
 	
+	/**
+	 * DFS algorithm which keeps track of the vertex start and finish time
+	 * and stores the visited vertices to the start of the list passed in the parameter
+	 * and also checks if the graph has a cycle or not
+	 * 
+	 * @param u
+	 * @param decFinList
+	 * @return boolean
+	 */
 	public boolean dfsVisitAndIsDAG(Graph.Vertex u, List<Graph.Vertex> decFinList){
 		
 		visit(u);
@@ -72,6 +94,11 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		return true;
 	}
 
+	/**
+	 * This method sets the component number statTime and visitStatus 
+	 * while visiting a vertex
+	 * @param u
+	 */
 	public void visit(Graph.Vertex u){
 		setVertexStatus(u, GraphVertexColor.GREY);
 		setCno(u);

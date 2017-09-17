@@ -1,5 +1,12 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering;
 
+/**
+ * This class performs topological ordering of vertices of a directed graph using two methods
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -15,6 +22,13 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class TopologicalOrder {
 	
+	/**
+	 * Remove vertices with no incoming edges, one at a
+	 * time, along with their incident edges, and add them to a list.
+	 * @param g
+	 * @return
+	 * @throws List<Graph.Vertex>
+	 */
 	public static List<Graph.Vertex> toplogicalOrder1(Graph g) throws Exception {
 		TopoGraph topoGraph = new TopoGraph(g);
 		int topNum = 0;
@@ -22,7 +36,7 @@ public class TopologicalOrder {
 		List<Graph.Vertex> topList = new ArrayList<Graph.Vertex>();
 
 		for (Graph.Vertex u : g) {
-			topoGraph.getVertex(u).inDegree = u.revAdj.size();
+			topoGraph.getVertex(u).inDegree = u.revAdj.size(); // get the number of incoming edges on each vertex
 			if (topoGraph.getVertex(u).inDegree == 0)
 				q.add(u);
 		}
@@ -38,16 +52,23 @@ public class TopologicalOrder {
 				}
 			}
 		}
-		if (topNum != g.n)
+		if (topNum != g.n)// if not all vertices are visited then there is a cycle.
 			throw new IllegalStateException("Exception: Not a DAG");
 		return topList;
 	}
 
+	/**
+	 * Run DFS on g and add nodes to the front of the output list,
+     * in the order in which they finish.
+     * 
+	 * @param g
+	 * @return List<Graph.Vertex>
+	 */
 	public static List<Graph.Vertex> toplogicalOrder2(Graph g) {
 
 		Iterator<Graph.Vertex> it = g.iterator();
 		DFS dfsTopoGraph = new DFS(g);
-		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>();
+		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>(); // list to store vertices in decrerasing order of their finish time 
 		Graph.Vertex u;
 		while (it.hasNext()) {
 			u = it.next();
@@ -58,7 +79,7 @@ public class TopologicalOrder {
 				}
 			}
 		}
-		return decFinishList;
+		return decFinishList; 
 	}
 
 	public static void main(String args[]) throws FileNotFoundException, IllegalStateException {
