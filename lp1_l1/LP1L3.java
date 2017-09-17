@@ -24,10 +24,10 @@ public class LP1L3 {
 			token = expression.get(i);
 			if (!isOperator(token)) {
 				if(!Character.isLetter(token.charAt(0))) {
-					operandStack.push(variableMap.get(token).value);
+					operandStack.push(new Num(token));
 				}
 				else {
-					operandStack.push(new Num(token));
+					operandStack.push(variableMap.get(token).value);
 				}
 			}
 			else {
@@ -43,7 +43,7 @@ public class LP1L3 {
 					break;
 					
 				case "-":
-					operandStack.push(Num.subtract(operand1, operand2));
+					operandStack.push(Num.subtract(operand2, operand1));
 					break;
 				
 				case "*":
@@ -51,15 +51,15 @@ public class LP1L3 {
 					break;
 				
 				case "/":
-					operandStack.push(Num.divide(operand1, operand2));
+					operandStack.push(Num.divide(operand2, operand1));
 					break;
 				
 				case "%":
-					operandStack.push(Num.mod(operand1, operand2));
+					operandStack.push(Num.mod(operand2, operand1));
 					break;
 				
 				case "^":
-					operandStack.push(Num.power(operand1, operand2));
+					operandStack.push(Num.power(operand2, operand1));
 					break;
 					
 				case "|":
@@ -100,12 +100,16 @@ public class LP1L3 {
 				while (in.hasNext()) {
 					word1 = in.next();
 					if (!word1.equals(";"))
-						expression.add(in.next());
+						expression.add(word1);
 					else {
-						if (expression.size() == 1)
+						if (expression.size() == 1) {
 							variableMap.put(variable, new Statement(variable, expression));
-						else
+							break;
+						}
+						else {
 							variableMap.put(variable, new Statement(variable, postfixEvaluation(expression)));
+							break;
+						}
 					}
 				}
 				expression = new ArrayList<>();
@@ -115,6 +119,8 @@ public class LP1L3 {
 				variable = word;
 			}
 		}
+		
+		System.out.println(variableMap.get("c").value);
 
 	}
 }

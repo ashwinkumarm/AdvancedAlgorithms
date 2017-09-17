@@ -9,7 +9,7 @@ public class Statement {
 
 	public Statement(String variable, ArrayList<String> expression) {
 		var = variable;
-		value = new Num(expression.get(0));
+		value = new Num(Long.parseLong(expression.get(0)));
 	}
 	
 	public Statement(String variable, Num value) {
