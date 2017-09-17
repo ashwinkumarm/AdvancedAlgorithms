@@ -210,7 +210,15 @@ public class Num implements Comparable<Num> {
 			}
 			result.digits.add(sub);
 		}
-		return result;
+		return trimZero(result);
+	}
+	
+	static Num trimZero(Num a){
+		Iterator<Long> aIterator = a.digits.descendingIterator();
+		while(aIterator.hasNext() && aIterator.next() == 0){
+			aIterator.remove();
+		}
+		return a;
 	}
 
 	static String makeEqualLength(String str1, String str2) {
@@ -229,26 +237,38 @@ public class Num implements Comparable<Num> {
 	}
 
 	static Num leftShift(Num a, long N) {
+		Num dupA = copyNum(a);
 		while (N > 0) {
-			a.digits.add(ZERO_LONG);
+			dupA.digits.add(0,ZERO_LONG);
 			N--;
 		}
-		return a;
+		return dupA;
 	}
 
 	static Num rightShift(Num a, long N) {
-		Iterator<Long> aIterator = a.digits.iterator();
+		Num dupA = copyNum(a);
+		Iterator<Long> aIterator = dupA.digits.iterator();
 		while (N > 0 && aIterator.hasNext()) {
 			aIterator.next();
 			aIterator.remove();
 			N--;
 		}
-		return a;
+		return dupA;
+	}
+	
+	static Num copyNum(Num a){
+		Num ta = new Num(ZERO_LONG);
+		ta.digits.clear();
+		Iterator<Long> aIterator = a.digits.iterator();
+		while(aIterator.hasNext()){
+			ta.digits.add(aIterator.next());
+		}
+		return ta;
 	}
 
 	// Implement Karatsuba algorithm for excellence credit
 	static Num product(Num a, Num b) {
-		return new Num(karatsubaMultiplication(a.toString(), b.toString()));
+		return karatsubaMultiplication(a, b);
 	}
 
 	static Num multiply(Num a, Num b) {
@@ -264,9 +284,9 @@ public class Num implements Comparable<Num> {
 
 		long len1 = a.digits.size();
 		long len2 = b.digits.size();
-		long m = Math.max(len1, len2);
+		long m = Math.min(len1, len2);
 
-		if (m <= 2) {
+		if (m <= 1) {
 			return multiply(a, b);
 		}
 
