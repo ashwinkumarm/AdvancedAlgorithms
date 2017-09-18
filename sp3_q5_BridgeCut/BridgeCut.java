@@ -22,7 +22,7 @@ public class BridgeCut {
 	 * @return List of Edges(Bridge)
 	 */
 	static List<Graph.Edge> findBridgeCut(Graph g) {
-		DFS DFSGraph = new DFS(g);
+		DFS1 DFSGraph = new DFS1(g);
 		List<Graph.Edge> bridgeList = new LinkedList<>();
 		for (Graph.Vertex u : g) {
 			if (!DFSGraph.seen(u)) {

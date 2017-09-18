@@ -14,7 +14,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
-public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
+public class DFS1 extends GraphAlgorithm<DFS1.DFSVertex> {
 
 	public static final int INFINITY = Integer.MAX_VALUE;
 	int time = 0;
@@ -37,7 +37,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 
 	Graph.Vertex src;
 
-	public DFS(Graph g) {
+	public DFS1(Graph g) {
 		super(g);
 		// this.src = src;
 		node = new DFSVertex[g.size()];
