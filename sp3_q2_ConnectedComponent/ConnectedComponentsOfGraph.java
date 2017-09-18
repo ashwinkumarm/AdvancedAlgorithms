@@ -23,7 +23,7 @@ public class ConnectedComponentsOfGraph {
 
 	/**
 	 * This method runs DFS on the given graph and get the list of vertices in the
-	 * decreasing order of their finish time and reverse's the graph and again run
+	 * decreasing order of their finish time and reverses the graph and again run
 	 * DFS on the reversed graph in the order of the decreasing finish time of
 	 * vertices from the original graph
 	 * 

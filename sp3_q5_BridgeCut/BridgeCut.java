@@ -16,6 +16,11 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  */
 public class BridgeCut {
 
+	/**
+	 * Returns the bridge of the given call by performing DFS
+	 * @param g
+	 * @return List of Edges(Bridge)
+	 */
 	static List<Graph.Edge> findBridgeCut(Graph g) {
 		DFS DFSGraph = new DFS(g);
 		List<Graph.Edge> bridgeList = new LinkedList<>();
@@ -28,6 +33,11 @@ public class BridgeCut {
 
 	}
 
+	/**
+	 * Main Method
+	 * @param args
+	 * @throws FileNotFoundException
+	 */
 	public static void main(String args[]) throws FileNotFoundException {
 		Scanner in;
 		if (args.length > 0) {
