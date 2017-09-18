@@ -183,7 +183,7 @@ public class Num implements Comparable<Num> {
 			long sub = aIterator.next() - bIterator.next() - borrow;
 			if (sub < 0) {
 				borrow = 1;
-				sub += defaultBase;
+				sub += base;
 			} else {
 				borrow = 0;
 			}
@@ -193,7 +193,7 @@ public class Num implements Comparable<Num> {
 			long sub = aIterator.next() - borrow;
 			if (sub < 0) {
 				borrow = 1;
-				sub += defaultBase;
+				sub += base;
 			} else {
 				borrow = 0;
 			}
@@ -203,7 +203,7 @@ public class Num implements Comparable<Num> {
 			long sub = bIterator.next() - borrow;
 			if (sub < 0) {
 				borrow = 1;
-				sub += defaultBase;
+				sub += base;
 			} else {
 				borrow = 0;
 			}
@@ -517,11 +517,24 @@ public class Num implements Comparable<Num> {
 		if (isNegative == true)
 			sb.append('-');
 		Iterator<Long> iterator = digits.iterator();
-		Num sum = new Num(0L, 10L);
+		Num sum = new Num(0L, TEN_LONG);
 		long i = 0;
-		while (iterator.hasNext())
-			sum = add(sum, new Num((long) (iterator.next() * Math.pow(base, i++)), TEN_LONG), TEN_LONG);
+		Num base10 = new Num(base, TEN_LONG);
+		long oldbase = base, olddefaultbase = defaultBase;
+		base = 10;
+		defaultBase = 10;
+		while (iterator.hasNext()) {
+			/*
+			 * iNum = new Num(i++, TEN_LONG); b = power(base10, iNum); d = new
+			 * Num(iterator.next(), TEN_LONG); p = product(d, b); sum = add(sum,
+			 * p, TEN_LONG);
+			 */
 
+			sum = add(sum, product(new Num(iterator.next(), TEN_LONG), power(base10, new Num(i++, TEN_LONG))),
+					TEN_LONG);
+		}
+		base = oldbase;
+		defaultBase = olddefaultbase;
 		Iterator<Long> iteratorBaseTen = sum.digits.descendingIterator();
 		while (iteratorBaseTen.hasNext())
 			sb.append(iteratorBaseTen.next().toString());
