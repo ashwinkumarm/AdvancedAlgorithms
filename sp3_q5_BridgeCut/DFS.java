@@ -15,10 +15,10 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 
 	// Class to store information about a vertex in this algorithm
 	static class DFSVertex {
-		boolean seen,cutVertex;
+		boolean seen, cutVertex;
 		Graph.Vertex parent;
 		int distance;// distance of vertex from source
-		int dis, low;
+		int dis, low, childrenCount;
 
 		DFSVertex(Graph.Vertex u) {
 			seen = false;
@@ -48,6 +48,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 			bu.seen = false;
 			bu.parent = null;
 			bu.distance = INFINITY;
+			bu.childrenCount = 0;
 		}
 		getVertex(src).distance = 0;
 	}
@@ -60,25 +61,28 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 			Graph.Vertex v = e.otherEnd(u);
 			DFSVertex dv = getVertex(v);
 			if (!seen(v)) {
+				du.childrenCount++;
 				visit(u, v);
 				dfs(v, bridgeList, cutVertexSet);
 
 				du.low = Math.min(du.low, dv.low);
 
-				if (dv.low >= du.dis || (du.parent==null && u.adj.size()>=2)) {
+				if (du.parent != null && dv.low >= du.dis) {
 					du.cutVertex = true;
 					cutVertexSet.add(u);
-					if(du.low>=du.dis && dv.low>=dv.dis)
-						bridgeList.add(e);
 				}
+
+				if (dv.low >= dv.dis && dv.parent != null)
+					bridgeList.add(e);
 			}
 
-			else if (v != getParent(u)) { //Back Edge
+			else if (v != getParent(u)) { // Back Edge
 				du.low = Math.min(du.low, dv.dis);
 			}
 		}
+		if (du.parent == null && du.childrenCount >= 2)
+			cutVertexSet.add(u);
 	}
-
 
 	boolean seen(Graph.Vertex u) {
 		return getVertex(u).seen;
