@@ -1,18 +1,18 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp4_q2_FibonacciNumbers;
 
 import java.math.BigInteger;
-import java.util.HashMap;
 
 public class FibonacciNumbers {
-	static HashMap<Integer, BigInteger> memo = new HashMap<>();
+	static BigInteger[] memo;
 
 	static BigInteger linearFibonacci(int n) {
-		memo.put(0, BigInteger.valueOf(0));
-		memo.put(1, BigInteger.valueOf(1));
+		memo = new BigInteger[n+1];
+		memo[0] = BigInteger.valueOf(0);
+		memo[1] = BigInteger.valueOf(1);
 		for (int i = 2; i <= n; i++) {
-			memo.put(i, memo.get(i - 1).add(memo.get(i - 2)));
+			memo[i] = memo[i - 1].add(memo[i - 2]);
 		}
-		return memo.get(n);
+		return memo[n];
 	}
 
 	static BigInteger logFibonacci(int n) {
@@ -51,8 +51,8 @@ public class FibonacciNumbers {
 	}
 
 	public static void main(String args[]) {
-		System.out.println("The Fibonacci Number for n using linear algorithm: " + linearFibonacci(1000));
-		System.out.println("The Fibonacci Number for n using logarthmic algorithm: " + logFibonacci(1000));
+		System.out.println("The nth Fibonacci number using linear algorithm: " + linearFibonacci(1000));
+		System.out.println("The nth Fibonacci number using logarthmic algorithm: " + logFibonacci(1000));
 	}
 
 }
