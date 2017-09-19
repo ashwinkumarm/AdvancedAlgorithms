@@ -2,6 +2,7 @@
 
 // Change following line to your group number
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1_l1;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Tokenizer;
@@ -10,6 +11,8 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class LP1L4 {
 	static InputString[] inputArray;
+	static Num[] variableMap = new Num[26];
+	static HashMap<Integer,Integer> LineNoForLabel = new HashMap<>();
 	
 	//the jump can go backward or forward. Since forward is possible, we need to read the entire inp first. Read the entire inp
 	//store t n ob array. obj class will have varible to store the entire infix expression. helper methods for converting and evaluating.
@@ -29,10 +32,13 @@ public class LP1L4 {
 			String word = in.next();
 			Token token = Tokenizer.tokenize(word);
 			InputString inp = new InputString();
+			inp.setLineNo(i);
+			i++;
 			if (token.equals(Token.EOL)) {
 				inputArray[i] = new InputString(inp);
 				inp = new InputString();
 			} else if (token.equals(Token.NUM)) {
+				LineNoForLabel.put(Integer.parseInt(word), i);
 				inp.setLabel(word);
 			} else if (token.equals(Token.VAR)) {
 				inp.setVariable(word);
@@ -45,18 +51,30 @@ public class LP1L4 {
 					else {
 						if (expression.toString().equals(Token.NUM)) {
 							inp.setValue(new Num(expression.toString()));
+							inp.setAssgn(true);
 						} else {
-							 inp.setExpression(expression.toString());
-							 String postfixExpression = ShuntingYard.infixToPostfix(expression.toString());
-							 inp.setValue(LP1L3.postfixEvaluation(postfixExpression));
+							 inp.setInfixExpression(expression.toString());
+							 inp.setExpression(true);
 						}
 						break;
 					}
 				}
 				expression = new StringBuilder();
 			} else {
-				while(!inp.getValue().isZero()){
-					
+				while (in.hasNext()) {
+					word = in.next();
+					if (!word.equals(Token.EOL)) {
+						expression.append(word);
+					}else{
+						if(expression.toString().equals(Token.NUM)){
+							inp.setNz(Integer.parseInt(word));
+						}else{
+							String[] labels = expression.toString().split(":");
+							inp.setNz(Integer.parseInt(labels[0]));
+							inp.setZr(Integer.parseInt(labels[1]));
+						}
+					}
+
 				}
 			}
 
