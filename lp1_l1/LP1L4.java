@@ -58,14 +58,14 @@ public class LP1L4 {
 					if (!token.equals(Token.EOL)) {
 						expression.append(word);
 					} else {
-						if (expression.length() == 1) {
+						if (Tokenizer.tokenize(expression.toString()).equals(Token.NUM)) {
 							inp.setValue(new Num(expression.toString()));
 							inp.setAssgn(true);
 						} else {
 							inp.setInfixExpression(expression.toString());
 							inp.setExpression(true);
 						}
-						if (inp.getLineNo() != -1) {
+						if (inp.getLineNo() == -1) {
 							inp.setLineNo(i);
 						}
 						inputArray.add(new InputString(inp));
@@ -82,14 +82,14 @@ public class LP1L4 {
 					if (!token.equals(Token.EOL)) {
 						expression.append(word);
 					} else {
-						if (expression.length() == 1) {
+						if (Tokenizer.tokenize(expression.toString()).equals(Token.NUM)) {
 							inp.setNz(Integer.parseInt(word));
 						} else {
 							String[] labels = expression.toString().split(":");
 							inp.setNz(Integer.parseInt(labels[0]));
 							inp.setZr(Integer.parseInt(labels[1]));
 						}
-						if (inp.getLineNo() != -1) {
+						if (inp.getLineNo() == -1) {
 							inp.setLineNo(i);
 						}
 						inputArray.add(new InputString(inp));
