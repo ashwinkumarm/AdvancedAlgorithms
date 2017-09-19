@@ -18,7 +18,7 @@ public class InsertionSort {
 	 * @param arr
 	 *            generic array which has the original content
 	 */
-	public static <T extends Comparable<? super T>> void nSquareSort(T[] arr) {
+	public static <T extends Comparable<? super T>> void insertionSort(T[] arr) {
 		for (int i = 1; i < arr.length; i++) {
 			T key = arr[i];
 			int j = i - 1;

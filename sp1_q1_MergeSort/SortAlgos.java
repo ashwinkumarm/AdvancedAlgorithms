@@ -41,7 +41,7 @@ public class SortAlgos {
 
 			Shuffle.shuffle(integerArr);
 			t.start();
-			InsertionSort.nSquareSort(integerArr);
+			InsertionSort.insertionSort(integerArr);
 			System.out.println("Time and Memory taken by Insertion Sort(Generic):\n" + t.end());
 
 			t.start();
