@@ -23,14 +23,14 @@ public class LP1L3 {
 	private static Num[] variableMap = new Num[26];
 
 	// Create Class
-	private static Num postfixEvaluation(ArrayList<String> expression) {
+	public static Num postfixEvaluation(String expression) {
 
 		Stack<Num> operandStack = new Stack<Num>();
 		String token;
-		int len = expression.size();
-
+		int len = expression.split(" ").length;
+		String[] expArray = expression.split(" ");
 		for (int i = 0; i < len; i++) {
-			token = expression.get(i);
+			token = expArray[i];
 			if (!isOperator(token)) {
 				if (!Character.isLetter(token.charAt(0))) { // *
 					operandStack.push(new Num(Long.parseLong(token)));
@@ -90,7 +90,7 @@ public class LP1L3 {
 	private static void readExpression(Scanner in) {
 		int index = -1;
 		String variable = null;
-		ArrayList<String> expression = new ArrayList<>();
+		StringBuilder expression = new StringBuilder();
 
 		while (in.hasNext()) {
 			String word = in.next();
@@ -102,21 +102,23 @@ public class LP1L3 {
 				String word1;
 				while (in.hasNext()) {
 					word1 = in.next();
-					if (!word1.equals(SEMI_COLON))
-						expression.add(word1);
+					if (!word1.equals(SEMI_COLON)){
+						expression.append(word1);
+						expression.append(" ");
+					}
 					else {
 						index = variable.charAt(0) - 'a';
-						if (expression.size() == 1) {
-							variableMap[index] = new Num(Long.parseLong(expression.get(0)));
+						if (expression.length() == 1) {
+							variableMap[index] = new Num(Long.parseLong(expression.toString()));
 							System.out.print("\n"+variableMap[index]);
 						} else {
-							variableMap[index] = postfixEvaluation(expression);
+							variableMap[index] = postfixEvaluation(expression.toString());
 							System.out.print("\n"+variableMap[index]);
 						}
 						break;
 					}
 				}
-				expression = new ArrayList<>();
+				expression = new StringBuilder();
 			} else {
 				variable = word;
 			}
