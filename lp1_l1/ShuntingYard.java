@@ -27,7 +27,7 @@ public class ShuntingYard {
 		operatorMap.put("*", new Operator("*", "left", 2));
 		operatorMap.put("/", new Operator("/", "left", 2));
 		operatorMap.put("^", new Operator("^", "right", 3));
-		operatorMap.put("!", new Operator("!", "none", 4));
+		operatorMap.put("|", new Operator("|", "none", 4));
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class ShuntingYard {
 	 */
 	public static void main(String args[]) {
 
-		String infix = "5!+3";
+		String infix = "5|+3";
 		System.out.println("Postfix expression: " + infixToPostfix(infix));
 	}
 

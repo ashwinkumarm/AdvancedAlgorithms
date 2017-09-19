@@ -3,7 +3,6 @@
 // Change following line to your group number
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1_l1;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -33,7 +32,7 @@ public class LP1L3 {
 			token = expArray[i];
 			if (!isOperator(token)) {
 				if (!Character.isLetter(token.charAt(0))) { // *
-					operandStack.push(new Num(Long.parseLong(token)));
+					operandStack.push(new Num(token));
 				} else {
 					int index = token.charAt(0) - 'a';
 					operandStack.push(variableMap[index]);
@@ -109,7 +108,7 @@ public class LP1L3 {
 					else {
 						index = variable.charAt(0) - 'a';
 						if (expression.length() == 1) {
-							variableMap[index] = new Num(Long.parseLong(expression.toString()));
+							variableMap[index] = new Num(expression.toString());
 							System.out.print("\n"+variableMap[index]);
 						} else {
 							variableMap[index] = postfixEvaluation(expression.toString());

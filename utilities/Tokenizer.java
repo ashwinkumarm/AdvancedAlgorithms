@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Tokenizer {
 	public enum Token {
-		VAR, NUM, OP, EQ, OPEN, CLOSE, EOL
+		VAR, NUM, OP, EQ, OPEN, CLOSE, EOL, QM
 	}
 
 	public static Token tokenize(String s) throws Exception {
@@ -25,6 +25,8 @@ public class Tokenizer {
 			return Token.CLOSE;
 		} else if (s.equals(";")) {
 			return Token.EOL;
+		} else if (s.equals("?")) {
+			return Token.QM;
 		} else { // Error
 			throw new Exception("Unknown token: " + s);
 		}
