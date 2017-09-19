@@ -13,13 +13,14 @@ public class MissingKNumbers {
 				return;
 
 			if (r - p == 1) {
-				int i = ++a[p];
+				int i = a[p] + 1;
 				while (i < a[r])
 					System.out.println(i++);
+				return;
 			}
 			int q = (p + r) / 2;
 			findMissing(a, p, q);
-			findMissing(a, q, q+1);
+			findMissing(a, q, q + 1);
 			findMissing(a, q + 1, r);
 		}
 	}
