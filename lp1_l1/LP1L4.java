@@ -80,7 +80,7 @@ public class LP1L4 {
 					break;
 
 				case MULTIPLY:
-					operandStack.push(Num.multiply(operand1, operand2));
+					operandStack.push(Num.karatsubaMultiplication(operand1, operand2));
 					break;
 
 				case DIVIDE:
@@ -147,7 +147,7 @@ public class LP1L4 {
 						i = LineNoForLabel.get(inputLine.getNz()) - 1;
 						continue;
 					}
-				}else{
+				}else if(inputLine.isExpression){
 					Num value = postfixEvaluation(inputLine.getPostfixExpression());
 					int index = inputLine.getVariable().charAt(0) - 'a';
 					variableMap[index] = value;
