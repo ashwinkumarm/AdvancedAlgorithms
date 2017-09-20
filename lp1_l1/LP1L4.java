@@ -34,73 +34,90 @@ public class LP1L4 {
 	// loop variable. Its basically a loop where that value is greater than zero.
 
 	static void computeInputArray(Scanner in) throws Exception {
-		int i = 1;
-		StringBuilder expression = new StringBuilder();
+		int i = 0;
 		InputString inp = new InputString();
 		Token token;
+		whileloop:
 		while (in.hasNext()) {
 			String word = in.next();
 			token = Tokenizer.tokenize(word);
-			if (token.equals(Token.EOL)) {
-				inputArray.add(new InputString(inp));
-				i++;
-				inp = new InputString();
-			} else if (token.equals(Token.NUM)) {
-				LineNoForLabel.put(word, i);
+			switch(token)
+			{
+			case EOL:
 				inp.setLineNo(i);
+				i++;
+				inputArray.add(new InputString(inp));
+				if(inp.getVariable().length() == 0){
+					break whileloop;	
+				}
+				inp = new InputString();
+				break;
+			case NUM:
+				LineNoForLabel.put(word, i);
 				inp.setLabel(word);
-			} else if (token.equals(Token.VAR)) {
+				break;
+			case VAR:
 				inp.setVariable(word);
-			} else if (token.equals(Token.EQ)) {
-				while (in.hasNext()) {
-					word = in.next();
-					token = Tokenizer.tokenize(word);
-					if (!token.equals(Token.EOL)) {
-						expression.append(word);
-					} else {
-						if (Tokenizer.tokenize(expression.toString()).equals(Token.NUM)) {
-							inp.setValue(new Num(expression.toString()));
-							inp.setAssgn(true);
-						} else {
-							inp.setInfixExpression(expression.toString());
-							inp.setExpression(true);
-						}
-						if (inp.getLineNo() == -1) {
-							inp.setLineNo(i);
-						}
-						inputArray.add(new InputString(inp));
-						i++;
-						inp = new InputString();
-						break;
-					}
-				}
-				expression = new StringBuilder();
-			} 
-			else if(token.equals(Token.QM)) {
-				while (in.hasNext()) {
-					token = Tokenizer.tokenize(word);
-					if (!token.equals(Token.EOL)) {
-						expression.append(word);
-					} else {
-						if (Tokenizer.tokenize(expression.toString()).equals(Token.NUM)) {
-							inp.setNz(Integer.parseInt(word));
-						} else {
-							String[] labels = expression.toString().split(":");
-							inp.setNz(Integer.parseInt(labels[0]));
-							inp.setZr(Integer.parseInt(labels[1]));
-						}
-						if (inp.getLineNo() == -1) {
-							inp.setLineNo(i);
-						}
-						inputArray.add(new InputString(inp));
-						i++;
-						inp = new InputString();
-						break;
-					}
-
-				}
+				break;
+			case EQ:
+				inp.setLineNo(i);
+				i++;
+				readRightHandSide(in, inp);
+				inp = new InputString();
+				break;
+			case QM:
+				inp.setLineNo(i);
+				i++;
+				inp.setLoop(true);
+				readLoopCondition(in, inp);
+				inp = new InputString();
+				break;
+			default:
+				System.out.println("Enter valid expression");
 			}
-
+			}
+	}
+	
+	public static void readRightHandSide(Scanner in, InputString inp) throws Exception {
+		StringBuilder exp = new StringBuilder();
+		while (in.hasNext()) {
+			String word = in.next();
+			Token token = Tokenizer.tokenize(word);
+			if (!token.equals(Token.EOL)) {
+				exp.append(word);
+			} else {
+				if (exp.toString().matches("\\d+")) {
+					inp.setValue(new Num(exp.toString()));
+					inp.setAssgn(true);
+				} else {
+					inp.setInfixExpression(exp.toString());
+					inp.setExpression(true);
+				}
+				inputArray.add(inp);
+				
+				break;
+			}
+		}
+	}
+	
+	public static void readLoopCondition(Scanner in, InputString inp) throws Exception {
+		StringBuilder exp = new StringBuilder();
+		while (in.hasNext()) {
+			String word = in.next();
+			Token token = Tokenizer.tokenize(word);
+			if (!token.equals(Token.EOL)) {
+				exp.append(word);
+			} else {
+				if (exp.toString().matches("\\d+")) {
+					inp.setNz(Integer.parseInt(exp.toString()));
+				} else {
+					String[] labels = exp.toString().split(":");
+					inp.setNz(Integer.parseInt(labels[0]));
+					inp.setZr(Integer.parseInt(labels[1]));
+				}
+				inputArray.add(inp);
+				break;
+			}
 		}
 
 	}

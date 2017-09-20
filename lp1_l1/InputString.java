@@ -2,8 +2,8 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1
 
 public class InputString {
 
-	String variable;
-	String label;
+	String variable = "";
+	String label = "";
 	int lineNo = -1;
 	String postfixExpression = "";
 	String infixExpression = "";
