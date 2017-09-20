@@ -6,14 +6,29 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Stack;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Tokenizer;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Tokenizer.Token;
 
 public class LP1L4 {
+	
+	// put in constant file. just adding here to check if its working 
+	static int base;
+
+	private static final String ADD = "+";
+	private static final String SUBTRACT = "-";
+	private static final String MULTIPLY = "*";
+	private static final String DIVIDE = "/";
+	private static final String MOD = "%";
+	private static final String POWER = "^";
+	private static final String SQUARE_ROOT = "|";
+	private static final String SEMI_COLON = ";";
+	private static final String EQUAL = "=";
+	
 	static ArrayList<InputString> inputArray = new ArrayList<InputString>();
 	static Num[] variableMap = new Num[26];
-	static HashMap<String, Integer> LineNoForLabel = new HashMap<>();
+	static HashMap<Integer, Integer> LineNoForLabel = new HashMap<>();
 
 	// the jump can go backward or forward. Since forward is possible, we need to
 	// read the entire inp first. Read the entire inp
@@ -33,7 +48,115 @@ public class LP1L4 {
 	// line number to the line number of the current line. and returns the value of
 	// loop variable. Its basically a loop where that value is greater than zero.
 
-	static void computeInputArray(Scanner in) throws Exception {
+	
+	public static Num postfixEvaluation(String expression) {
+
+		Stack<Num> operandStack = new Stack<Num>();
+		String token;
+		int len = expression.length();
+		for (int i = 0; i < len; i++) {
+			token = String.valueOf(expression.charAt(i));
+			if (!isOperator(token)) {
+				if (!Character.isLetter(token.charAt(0))) { // *
+					operandStack.push(new Num(token));
+				} else {
+					int index = token.charAt(0) - 'a';
+					operandStack.push(variableMap[index]);
+				}
+			} else {
+				Num operand1 = operandStack.pop();
+				Num operand2 = null;
+
+				if (!token.equals(SQUARE_ROOT)) {
+					operand2 = operandStack.pop();
+				}
+				switch (token) {
+				case ADD:
+					operandStack.push(Num.add(operand1, operand2));
+					break;
+
+				case SUBTRACT:
+					operandStack.push(Num.subtract(operand2, operand1));
+					break;
+
+				case MULTIPLY:
+					operandStack.push(Num.multiply(operand1, operand2));
+					break;
+
+				case DIVIDE:
+					operandStack.push(Num.divide(operand2, operand1));
+					break;
+
+				case MOD:
+					operandStack.push(Num.mod(operand2, operand1));
+					break;
+
+				case POWER:
+					operandStack.push(Num.power(operand2, operand1));
+					break;
+
+				case SQUARE_ROOT:
+					operandStack.push(Num.squareRoot(operand1));
+					break;
+				default:
+					throw new IllegalStateException("Invalid Operator");
+				}
+			}
+		}
+
+		return operandStack.pop();
+	}
+	
+	private static boolean isOperator(String token) {
+		return token.equals(ADD) || token.equals(SUBTRACT) || token.equals(MULTIPLY) || token.equals(DIVIDE)
+				|| token.equals(MOD) || token.equals(POWER) || token.equals(SQUARE_ROOT);
+	}
+	
+	static void evaluateStatements(){
+	for(int i =0; i < inputArray.size(); i++){
+			InputString inputLine = inputArray.get(i);
+			//Level 3 statement
+			if(inputLine.getLabel() == -1){
+				if(inputLine.isExpression){
+					Num value = postfixEvaluation(inputLine.getPostfixExpression());
+					int index = inputLine.getVariable().charAt(0) - 'a';
+					variableMap[index] = value;
+					inputLine.setValue(value);
+					System.out.println(value);
+				}else{
+					if(inputLine.getVariable().length() > 0){
+					System.out.println(variableMap[inputLine.getVariable().charAt(0) - 'a']);
+					}else{
+						//last line
+						Num r = variableMap[inputArray.get(i-1).getVariable().charAt(0)-'a'];
+						r.printList();
+					}
+				}
+			}else{
+				//Level 4 statements
+				if(inputLine.isLoop){
+					int index = inputLine.getVariable().charAt(0) - 'a';
+					if(variableMap[index].isZero()){
+						if(inputLine.getZr() != -1){
+							i = LineNoForLabel.get(inputLine.getZr()) -1;	
+						}/*else{
+							i = i;
+						}*/
+						continue;
+					}else{
+						i = LineNoForLabel.get(inputLine.getNz()) - 1;
+						continue;
+					}
+				}else{
+					Num value = postfixEvaluation(inputLine.getPostfixExpression());
+					int index = inputLine.getVariable().charAt(0) - 'a';
+					variableMap[index] = value;
+					inputLine.setValue(value);
+				}
+			}
+		}
+	}
+	static void formInputArray(Scanner in) throws Exception {
 		int i = 0;
 		InputString inp = new InputString();
 		Token token;
@@ -52,8 +175,8 @@ public class LP1L4 {
 				inp = new InputString();
 				break;
 			case NUM:
-				LineNoForLabel.put(word, i);
-				inp.setLabel(word);
+				LineNoForLabel.put(Integer.parseInt(word), i);
+				inp.setLabel(Integer.parseInt(word));
 				break;
 			case VAR:
 				inp.setVariable(word);
@@ -85,6 +208,8 @@ public class LP1L4 {
 			} else {
 				if (exp.toString().matches("\\d+")) {
 					inp.setValue(new Num(exp.toString()));
+					int index = inp.getVariable().charAt(0) - 'a';
+					variableMap[index] = new Num(exp.toString());
 					inp.setAssgn(true);
 				} else {
 					inp.setPostfixExpression(ShuntingYard.infixToPostfix(exp.toString()));
@@ -122,11 +247,12 @@ public class LP1L4 {
 	public static void main(String[] args) throws Exception {
 		Scanner in;
 		if (args.length > 0) {
-			int base = Integer.parseInt(args[0]);
+			 base = Integer.parseInt(args[0]);
 			// Use above base for all numbers (except I/O, which is in base 10)
 		}
 
 		in = new Scanner(System.in);
-		computeInputArray(in);
+		formInputArray(in);
+		evaluateStatements();
 	}
 }

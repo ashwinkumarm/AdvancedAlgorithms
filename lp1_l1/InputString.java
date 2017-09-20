@@ -3,14 +3,14 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1
 public class InputString {
 
 	String variable = "";
-	String label = "";
+	int label = -1;
 	String postfixExpression = "";
 	Num value;
 	boolean isAssgn;
 	boolean isLoop;
 	boolean isExpression;
-	int nz;
-	int zr;
+	int nz = -1;
+	int zr = -1;
 	
 	public int getNz() {
 		return nz;
@@ -49,11 +49,11 @@ public class InputString {
 		this.variable = variable;
 	}
 
-	public String getLabel() {
+	public int getLabel() {
 		return label;
 	}
 
-	public void setLabel(String label) {
+	public void setLabel(int label) {
 		this.label = label;
 	}
 
