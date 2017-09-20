@@ -12,8 +12,8 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Tokenizer.Token;
 
 public class LP1L4 {
-	
-	// put in constant file. just adding here to check if its working 
+
+	// put in constant file. just adding here to check if its working
 	static int base;
 
 	private static final String ADD = "+";
@@ -23,32 +23,35 @@ public class LP1L4 {
 	private static final String MOD = "%";
 	private static final String POWER = "^";
 	private static final String SQUARE_ROOT = "|";
-	private static final String SEMI_COLON = ";";
-	private static final String EQUAL = "=";
-	
+
 	static ArrayList<InputString> inputArray = new ArrayList<InputString>();
 	static Num[] variableMap = new Num[26];
 	static HashMap<Integer, Integer> LineNoForLabel = new HashMap<>();
 
-	// the jump can go backward or forward. Since forward is possible, we need to
+	// the jump can go backward or forward. Since forward is possible, we need
+	// to
 	// read the entire inp first. Read the entire inp
 	// store t n ob array. obj class will have varible to store the entire infix
 	// expression. helper methods for converting and evaluating.
-	// Have variable in the class to say if its a just a assign, expression or loop
+	// Have variable in the class to say if its a just a assign, expression or
+	// loop
 	// conditions
 	// Have hashmap for storing label and line number too.
 
 	// Read the entire input again from first line. If t s not a loop condition,
 	// then just update the values upto the specific line and
-	// move to the next line. For updating we need to update for the specific object
+	// move to the next line. For updating we need to update for the specific
+	// object
 	// plus we can have an num array like in lp3 and keep updating
 	// so that referencing the value is easier.
-	// if its a loop conditon, we can have an helper function which iterates from
+	// if its a loop conditon, we can have an helper function which iterates
+	// from
 	// specific label, retrieved from hashmap and it runs from the specific
-	// line number to the line number of the current line. and returns the value of
-	// loop variable. Its basically a loop where that value is greater than zero.
+	// line number to the line number of the current line. and returns the value
+	// of
+	// loop variable. Its basically a loop where that value is greater than
+	// zero.
 
-	
 	public static Num postfixEvaluation(String expression) {
 
 		Stack<Num> operandStack = new Stack<Num>();
@@ -106,71 +109,74 @@ public class LP1L4 {
 
 		return operandStack.pop();
 	}
-	
+
 	private static boolean isOperator(String token) {
 		return token.equals(ADD) || token.equals(SUBTRACT) || token.equals(MULTIPLY) || token.equals(DIVIDE)
 				|| token.equals(MOD) || token.equals(POWER) || token.equals(SQUARE_ROOT);
 	}
-	
-	static void evaluateStatements(){
-	for(int i =0; i < inputArray.size(); i++){
+
+	static void evaluateStatements() {
+		for (int i = 0; i < inputArray.size(); i++) {
 			InputString inputLine = inputArray.get(i);
-			//Level 3 statement
-			if(inputLine.getLabel() == -1){
-				if(inputLine.isExpression){
+			int index = inputLine.getVariable().isEmpty() ? 0 : inputLine.getVariable().charAt(0) - 'a';
+			// Level 3 statement
+			if (inputLine.getLabel() == -1) {
+				if (inputLine.isExpression) {
 					Num value = postfixEvaluation(inputLine.getPostfixExpression());
-					int index = inputLine.getVariable().charAt(0) - 'a';
 					variableMap[index] = value;
 					inputLine.setValue(value);
 					System.out.println(value);
-				}else{
-					if(inputLine.getVariable().length() > 0){
-					System.out.println(variableMap[inputLine.getVariable().charAt(0) - 'a']);
-					}else{
-						//last line
-						Num r = variableMap[inputArray.get(i-1).getVariable().charAt(0)-'a'];
+				} else {
+					if (inputLine.getVariable().length() > 0) {
+						System.out.println(variableMap[inputLine.getVariable().charAt(0) - 'a']);
+					} else {
+						// last line
+						Num r = variableMap[inputArray.get(i - 1).getVariable().charAt(0) - 'a'];
 						r.printList();
 					}
 				}
-			}else{
-				//Level 4 statements
-				if(inputLine.isLoop){
-					int index = inputLine.getVariable().charAt(0) - 'a';
-					if(variableMap[index].isZero()){
-						if(inputLine.getZr() != -1){
-							i = LineNoForLabel.get(inputLine.getZr()) -1;	
-						}/*else{
-							i = i;
-						}*/
+			} else {
+				// Level 4 statements
+				if (inputLine.isLoop) {
+					// if (index == 1)
+					// System.out.println("b " + variableMap[index] + " p "
+					// + variableMap[15] + " k " + variableMap[10]
+					// + " d " + variableMap[3]);
+					if (variableMap[index].isZero()) {
+						if (inputLine.getZr() != -1) {
+							i = LineNoForLabel.get(inputLine.getZr()) - 1;
+						} /*
+							 * else{ i = i; }
+							 */
 						continue;
-					}else{
+					} else {
 						i = LineNoForLabel.get(inputLine.getNz()) - 1;
 						continue;
 					}
-				}else if(inputLine.isExpression){
+				} else if (inputLine.isExpression) {
 					Num value = postfixEvaluation(inputLine.getPostfixExpression());
-					int index = inputLine.getVariable().charAt(0) - 'a';
 					variableMap[index] = value;
 					inputLine.setValue(value);
+				} else {
+					variableMap[index] = inputLine.getValue();
 				}
 			}
 		}
 	}
+
 	static void formInputArray(Scanner in) throws Exception {
 		int i = 0;
 		InputString inp = new InputString();
 		Token token;
-		whileloop:
-		while (in.hasNext()) {
+		whileloop: while (in.hasNext()) {
 			String word = in.next();
 			token = Tokenizer.tokenize(word);
-			switch(token)
-			{
+			switch (token) {
 			case EOL:
 				i++;
 				inputArray.add(inp);
-				if(inp.getVariable().length() == 0){
-					break whileloop;	
+				if (inp.getVariable().length() == 0) {
+					break whileloop;
 				}
 				inp = new InputString();
 				break;
@@ -195,9 +201,9 @@ public class LP1L4 {
 			default:
 				System.out.println("Enter valid expression");
 			}
-			}
+		}
 	}
-	
+
 	public static void readRightHandSide(Scanner in, InputString inp) throws Exception {
 		StringBuilder exp = new StringBuilder();
 		while (in.hasNext()) {
@@ -216,12 +222,12 @@ public class LP1L4 {
 					inp.setExpression(true);
 				}
 				inputArray.add(inp);
-				
+
 				break;
 			}
 		}
 	}
-	
+
 	public static void readLoopCondition(Scanner in, InputString inp) throws Exception {
 		StringBuilder exp = new StringBuilder();
 		while (in.hasNext()) {
@@ -247,7 +253,7 @@ public class LP1L4 {
 	public static void main(String[] args) throws Exception {
 		Scanner in;
 		if (args.length > 0) {
-			 base = Integer.parseInt(args[0]);
+			base = Integer.parseInt(args[0]);
 			// Use above base for all numbers (except I/O, which is in base 10)
 		}
 

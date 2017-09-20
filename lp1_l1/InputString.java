@@ -11,7 +11,7 @@ public class InputString {
 	boolean isExpression;
 	int nz = -1;
 	int zr = -1;
-	
+
 	public int getNz() {
 		return nz;
 	}
@@ -97,5 +97,11 @@ public class InputString {
 	public void setValue(Num value) {
 		this.value = value;
 	}
+
+	@Override
+	public String toString() {
+		return variable + " = " + postfixExpression;
+	}
+
 
 }
