@@ -44,9 +44,8 @@ public class LP1L4 {
 			switch(token)
 			{
 			case EOL:
-				inp.setLineNo(i);
 				i++;
-				inputArray.add(new InputString(inp));
+				inputArray.add(inp);
 				if(inp.getVariable().length() == 0){
 					break whileloop;	
 				}
@@ -60,13 +59,11 @@ public class LP1L4 {
 				inp.setVariable(word);
 				break;
 			case EQ:
-				inp.setLineNo(i);
 				i++;
 				readRightHandSide(in, inp);
 				inp = new InputString();
 				break;
 			case QM:
-				inp.setLineNo(i);
 				i++;
 				inp.setLoop(true);
 				readLoopCondition(in, inp);
@@ -90,7 +87,7 @@ public class LP1L4 {
 					inp.setValue(new Num(exp.toString()));
 					inp.setAssgn(true);
 				} else {
-					inp.setInfixExpression(exp.toString());
+					inp.setPostfixExpression(ShuntingYard.infixToPostfix(exp.toString()));
 					inp.setExpression(true);
 				}
 				inputArray.add(inp);

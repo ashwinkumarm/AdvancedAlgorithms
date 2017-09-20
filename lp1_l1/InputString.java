@@ -4,9 +4,7 @@ public class InputString {
 
 	String variable = "";
 	String label = "";
-	int lineNo = -1;
 	String postfixExpression = "";
-	String infixExpression = "";
 	Num value;
 	boolean isAssgn;
 	boolean isLoop;
@@ -36,19 +34,12 @@ public class InputString {
 	InputString(InputString exp) {
 		this.variable = exp.variable;
 		this.label = exp.label;
-		this.lineNo = exp.lineNo;
-		this.infixExpression = exp.infixExpression;
-		this.postfixExpression = infixToPostfix(exp.infixExpression);
 		this.isAssgn = exp.isAssgn;
 		this.isLoop = exp.isLoop;
 		this.isExpression = exp.isExpression;
 		this.value = exp.value;
 	}
 
-	public String infixToPostfix(String infixExp) {
-		return postfixExpression = ShuntingYard.infixToPostfix(infixExp.toString());
-
-	}
 
 	public String getVariable() {
 		return variable;
@@ -66,14 +57,6 @@ public class InputString {
 		this.label = label;
 	}
 
-	public int getLineNo() {
-		return lineNo;
-	}
-
-	public void setLineNo(int lineNo) {
-		this.lineNo = lineNo;
-	}
-
 
 	public String getPostfixExpression() {
 		return postfixExpression;
@@ -81,14 +64,6 @@ public class InputString {
 
 	public void setPostfixExpression(String postfixExpression) {
 		this.postfixExpression = postfixExpression;
-	}
-
-	public String getInfixExpression() {
-		return infixExpression;
-	}
-
-	public void setInfixExpression(String infixExpression) {
-		this.infixExpression = infixExpression;
 	}
 
 	public boolean isAssgn() {
