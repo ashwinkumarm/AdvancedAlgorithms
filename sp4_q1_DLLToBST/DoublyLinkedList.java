@@ -105,7 +105,13 @@ public class DoublyLinkedList<T> implements Iterable<T> {
 		head.next = sortedListToBST(size); // Assign root of the BST as next the
 											// dummy header
 	}
-
+	
+	/**
+	 * Recursive function to convert a Dll in to BST
+	 * 
+	 * @param n: int : nnumber of elements in dll
+	 * @return :Entry<T> : root of the BST
+	 */
 	Entry<T> sortedListToBST(int n) {
 		if (n <= 0) // Base condition
 			return null;
@@ -134,6 +140,13 @@ public class DoublyLinkedList<T> implements Iterable<T> {
 			head = head.next.prev;
 	}
 
+	/**
+	 * Recursive function to convert a BST int DLL
+	 * 
+	 * 
+	 * @param : Entry<T> :root of the BST whose left and right subtree are coverted into Dll 
+	 * @return :Entry<T> : root of the BST
+	 */
 	Entry<T> BSTtoSortedList(Entry<T> root) {
 
 		if (root == null) {
