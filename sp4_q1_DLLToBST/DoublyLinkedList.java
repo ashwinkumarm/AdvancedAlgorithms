@@ -64,7 +64,7 @@ public class DoublyLinkedList<T> implements Iterable<T> {
 				throw new NoSuchElementException();
 			}
 			cursor.prev.next = cursor.next;
-			
+
 			// Handle case when tail of a list is deleted
 			if (cursor == list.tail) {
 				list.tail = cursor.prev;
@@ -100,30 +100,75 @@ public class DoublyLinkedList<T> implements Iterable<T> {
 
 		System.out.println();
 	}
-	
+
 	void sortedListToBST() {
-		head.next = sortedListToBST(size); //Assign root of the BST as next the dummy header
+		head.next = sortedListToBST(size); // Assign root of the BST as next the
+											// dummy header
 	}
-	
-	Entry<T> sortedListToBST(int n)
-    {
-        if (n <= 0)        //Base condition
-            return null;
- 
-        /* Recursively construct the left subtree */
-        Entry<T> left = sortedListToBST(n / 2);
-        Entry<T> root = head.next; // the middle element because the root in each sub tree construction
-        root.prev = left;
-        head.next = head.next.next; //update the header to the next element in the list
-        
-        /*Recursively construct the right subtree by passing the remaining number of elements left
-         * constructing the left subtree and the root
-         */
-        root.next = sortedListToBST(n - n / 2 - 1);
- 
-        return root;
-    }
-	
+
+	Entry<T> sortedListToBST(int n) {
+		if (n <= 0) // Base condition
+			return null;
+
+		/* Recursively construct the left subtree */
+		Entry<T> left = sortedListToBST(n / 2);
+		Entry<T> root = head.next; // the middle element because the root in
+									// each sub tree construction
+		root.prev = left;
+		head.next = head.next.next; // update the header to the next element in
+									// the list
+
+		/*
+		 * Recursively construct the right subtree by passing the remaining
+		 * number of elements left constructing the left subtree and the root
+		 */
+		root.next = sortedListToBST(n - n / 2 - 1);
+
+		return root;
+	}
+
+	void BSTtoSortedList() {
+		BSTtoSortedList(head.next);
+		while (head.next.prev != null) // change the header from root of BST to
+										// start of Dll
+			head = head.next.prev;
+	}
+
+	Entry<T> BSTtoSortedList(Entry<T> root) {
+
+		if (root == null) {
+			return null;
+		}
+
+		/* recursively convert the left subtree to DLL and connect last element
+		 * to current root
+		 */
+		if (root.prev != null) {
+
+			Entry<T> prev = BSTtoSortedList(root.prev);
+			while (prev.next != null) {
+				prev = prev.next;
+			}
+			prev.next = root;
+			root.prev = prev;
+		}
+		
+		/* recursively convert right subtree to DLL and connect root to the
+		 * first element
+		 */
+		if (root.next != null) {
+
+			Entry<T> right = BSTtoSortedList(root.next);
+			while (right.prev != null) {
+				right = right.prev;
+			}
+			right.prev = root;
+			root.next = right;
+		}
+
+		return root;
+	}
+
 	public static void main(String[] args) throws NoSuchElementException {
 		int n = 4;
 		if (args.length > 0) {
@@ -158,6 +203,7 @@ public class DoublyLinkedList<T> implements Iterable<T> {
 		}
 		lst.printList();
 		lst.sortedListToBST();
+		lst.BSTtoSortedList();
 		lst.printList();
 	}
 
