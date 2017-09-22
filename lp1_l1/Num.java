@@ -12,9 +12,9 @@ import java.util.LinkedList;
  *
  */
 public class Num implements Comparable<Num> {
-	static long defaultBase = 10000;
+	static long defaultBase = 1000;
 	static long base = defaultBase;
-	static Num TEN = new Num(10L);
+	//static Num TEN = new Num(10L);
 	static Num ZERO = new Num(0L);
 	static Num ONE = new Num(1L);
 	static Num TWO = new Num(2L);
@@ -65,7 +65,7 @@ public class Num implements Comparable<Num> {
 		// Convert a number into a number of given base
 		Num num = new Num(ZERO_LONG);
 		for (int i = cursor; i < len; i++)
-			num = add(product(num, TEN), new Num(Character.getNumericValue(inputDigits[i])));
+			num = add(product(num, new Num(10L)), new Num(Character.getNumericValue(inputDigits[i])));
 		this.digits = num.digits;
 	}
 

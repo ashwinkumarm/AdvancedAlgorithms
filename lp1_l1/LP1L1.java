@@ -17,7 +17,7 @@ public class LP1L1 {
 	public static void main(String[] args) {
 		
 		Num x = new Num("8999909");
-		Num y = new Num("200");
+		Num y = new Num("-200");
 		System.out.println(x);
 		System.out.println(y);
 		//System.out.println(Num.product(x, y));
