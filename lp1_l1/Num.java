@@ -8,9 +8,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * This class performs the arithmetic operations for the given numbers in any base ranging from 2 to 10000
- * Operations: Addition, Subtraction,Multiplication,Exponentiation, printList
- * 
+ * This class performs the arithmetic operations for the given numbers in any
+ * base ranging from 2 to 10000 Operations: Addition,
+ * Subtraction,Multiplication,Exponentiation, printList
+ *
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
@@ -27,11 +28,12 @@ public class Num implements Comparable<Num> {
 	static long TEN_LONG = 10L;
 	boolean isNegative = false;
 	/* Start of Level 1 */
-	//LinkedList to store the digits of a given number
+	// LinkedList to store the digits of a given number
 	LinkedList<Long> digits = new LinkedList<>();
 
 	/**
 	 * Convert the string to a Linkedlist of Num type for the given base
+	 *
 	 * @param s
 	 */
 	Num(String s) {
@@ -39,7 +41,7 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 *Helper function for the above constructor
+	 * Helper function for the above constructor
 	 *
 	 * @param s
 	 */
@@ -72,7 +74,7 @@ public class Num implements Comparable<Num> {
 		if (cursor == len) {
 			return;
 		}
-		//Convert a number into a number of given base
+		// Convert a number into a number of given base
 		Num num = new Num(ZERO_LONG);
 		for (int i = cursor; i < len; i++)
 			num = add(product(num, TEN), new Num(Character.getNumericValue(inputDigits[i])));
@@ -80,7 +82,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Converts the long integer into a Linkedlist of Num type for the given base
+	 * Converts the long integer into a Linkedlist of Num type for the given
+	 * base
+	 *
 	 * @param x
 	 */
 	Num(long x) {
@@ -102,12 +106,14 @@ public class Num implements Comparable<Num> {
 			x /= userBase;
 		}
 	}
-	
-	
+
 	/**
 	 * Adds the two numbers of Num type for the given base
-	 * @param a :First Operand
-	 * @param b :Second Operand
+	 *
+	 * @param a
+	 *            :First Operand
+	 * @param b
+	 *            :Second Operand
 	 * @return
 	 */
 	static Num add(Num a, Num b) {
@@ -117,6 +123,7 @@ public class Num implements Comparable<Num> {
 	/**
 	 * Adds the two numbers of Num type for the given base(Helper function)
 	 * Achieved this using method overloading
+	 *
 	 * @param a
 	 * @param b
 	 * @param baseForAdd
@@ -138,6 +145,7 @@ public class Num implements Comparable<Num> {
 
 	/**
 	 * Helper function to perform addition
+	 *
 	 * @param a
 	 * @param b
 	 * @param result
@@ -188,6 +196,7 @@ public class Num implements Comparable<Num> {
 
 	/**
 	 * Performs the subtraction of two numbers of Num type for the given base
+	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -209,6 +218,7 @@ public class Num implements Comparable<Num> {
 
 	/**
 	 * Helper function to perform subtraction
+	 *
 	 * @param a
 	 * @param b
 	 * @param result
@@ -252,7 +262,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Trim(Delete) the zeros from the most significant part for the given number
+	 * Trim(Delete) the zeros from the most significant part for the given
+	 * number
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -265,8 +277,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Performs the left shift operation
-	 * Adds N zeros to the least significant part of the given number
+	 * Performs the left shift operation Adds N zeros to the least significant
+	 * part of the given number
+	 *
 	 * @param a
 	 * @param N
 	 * @return
@@ -281,8 +294,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Performs the right shift operation
-	 * Removes N digits from the most significant part of the given number
+	 * Performs the right shift operation Removes N digits from the most
+	 * significant part of the given number
+	 *
 	 * @param a
 	 * @param N
 	 * @return
@@ -300,6 +314,7 @@ public class Num implements Comparable<Num> {
 
 	/**
 	 * Makes a copy of the given number
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -314,22 +329,21 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Performs the multiplication of two given numbers using Karatsuba algorithm
+	 * Performs the multiplication of two given numbers using Karatsuba
+	 * algorithm
+	 *
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	static Num product(Num a, Num b) {
-		//a.isNegative = false;
-		//b.isNegative = false;
-		Num result = karatsubaMultiplication(a, b);
-		return result;
+		return karatsubaMultiplication(a, b);
 	}
 
 	static Num multiply1(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
 		result.isNegative = a.isNegative ^ b.isNegative;
-		
+
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
 
@@ -361,8 +375,8 @@ public class Num implements Comparable<Num> {
 
 	static Num multiply(Num a, Num b) {
 		Num product = new Num(ZERO_LONG);
-		//product.isNegative = a.isNegative ^ b.isNegative;
-		
+		// product.isNegative = a.isNegative ^ b.isNegative;
+
 		if (a.getNumberOfDigits() > b.getNumberOfDigits()) {
 			Num c = a;
 			a = b;
@@ -378,6 +392,7 @@ public class Num implements Comparable<Num> {
 
 	/**
 	 * Performs the Karatsuba multiplication by recursively dividing the numbers
+	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -392,7 +407,7 @@ public class Num implements Comparable<Num> {
 		}
 
 		m = (m / 2) + (m % 2);
-		//Divides the two operands into low parts and high parts
+		// Divides the two operands into low parts and high parts
 		Num aHigh = rightShift(a, m);
 		Num aLow = subtract(a, leftShift(aHigh, m));
 		Num bHigh = rightShift(b, m);
@@ -406,9 +421,11 @@ public class Num implements Comparable<Num> {
 	}
 
 	// Use divide and conquer
-	
+
 	/**
-	 * Performs the exponent operation of Num type base and long integer type exponent using multiplication
+	 * Performs the exponent operation of Num type base and long integer type
+	 * exponent using multiplication
+	 *
 	 * @param a
 	 * @param n
 	 * @return
@@ -432,6 +449,7 @@ public class Num implements Comparable<Num> {
 
 	/**
 	 * Divides the magnitude of the given number of any base by 2
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -462,7 +480,8 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Performs the division operation using binary search between 1 and a/2  
+	 * Performs the division operation using binary search between 1 and a/2
+	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -496,7 +515,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Performs mod operation a-(a/b)*b which returns the remainder of the division
+	 * Performs mod operation a-(a/b)*b which returns the remainder of the
+	 * division
+	 *
 	 * @param a
 	 * @param b
 	 * @return
@@ -508,8 +529,9 @@ public class Num implements Comparable<Num> {
 
 	// Use divide and conquer
 	/**
-	 * Performs the exponent operation of Num type base and Num type exponent using multiplication
-	 * s = shift(n) by base B a^n = (a^s)^base * x^a0
+	 * Performs the exponent operation of Num type base and Num type exponent
+	 * using multiplication s = shift(n) by base B a^n = (a^s)^base * x^a0
+	 *
 	 * @param a
 	 * @param n
 	 * @return
@@ -524,7 +546,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Finds the square root for the given number using binary search between x*x and (x+1)*(x+1)
+	 * Finds the square root for the given number using binary search between
+	 * x*x and (x+1)*(x+1)
+	 *
 	 * @param a
 	 * @return
 	 */
@@ -573,8 +597,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Compares the magnitude of the two given numbers
-	 * Returns 1 if a>b, 0 if a==b, else -1 if a<b
+	 * Compares the magnitude of the two given numbers Returns 1 if a>b, 0 if
+	 * a==b, else -1 if a<b
+	 *
 	 * @param other
 	 * @return
 	 */
@@ -602,9 +627,13 @@ public class Num implements Comparable<Num> {
 	// then the output is "100: 65 9 1"
 	void printList() {
 		System.out.print(base + ": ");
-		Iterator<Long> iterator = digits.iterator();
-		while (iterator.hasNext())
-			System.out.print(iterator.next() + " ");
+		if (digits.isEmpty())
+			System.out.print(0);
+		else {
+			Iterator<Long> iterator = digits.iterator();
+			while (iterator.hasNext())
+				System.out.print(iterator.next() + " ");
+		}
 	}
 
 	// Return number to a string in base 10
@@ -622,8 +651,7 @@ public class Num implements Comparable<Num> {
 		base = 10;
 		defaultBase = 10;
 		while (iterator.hasNext()) {
-			sum = add(sum, product(new Num(iterator.next(), TEN_LONG), power(base10, i++)),
-					TEN_LONG);
+			sum = add(sum, product(new Num(iterator.next(), TEN_LONG), power(base10, i++)), TEN_LONG);
 		}
 		base = oldbase;
 		defaultBase = olddefaultbase;
@@ -649,6 +677,7 @@ public class Num implements Comparable<Num> {
 
 	/**
 	 * Returns the number of digits for a given number
+	 *
 	 * @return
 	 */
 	public int getNumberOfDigits() {

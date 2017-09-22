@@ -13,7 +13,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 /**
  * This class performs infix to postfix and postfix evaluation operations
- * 
+ *
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
@@ -31,7 +31,7 @@ public class LP1L4 {
 	static Num[] variableMap = new Num[26];
 	static HashMap<Integer, Integer> LineNoForLabel = new HashMap<>();
 
-	
+
 	/**
 	 * Performs the evaluation of postfix expression using stack
 	 * @param expression
@@ -94,7 +94,7 @@ public class LP1L4 {
 
 		return operandStack.pop();
 	}
-	
+
 	/**
 	 * Return whether the given operator is in the following list of operators
 	 * Add,subtract, multiply,divide,mod,exponent,square root
@@ -117,6 +117,7 @@ public class LP1L4 {
 			if (i == inputArray.size() - 1 && inputLine.getVariable().length() == 0) {
 				Num r = variableMap[inputArray.get(i - 1).getVariable().charAt(0) - 'a'];
 				r.printList();
+				break;
 			}
 			// Process Level 3 statements
 			if (inputLine.getLabel() == -1) {
@@ -231,7 +232,7 @@ public class LP1L4 {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param in
 	 * @param inp
 	 * @throws Exception
