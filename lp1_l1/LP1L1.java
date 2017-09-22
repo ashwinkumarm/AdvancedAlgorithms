@@ -2,7 +2,19 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1
 
 import java.math.BigInteger;
 
+/**
+ * This class contains Main method to test LP1 Level 1
+ * Operations: Addition, Subtraction,Multiplication,Division,Exponentiation(Num,long)
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class LP1L1 {
+	
+	/**
+	 * Main method
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		// BigInteger b = new BigInteger();
 		Num x = new Num("899990");

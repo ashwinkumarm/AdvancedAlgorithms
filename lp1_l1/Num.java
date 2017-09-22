@@ -7,6 +7,13 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * This class performs the arithmetic operations for the given numbers in any base ranging from 2 to 10000
+ * Operations: Addition, Subtraction,Multiplication,Exponentiation, printList
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class Num implements Comparable<Num> {
 	static long defaultBase = 10; // This can be changed to what you want it to
 									// be.
@@ -20,6 +27,7 @@ public class Num implements Comparable<Num> {
 	static long TEN_LONG = 10L;
 	boolean isNegative = false;
 	/* Start of Level 1 */
+	//LinkedList to store the digits of a given number
 	LinkedList<Long> digits = new LinkedList<>();
 
 	/**

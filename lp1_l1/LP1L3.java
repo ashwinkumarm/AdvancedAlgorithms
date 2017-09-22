@@ -6,8 +6,14 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1
 import java.util.Scanner;
 import java.util.Stack;
 
+/**
+ * This class performs postfix expression evaluation
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class LP1L3 {
-
+	//List of constants
 	private static final String ADD = "+";
 	private static final String SUBTRACT = "-";
 	private static final String MULTIPLY = "*";
@@ -17,11 +23,15 @@ public class LP1L3 {
 	private static final String SQUARE_ROOT = "|";
 	private static final String SEMI_COLON = ";";
 	private static final String EQUAL = "=";
-
-	// private static HashMap<String, Num> variableMap1 = new HashMap<>();
+	
+	//Num array to store the variables [a-z]
 	private static Num[] variableMap = new Num[26];
 
-	// Create Class
+	/**
+	 * Performs the evaluation of postfix expression using stack
+	 * @param expression
+	 * @return
+	 */
 	public static Num postfixEvaluation(String expression) {
 
 		Stack<Num> operandStack = new Stack<Num>();
@@ -31,7 +41,7 @@ public class LP1L3 {
 		for (int i = 0; i < len; i++) {
 			token = expArray[i];
 			if (!isOperator(token)) {
-				if (!Character.isLetter(token.charAt(0))) { // *
+				if (!Character.isLetter(token.charAt(0))) {
 					operandStack.push(new Num(token));
 				} else {
 					int index = token.charAt(0) - 'a';
@@ -81,11 +91,21 @@ public class LP1L3 {
 		return operandStack.pop();
 	}
 
+	/**
+	 * Return whether the given operator is in the following list of operators
+	 * Add,subtract, multiply,divide,mod,exponent,square root
+	 * @param token
+	 * @return
+	 */
 	private static boolean isOperator(String token) {
 		return token.equals(ADD) || token.equals(SUBTRACT) || token.equals(MULTIPLY) || token.equals(DIVIDE)
 				|| token.equals(MOD) || token.equals(POWER) || token.equals(SQUARE_ROOT);
 	}
 
+	/**
+	 * Reads the given expression,parses the same and performs the postfix evaluation
+	 * @param in
+	 */
 	private static void readExpression(Scanner in) {
 		int index = -1;
 		String variable = null;
@@ -126,6 +146,10 @@ public class LP1L3 {
 		in.close();
 	}
 
+	/**
+	 * Main method for testing
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
 		// LP1L3 x = new LP1L3();
