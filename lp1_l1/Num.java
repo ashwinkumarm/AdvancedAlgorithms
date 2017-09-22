@@ -12,9 +12,8 @@ import java.util.LinkedList;
  *
  */
 public class Num implements Comparable<Num> {
-	static long defaultBase = 10; // This can be changed to what you want it to
-									// be.
-	static long base = defaultBase; // Change as needed
+	static long defaultBase = 10000;
+	static long base = defaultBase;
 	static Num TEN = new Num(10L);
 	static Num ZERO = new Num(0L);
 	static Num ONE = new Num(1L);
@@ -23,27 +22,19 @@ public class Num implements Comparable<Num> {
 	static long ONE_LONG = 1L;
 	static long TEN_LONG = 10L;
 	boolean isNegative = false;
+
 	/* Start of Level 1 */
+
 	// LinkedList to store the digits of a given number
 	LinkedList<Long> digits = new LinkedList<>();
-
-	/**
-	 * Convert the string to a Linkedlist of Num type for the given base
-	 *
-	 * @param s
-	 */
-	Num(String s) {
-		this(s, defaultBase);
-	}
 
 	/**
 	 * Helper function for the above constructor
 	 *
 	 * @param s
 	 */
-	Num(String s, long userBase) {
+	Num(String s) {
 		int cursor = 0;
-		base = userBase;
 
 		char[] inputDigits = s.toCharArray();
 
@@ -70,6 +61,7 @@ public class Num implements Comparable<Num> {
 		if (cursor == len) {
 			return;
 		}
+
 		// Convert a number into a number of given base
 		Num num = new Num(ZERO_LONG);
 		for (int i = cursor; i < len; i++)
@@ -78,42 +70,19 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Converts the long integer into a Linkedlist of Num type for the given
-	 * base
-	 *
-	 * @param x
-	 */
-	Num(long x) {
-		this(x, defaultBase);
-	}
-
-	/**
 	 * Helper function for the above 'long' constructor
 	 *
 	 * @param x
 	 */
-	Num(long x, long userBase) {
+	Num(long x) {
 		if (x < 0) {
 			isNegative = true;
 			x = -x;
 		}
 		while (x != ZERO_LONG) {
-			digits.add(x % userBase);
-			x /= userBase;
+			digits.add(x % base);
+			x /= base;
 		}
-	}
-
-	/**
-	 * Adds the two numbers of Num type for the given base
-	 *
-	 * @param a
-	 *            :First Operand
-	 * @param b
-	 *            :Second Operand
-	 * @return
-	 */
-	static Num add(Num a, Num b) {
-		return add(a, b, base);
 	}
 
 	/**
@@ -125,11 +94,11 @@ public class Num implements Comparable<Num> {
 	 * @param baseForAdd
 	 * @return
 	 */
-	static Num add(Num a, Num b, long baseForAdd) {
+	static Num add(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
 		if (a.isNegative == b.isNegative) {
 			result.isNegative = a.isNegative;
-			return add(a, b, result, baseForAdd);
+			return add(a, b, result);
 		} else {
 			int cmp = a.compareMag(b);
 			Num resultMag = (cmp > 0 ? subtract(a, b, result) : subtract(b, a, result));
@@ -148,15 +117,15 @@ public class Num implements Comparable<Num> {
 	 * @param baseForAdd
 	 * @return
 	 */
-	static Num add(Num a, Num b, Num result, long baseForAdd) {
+	static Num add(Num a, Num b, Num result) {
 		long carry = 0;
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
 		while (aIterator.hasNext() && bIterator.hasNext()) {
 			long sum = aIterator.next() + bIterator.next() + carry;
-			if (sum >= baseForAdd) {
+			if (sum >= base) {
 				carry = 1;
-				sum -= baseForAdd;
+				sum -= base;
 			} else {
 				carry = 0;
 			}
@@ -164,9 +133,9 @@ public class Num implements Comparable<Num> {
 		}
 		while (aIterator.hasNext()) {
 			long sum = aIterator.next() + carry;
-			if (sum >= baseForAdd) {
+			if (sum >= base) {
 				carry = 1;
-				sum -= baseForAdd;
+				sum -= base;
 			} else {
 				carry = 0;
 			}
@@ -174,9 +143,9 @@ public class Num implements Comparable<Num> {
 		}
 		while (bIterator.hasNext()) {
 			long sum = bIterator.next() + carry;
-			if (sum >= baseForAdd) {
+			if (sum >= base) {
 				carry = 1;
-				sum -= baseForAdd;
+				sum -= base;
 			} else {
 				carry = 0;
 			}
@@ -201,7 +170,7 @@ public class Num implements Comparable<Num> {
 		Num result = new Num(ZERO_LONG);
 		if (a.isNegative != b.isNegative) {
 			result.isNegative = a.isNegative;
-			return add(a, b, result, base);
+			return add(a, b, result);
 		} else {
 			int cmp = a.compareMag(b);
 			if (cmp == 0)
@@ -333,12 +302,18 @@ public class Num implements Comparable<Num> {
 	 * @return
 	 */
 	static Num product(Num a, Num b) {
-		return karatsubaMultiplication(a, b);
+		Num result = karatsubaMultiplication(a, b);
+		result.isNegative = a.isNegative ^ b.isNegative;
+		return result;
 	}
 
-	static Num multiply1(Num a, Num b) {
+	/**
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	static Num multiplyGradeSchool(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
-		result.isNegative = a.isNegative ^ b.isNegative;
 
 		Iterator<Long> aIterator = a.digits.iterator();
 		Iterator<Long> bIterator = b.digits.iterator();
@@ -371,7 +346,6 @@ public class Num implements Comparable<Num> {
 
 	static Num multiply(Num a, Num b) {
 		Num product = new Num(ZERO_LONG);
-		// product.isNegative = a.isNegative ^ b.isNegative;
 
 		if (a.getNumberOfDigits() > b.getNumberOfDigits()) {
 			Num c = a;
@@ -398,8 +372,8 @@ public class Num implements Comparable<Num> {
 		long len2 = b.getNumberOfDigits();
 		long m = Math.min(len1, len2);
 
-		if (m <= 1) {
-			return multiply(a, b);
+		if (m <= 10) {
+			return multiplyGradeSchool(a, b);
 		}
 
 		m = (m / 2) + (m % 2);
@@ -619,9 +593,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Outputs the number in the format "base: elements of list ..." For example, if
-	 * base=100, and the number stored corresponds to 10965, then the output is
-	 * "100: 65 9 1"
+	 * Outputs the number in the format "base: elements of list ..." For
+	 * example, if base=100, and the number stored corresponds to 10965, then
+	 * the output is "100: 65 9 1"
 	 */
 	void printList() {
 		System.out.print(base + ": ");
@@ -642,20 +616,18 @@ public class Num implements Comparable<Num> {
 		if (isNegative == true)
 			sb.append('-');
 		Iterator<Long> iterator = digits.iterator();
-		Num sum = new Num(0L, TEN_LONG);
-		long i = 0;
-		Num base10 = new Num(base, TEN_LONG);
-		long oldbase = base, olddefaultbase = defaultBase;
+		long oldbase = base;
 		base = 10;
-		defaultBase = 10;
+		Num sum = new Num(0L);
+		long i = 0;
+		Num base10 = new Num(oldbase);
 		while (iterator.hasNext()) {
-			sum = add(sum, product(new Num(iterator.next(), TEN_LONG), power(base10, i++)), TEN_LONG);
+			sum = add(sum, product(new Num(iterator.next()), power(base10, i++)));
 		}
-		base = oldbase;
-		defaultBase = olddefaultbase;
 		Iterator<Long> iteratorBaseTen = sum.digits.descendingIterator();
 		while (iteratorBaseTen.hasNext())
 			sb.append(iteratorBaseTen.next().toString());
+		base = oldbase;
 		return sb.toString();
 	}
 
