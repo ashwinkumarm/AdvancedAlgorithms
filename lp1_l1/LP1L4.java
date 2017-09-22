@@ -11,10 +11,14 @@ import java.util.Stack;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Tokenizer;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Tokenizer.Token;
 
+/**
+ * This class performs infix to postfix and postfix evaluation operations
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class LP1L4 {
-
-	// put in constant file. just adding here to check if its working
-
+	//List of constants
 	private static final String ADD = "+";
 	private static final String SUBTRACT = "-";
 	private static final String MULTIPLY = "*";
@@ -27,30 +31,12 @@ public class LP1L4 {
 	static Num[] variableMap = new Num[26];
 	static HashMap<Integer, Integer> LineNoForLabel = new HashMap<>();
 
-	// the jump can go backward or forward. Since forward is possible, we need
-	// to
-	// read the entire inp first. Read the entire inp
-	// store t n ob array. obj class will have varible to store the entire infix
-	// expression. helper methods for converting and evaluating.
-	// Have variable in the class to say if its a just a assign, expression or
-	// loop
-	// conditions
-	// Have hashmap for storing label and line number too.
-
-	// Read the entire input again from first line. If t s not a loop condition,
-	// then just update the values upto the specific line and
-	// move to the next line. For updating we need to update for the specific
-	// object
-	// plus we can have an num array like in lp3 and keep updating
-	// so that referencing the value is easier.
-	// if its a loop conditon, we can have an helper function which iterates
-	// from
-	// specific label, retrieved from hashmap and it runs from the specific
-	// line number to the line number of the current line. and returns the value
-	// of
-	// loop variable. Its basically a loop where that value is greater than
-	// zero.
-
+	
+	/**
+	 * Performs the evaluation of postfix expression using stack
+	 * @param expression
+	 * @return
+	 */
 	public static Num postfixEvaluation(String expression) {
 
 		Stack<Num> operandStack = new Stack<Num>();
@@ -108,12 +94,21 @@ public class LP1L4 {
 
 		return operandStack.pop();
 	}
-
+	
+	/**
+	 * Return whether the given operator is in the following list of operators
+	 * Add,subtract, multiply,divide,mod,exponent,square root
+	 * @param token
+	 * @return
+	 */
 	private static boolean isOperator(String token) {
 		return token.equals(ADD) || token.equals(SUBTRACT) || token.equals(MULTIPLY) || token.equals(DIVIDE)
 				|| token.equals(MOD) || token.equals(POWER) || token.equals(SQUARE_ROOT);
 	}
 
+	/**
+	 * Evaluate the statements from the input based on the labels and assign the values to the variables
+	 */
 	static void evaluateStatements() {
 		for (int i = 0; i < inputArray.size(); i++) {
 			InputString inputLine = inputArray.get(i);
@@ -123,7 +118,7 @@ public class LP1L4 {
 				Num r = variableMap[inputArray.get(i - 1).getVariable().charAt(0) - 'a'];
 				r.printList();
 			}
-			// Level 3 statement
+			// Process Level 3 statements
 			if (inputLine.getLabel() == -1) {
 				if (inputLine.isExpression) {
 					Num value = postfixEvaluation(inputLine.getPostfixExpression());
@@ -138,7 +133,7 @@ public class LP1L4 {
 				}
 
 			} else {
-				// Level 4 statements
+				// Process Level 4 statements
 				if (inputLine.isLoop) {
 					if (variableMap[index].isZero()) {
 						if (inputLine.getZr() != -1) {
@@ -160,6 +155,11 @@ public class LP1L4 {
 		}
 	}
 
+	/**
+	 * Parses the given statements based on the tokens from the tokenizer class
+	 * @param in
+	 * @throws Exception
+	 */
 	static void formInputArray(Scanner in) throws Exception {
 		int i = 0;
 		InputString inp = new InputString();
@@ -200,6 +200,12 @@ public class LP1L4 {
 		}
 	}
 
+	/**
+	 * Performs the parsing of the right hand side of the variable containing the expression
+	 * @param in
+	 * @param inp
+	 * @throws Exception
+	 */
 	public static void readRightHandSide(Scanner in, InputString inp) throws Exception {
 		StringBuilder exp = new StringBuilder();
 		while (in.hasNext()) {
@@ -224,6 +230,12 @@ public class LP1L4 {
 		}
 	}
 
+	/**
+	 * 
+	 * @param in
+	 * @param inp
+	 * @throws Exception
+	 */
 	public static void readLoopCondition(Scanner in, InputString inp) throws Exception {
 		StringBuilder exp = new StringBuilder();
 		while (in.hasNext()) {
@@ -246,10 +258,15 @@ public class LP1L4 {
 
 	}
 
+	/**
+	 * Main method for testing
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		Scanner in;
 		if (args.length > 0) {
-			Num.defaultBase = Integer.parseInt(args[0]);
+			Num.base = Integer.parseInt(args[0]);
 			// Use above base for all numbers (except I/O, which is in base 10)
 		}
 
