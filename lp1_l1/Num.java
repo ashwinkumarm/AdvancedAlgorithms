@@ -1,7 +1,3 @@
-//Starter code for lp1.
-
-//Change following line to your group number
-//Changed type of base to long: 1:15 PM, 2017-09-08.
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp1_l1;
 
 import java.util.Iterator;
@@ -622,9 +618,11 @@ public class Num implements Comparable<Num> {
 		return 0;
 	}
 
-	// Output using the format "base: elements of list ..."
-	// For example, if base=100, and the number stored corresponds to 10965,
-	// then the output is "100: 65 9 1"
+	/**
+	 * Outputs the number in the format "base: elements of list ..." For example, if
+	 * base=100, and the number stored corresponds to 10965, then the output is
+	 * "100: 65 9 1"
+	 */
 	void printList() {
 		System.out.print(base + ": ");
 		if (digits.isEmpty())
