@@ -94,6 +94,7 @@ public class LP1L3 {
 	/**
 	 * Return whether the given operator is in the following list of operators
 	 * Add,subtract, multiply,divide,mod,exponent,square root
+	 * 
 	 * @param token
 	 * @return
 	 */
