@@ -16,15 +16,15 @@ public class LP1L2 {
      * @param args
      */
     public static void main(String[] args) {
-	Num x = new Num(999);
+	Num x = new Num("999");
 	Num y = new Num("8");
-	Num z = Num.add(x, y);
-	System.out.println(z);
+	/*Num z = Num.add(x, y);
+	System.out.println(z);*/
 	Num a = Num.power(x, y);
 	System.out.println(a);
 	System.out.println(Num.divide(x, y));
 	System.out.println(Num.mod(x, y));
 	System.out.println(Num.squareRoot(x));
-	z.printList();
+	//z.printList();
     }
 }

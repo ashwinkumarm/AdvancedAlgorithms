@@ -14,7 +14,7 @@ import java.util.LinkedList;
 public class Num implements Comparable<Num> {
 	static long defaultBase = 10000;
 	static long base = defaultBase;
-	static Num TEN = new Num(10L);
+	//static Num TEN = new Num(10L);
 	static Num ZERO = new Num(0L);
 	static Num ONE = new Num(1L);
 	static Num TWO = new Num(2L);
@@ -65,7 +65,7 @@ public class Num implements Comparable<Num> {
 		// Convert a number into a number of given base
 		Num num = new Num(ZERO_LONG);
 		for (int i = cursor; i < len; i++)
-			num = add(product(num, TEN), new Num(Character.getNumericValue(inputDigits[i])));
+			num = add(product(num, new Num(10L)), new Num(Character.getNumericValue(inputDigits[i])));
 		this.digits = num.digits;
 	}
 
@@ -106,6 +106,11 @@ public class Num implements Comparable<Num> {
 			return resultMag;
 		}
 
+	}
+	
+	static Num add1(Num a, Num b) {
+		Num result = new Num(ZERO_LONG);
+		return add(a,b,result);
 	}
 
 	/**
@@ -179,6 +184,11 @@ public class Num implements Comparable<Num> {
 			resultMag.isNegative = (cmp > 0 ? a.isNegative : !a.isNegative);
 			return resultMag;
 		}
+	}
+	
+	static Num subtract1(Num a, Num b) {
+		Num result = new Num(ZERO_LONG);
+		return subtract(a,b,result);
 	}
 
 	/**
@@ -356,22 +366,22 @@ public class Num implements Comparable<Num> {
 		long len2 = b.getNumberOfDigits();
 		long m = Math.min(len1, len2);
 
-		if (m <= 10) {
+		if (m <= 100) {
 			return multiplyGradeSchool(a, b);
 		}
 
 		m = (m / 2) + (m % 2);
 		// Divides the two operands into low parts and high parts
 		Num aHigh = rightShift(a, m);
-		Num aLow = subtract(a, leftShift(aHigh, m));
+		Num aLow = subtract1(a, leftShift(aHigh, m));
 		Num bHigh = rightShift(b, m);
-		Num bLow = subtract(b, leftShift(bHigh, m));
+		Num bLow = subtract1(b, leftShift(bHigh, m));
 
 		Num abLow = karatsubaMultiplication(aLow, bLow);
 		Num abHigh = karatsubaMultiplication(aHigh, bHigh);
-		Num abcd = karatsubaMultiplication(add(aLow, aHigh), add(bLow, bHigh));
+		Num abcd = karatsubaMultiplication(add1(aLow, aHigh), add1(bLow, bHigh));
 
-		return add(leftShift(abHigh, 2 * m), add(leftShift(subtract(subtract(abcd, abHigh), abLow), m), abLow));
+		return add1(leftShift(abHigh, 2 * m), add1(leftShift(subtract1(subtract1(abcd, abHigh), abLow), m), abLow));
 	}
 
 	// Use divide and conquer
@@ -454,11 +464,11 @@ public class Num implements Comparable<Num> {
 		Num p = ONE;
 		Num r = divideMagnitudeByTwo(a);
 		while (p.compareTo(r) != 1) {
-			result = divideMagnitudeByTwo(add(p, r));
+			result = divideMagnitudeByTwo(add1(p, r));
 			if (product(result, b).compareMag(a) == 1)
-				r = subtract(result, ONE);
-			else if (product(add(result, ONE), b).compareMag(a) != 1)
-				p = add(result, ONE);
+				r = subtract1(result, ONE);
+			else if (product(add1(result, ONE), b).compareMag(a) != 1)
+				p = add1(result, ONE);
 			else
 				break;
 		}
@@ -478,7 +488,7 @@ public class Num implements Comparable<Num> {
 	 * @return
 	 */
 	static Num mod(Num a, Num b) {
-		Num mod = subtract(a, product(divide(a, b), b));
+		Num mod = subtract1(a, product(divide(a, b), b));
 		return mod;
 	}
 
@@ -518,11 +528,11 @@ public class Num implements Comparable<Num> {
 		Num p = ONE;
 		Num r = divideMagnitudeByTwo(a);
 		while (p.compareTo(r) != 1) {
-			result = divideMagnitudeByTwo(add(p, r));
+			result = divideMagnitudeByTwo(add1(p, r));
 			if (product(result, result).compareMag(a) == 1)
-				r = subtract(result, ONE);
-			else if (product(add(result, ONE), add(result, ONE)).compareMag(a) != 1)
-				p = add(result, ONE);
+				r = subtract1(result, ONE);
+			else if (product(add1(result, ONE), add1(result, ONE)).compareMag(a) != 1)
+				p = add1(result, ONE);
 			else
 				break;
 		}

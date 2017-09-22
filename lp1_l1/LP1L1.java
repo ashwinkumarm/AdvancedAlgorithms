@@ -16,13 +16,11 @@ public class LP1L1 {
 	 */
 	public static void main(String[] args) {
 		
-		Num x = new Num("8999909");
-		Num y = new Num("200");
-		System.out.println(x);
-		System.out.println(y);
-		//System.out.println(Num.product(x, y));
-//		System.out.println(Num.add(x, y));
-//		System.out.println(Num.subtract(x, y));
+		Num x = new Num("-81999900643");
+		Num y = new Num("400");
+		System.out.println(Num.add(x, y));
+		System.out.println(Num.subtract(x, y));
+		System.out.println(Num.product(x, y));
 		System.out.println(Num.power(x, y));
 		x.printList();
 		y.printList();
