@@ -464,8 +464,6 @@ public class Num implements Comparable<Num> {
 		if (b.compareMag(a) == 1)
 			return result;
 
-		if (a.isNegative != b.isNegative)
-			result.isNegative = true;
 		if (b.compareMag(a) == 0)
 			return new Num(ONE_LONG);
 
@@ -480,6 +478,9 @@ public class Num implements Comparable<Num> {
 			else
 				break;
 		}
+
+		if (a.isNegative != b.isNegative)
+			result.isNegative = true;
 
 		return result;
 	}
