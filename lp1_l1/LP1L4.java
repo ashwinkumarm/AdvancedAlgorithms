@@ -273,8 +273,7 @@ public class LP1L4 {
 	public static void main(String[] args) throws Exception {
 		Scanner in;
 		if (args.length > 0) {
-			Num.base = Integer.parseInt(args[0]);
-			// Use above base for all numbers (except I/O, which is in base 10)
+			Num.base = Long.parseLong(args[0]);
 		}
 
 		in = new Scanner(System.in);

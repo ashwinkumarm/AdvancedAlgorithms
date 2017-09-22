@@ -13,7 +13,7 @@ import java.util.Stack;
  *
  */
 public class LP1L3 {
-	//List of constants
+	// List of constants
 	private static final String ADD = "+";
 	private static final String SUBTRACT = "-";
 	private static final String MULTIPLY = "*";
@@ -23,12 +23,13 @@ public class LP1L3 {
 	private static final String SQUARE_ROOT = "|";
 	private static final String SEMI_COLON = ";";
 	private static final String EQUAL = "=";
-	
-	//Num array to store the variables [a-z]
+
+	// Num array to store the variables [a-z]
 	private static Num[] variableMap = new Num[26];
 
 	/**
 	 * Performs the evaluation of postfix expression using stack
+	 * 
 	 * @param expression
 	 * @return
 	 */
@@ -104,7 +105,9 @@ public class LP1L3 {
 	}
 
 	/**
-	 * Reads the given expression,parses the same and performs the postfix evaluation
+	 * Reads the given expression,parses the same and performs the postfix
+	 * evaluation
+	 * 
 	 * @param in
 	 */
 	private static void readExpression(Scanner in) {
@@ -122,18 +125,17 @@ public class LP1L3 {
 				String word1;
 				while (in.hasNext()) {
 					word1 = in.next();
-					if (!word1.equals(SEMI_COLON)){
+					if (!word1.equals(SEMI_COLON)) {
 						expression.append(word1);
 						expression.append(" ");
-					}
-					else {
+					} else {
 						index = variable.charAt(0) - 'a';
 						if (expression.length() == 1) {
 							variableMap[index] = new Num(expression.toString());
-							System.out.print("\n"+variableMap[index]);
+							System.out.print("\n" + variableMap[index]);
 						} else {
 							variableMap[index] = postfixEvaluation(expression.toString());
-							System.out.print("\n"+variableMap[index]);
+							System.out.print("\n" + variableMap[index]);
 						}
 						break;
 					}
@@ -149,12 +151,11 @@ public class LP1L3 {
 
 	/**
 	 * Main method for testing
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
-		// LP1L3 x = new LP1L3();
-
 		readExpression(in);
 
 	}

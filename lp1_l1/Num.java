@@ -12,9 +12,8 @@ import java.util.LinkedList;
  *
  */
 public class Num implements Comparable<Num> {
-	static long defaultBase = 10000;
+	static long defaultBase = 100;
 	static long base = defaultBase;
-	//static Num TEN = new Num(10L);
 	static Num ZERO = new Num(0L);
 	static Num ONE = new Num(1L);
 	static Num TWO = new Num(2L);
@@ -86,8 +85,8 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Adds the two numbers of Num type for the given base(Helper function)
-	 * Achieved this using method overloading
+	 * Adds the two numbers of Num type for the given base(Helper function) Achieved
+	 * this using method overloading
 	 *
 	 * @param a
 	 * @param b
@@ -107,10 +106,17 @@ public class Num implements Comparable<Num> {
 		}
 
 	}
-	
-	static Num add1(Num a, Num b) {
+
+	/**
+	 * Adds only positive numbers
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	static Num addPositiveNos(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
-		return add(a,b,result);
+		return add(a, b, result);
 	}
 
 	/**
@@ -185,10 +191,17 @@ public class Num implements Comparable<Num> {
 			return resultMag;
 		}
 	}
-	
-	static Num subtract1(Num a, Num b) {
+
+	/**
+	 * Subtracts only positive numbers
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	static Num subtractPositiveNos(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
-		return subtract(a,b,result);
+		return subtract(a, b, result);
 	}
 
 	/**
@@ -237,8 +250,7 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Trim(Delete) the zeros from the most significant part for the given
-	 * number
+	 * Trim(Delete) the zeros from the most significant part for the given number
 	 *
 	 * @param a
 	 * @return
@@ -252,8 +264,8 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Performs the left shift operation Adds N zeros to the least significant
-	 * part of the given number
+	 * Performs the left shift operation Adds N zeros to the least significant part
+	 * of the given number
 	 *
 	 * @param a
 	 * @param N
@@ -269,8 +281,8 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Performs the right shift operation Removes N digits from the most
-	 * significant part of the given number
+	 * Performs the right shift operation Removes N digits from the most significant
+	 * part of the given number
 	 *
 	 * @param a
 	 * @param N
@@ -304,8 +316,7 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Performs the multiplication of two given numbers using Karatsuba
-	 * algorithm
+	 * Performs the multiplication of two given numbers using Karatsuba algorithm
 	 *
 	 * @param a
 	 * @param b
@@ -319,6 +330,7 @@ public class Num implements Comparable<Num> {
 
 	/**
 	 * Performs normal multiplication for the numbers with number of digits <=10
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
@@ -354,6 +366,7 @@ public class Num implements Comparable<Num> {
 		}
 		return result;
 	}
+
 	/**
 	 * Performs the Karatsuba multiplication by recursively dividing the numbers
 	 *
@@ -373,15 +386,16 @@ public class Num implements Comparable<Num> {
 		m = (m / 2) + (m % 2);
 		// Divides the two operands into low parts and high parts
 		Num aHigh = rightShift(a, m);
-		Num aLow = subtract1(a, leftShift(aHigh, m));
+		Num aLow = subtractPositiveNos(a, leftShift(aHigh, m));
 		Num bHigh = rightShift(b, m);
-		Num bLow = subtract1(b, leftShift(bHigh, m));
+		Num bLow = subtractPositiveNos(b, leftShift(bHigh, m));
 
 		Num abLow = karatsubaMultiplication(aLow, bLow);
 		Num abHigh = karatsubaMultiplication(aHigh, bHigh);
-		Num abcd = karatsubaMultiplication(add1(aLow, aHigh), add1(bLow, bHigh));
+		Num abcd = karatsubaMultiplication(addPositiveNos(aLow, aHigh), addPositiveNos(bLow, bHigh));
 
-		return add1(leftShift(abHigh, 2 * m), add1(leftShift(subtract1(subtract1(abcd, abHigh), abLow), m), abLow));
+		return addPositiveNos(leftShift(abHigh, 2 * m),
+				addPositiveNos(leftShift(subtractPositiveNos(subtractPositiveNos(abcd, abHigh), abLow), m), abLow));
 	}
 
 	// Use divide and conquer
@@ -464,11 +478,11 @@ public class Num implements Comparable<Num> {
 		Num p = ONE;
 		Num r = divideMagnitudeByTwo(a);
 		while (p.compareTo(r) != 1) {
-			result = divideMagnitudeByTwo(add1(p, r));
+			result = divideMagnitudeByTwo(addPositiveNos(p, r));
 			if (product(result, b).compareMag(a) == 1)
-				r = subtract1(result, ONE);
-			else if (product(add1(result, ONE), b).compareMag(a) != 1)
-				p = add1(result, ONE);
+				r = subtractPositiveNos(result, ONE);
+			else if (product(addPositiveNos(result, ONE), b).compareMag(a) != 1)
+				p = addPositiveNos(result, ONE);
 			else
 				break;
 		}
@@ -480,22 +494,21 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Performs mod operation a-(a/b)*b which returns the remainder of the
-	 * division
+	 * Performs mod operation a-(a/b)*b which returns the remainder of the division
 	 *
 	 * @param a
 	 * @param b
 	 * @return
 	 */
 	static Num mod(Num a, Num b) {
-		Num mod = subtract1(a, product(divide(a, b), b));
+		Num mod = subtractPositiveNos(a, product(divide(a, b), b));
 		return mod;
 	}
 
 	// Use divide and conquer
 	/**
-	 * Performs the exponent operation of Num type base and Num type exponent
-	 * using multiplication s = shift(n) by base B a^n = (a^s)^base * x^a0
+	 * Performs the exponent operation of Num type base and Num type exponent using
+	 * multiplication s = shift(n) by base B a^n = (a^s)^base * x^a0
 	 *
 	 * @param a
 	 * @param n
@@ -511,8 +524,8 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Finds the square root for the given number using binary search between
-	 * x*x and (x+1)*(x+1)
+	 * Finds the square root for the given number using binary search between x*x
+	 * and (x+1)*(x+1)
 	 *
 	 * @param a
 	 * @return
@@ -528,11 +541,11 @@ public class Num implements Comparable<Num> {
 		Num p = ONE;
 		Num r = divideMagnitudeByTwo(a);
 		while (p.compareTo(r) != 1) {
-			result = divideMagnitudeByTwo(add1(p, r));
+			result = divideMagnitudeByTwo(addPositiveNos(p, r));
 			if (product(result, result).compareMag(a) == 1)
-				r = subtract1(result, ONE);
-			else if (product(add1(result, ONE), add1(result, ONE)).compareMag(a) != 1)
-				p = add1(result, ONE);
+				r = subtractPositiveNos(result, ONE);
+			else if (product(addPositiveNos(result, ONE), addPositiveNos(result, ONE)).compareMag(a) != 1)
+				p = addPositiveNos(result, ONE);
 			else
 				break;
 		}
@@ -562,8 +575,8 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Compares the magnitude of the two given numbers Returns 1 if a>b, 0 if
-	 * a==b, else -1 if a<b
+	 * Compares the magnitude of the two given numbers Returns 1 if a>b, 0 if a==b,
+	 * else -1 if a<b
 	 *
 	 * @param other
 	 * @return
@@ -588,9 +601,9 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
-	 * Outputs the number in the format "base: elements of list ..." For
-	 * example, if base=100, and the number stored corresponds to 10965, then
-	 * the output is "100: 65 9 1"
+	 * Outputs the number in the format "base: elements of list ..." For example, if
+	 * base=100, and the number stored corresponds to 10965, then the output is
+	 * "100: 65 9 1"
 	 */
 	void printList() {
 		System.out.print(base + ": ");
@@ -601,6 +614,7 @@ public class Num implements Comparable<Num> {
 			while (iterator.hasNext())
 				System.out.print(iterator.next() + " ");
 		}
+		System.out.println();
 	}
 
 	// Return number to a string in base 10
