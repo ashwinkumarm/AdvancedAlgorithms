@@ -270,14 +270,47 @@ public class Num implements Comparable<Num> {
 		return karatsubaMultiplication(a, b);
 	}
 
+	static Num multiply1(Num a, Num b) {
+		Num result = new Num(ZERO_LONG);
+		result.isNegative = a.isNegative && b.isNegative;
+
+		Iterator<Long> aIterator = a.digits.iterator();
+		Iterator<Long> bIterator = b.digits.iterator();
+
+		long shift = 0;
+		while (bIterator.hasNext()) {
+			long carry = ZERO_LONG;
+			long digit;
+			Num partial = new Num(ZERO_LONG);
+			long bDigit = bIterator.next();
+
+			while (aIterator.hasNext()) {
+				digit = (bDigit * aIterator.next()) + carry;
+				carry = (long) Math.floor(digit / TEN_LONG);
+				partial.digits.add(digit % TEN_LONG);
+			}
+
+			if (carry > 0)
+				partial.digits.add(carry);
+
+			partial = leftShift(partial, shift);
+
+			// Append this partial product to the list
+			result = add(result, partial);
+			shift++;
+			aIterator = a.digits.iterator();
+		}
+		return result;
+	}
+
 	static Num multiply(Num a, Num b) {
 		Num product = new Num(ZERO_LONG);
 		if (a.getNumberOfDigits() > b.getNumberOfDigits()) {
 			Num c = a;
 			a = b;
 			b = c;
-
 		}
+
 		while (!a.isZero()) {
 			product = add(product, b);
 			a = subtract(a, new Num(ONE_LONG));
