@@ -2,6 +2,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.uti
 
 import java.util.Scanner;
 
+//Added question mark and colon to tokenizer class
 public class Tokenizer {
 	public enum Token {
 		VAR, NUM, OP, EQ, OPEN, CLOSE, EOL, QM, CL
@@ -27,13 +28,19 @@ public class Tokenizer {
 			return Token.EOL;
 		} else if (s.equals("?")) {
 			return Token.QM;
-		} else if (s.equals(":")){
+		} else if (s.equals(":")) {
 			return Token.CL;
-		}else { // Error
+		} else { // Error
 			throw new Exception("Unknown token: " + s);
 		}
 	}
 
+	/**
+	 * Main method for testing
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		Scanner in = new Scanner(System.in);
 		while (in.hasNext()) {
