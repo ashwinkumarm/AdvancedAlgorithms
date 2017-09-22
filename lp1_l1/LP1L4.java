@@ -14,7 +14,6 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 public class LP1L4 {
 
 	// put in constant file. just adding here to check if its working
-	static int base;
 
 	private static final String ADD = "+";
 	private static final String SUBTRACT = "-";
@@ -119,6 +118,11 @@ public class LP1L4 {
 		for (int i = 0; i < inputArray.size(); i++) {
 			InputString inputLine = inputArray.get(i);
 			int index = inputLine.getVariable().isEmpty() ? 0 : inputLine.getVariable().charAt(0) - 'a';
+
+			if (i == inputArray.size() - 1 && inputLine.getVariable().length() == 0) {
+				Num r = variableMap[inputArray.get(i - 1).getVariable().charAt(0) - 'a'];
+				r.printList();
+			}
 			// Level 3 statement
 			if (inputLine.getLabel() == -1) {
 				if (inputLine.isExpression) {
@@ -126,28 +130,20 @@ public class LP1L4 {
 					variableMap[index] = value;
 					inputLine.setValue(value);
 					System.out.println(value);
+				} else if (inputLine.getVariable().length() > 0 && inputLine.isAssgn) {
+					variableMap[index] = inputLine.getValue();
+					System.out.println(variableMap[index]);
 				} else {
-					if (inputLine.getVariable().length() > 0) {
-						System.out.println(variableMap[inputLine.getVariable().charAt(0) - 'a']);
-					} else {
-						// last line
-						Num r = variableMap[inputArray.get(i - 1).getVariable().charAt(0) - 'a'];
-						r.printList();
-					}
+					System.out.println(variableMap[index]);
 				}
+
 			} else {
 				// Level 4 statements
 				if (inputLine.isLoop) {
-					// if (index == 1)
-					// System.out.println("b " + variableMap[index] + " p "
-					// + variableMap[15] + " k " + variableMap[10]
-					// + " d " + variableMap[3]);
 					if (variableMap[index].isZero()) {
 						if (inputLine.getZr() != -1) {
 							i = LineNoForLabel.get(inputLine.getZr()) - 1;
-						} /*
-							 * else{ i = i; }
-							 */
+						}
 						continue;
 					} else {
 						i = LineNoForLabel.get(inputLine.getNz()) - 1;
@@ -253,7 +249,7 @@ public class LP1L4 {
 	public static void main(String[] args) throws Exception {
 		Scanner in;
 		if (args.length > 0) {
-			base = Integer.parseInt(args[0]);
+			Num.defaultBase = Integer.parseInt(args[0]);
 			// Use above base for all numbers (except I/O, which is in base 10)
 		}
 
