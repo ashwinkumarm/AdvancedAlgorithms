@@ -564,6 +564,12 @@ public class Num implements Comparable<Num> {
 		return magnitude;
 	}
 
+	/**
+	 * Compares the magnitude of the two given numbers
+	 * Returns 1 if a>b, 0 if a==b, else -1 if a<b
+	 * @param other
+	 * @return
+	 */
 	public int compareMag(Num this,Num other) {
 		if (this.getNumberOfDigits() > other.getNumberOfDigits()) {
 			return 1;
@@ -608,12 +614,6 @@ public class Num implements Comparable<Num> {
 		base = 10;
 		defaultBase = 10;
 		while (iterator.hasNext()) {
-			/*
-			 * iNum = new Num(i++, TEN_LONG); b = power(base10, iNum); d = new
-			 * Num(iterator.next(), TEN_LONG); p = product(d, b); sum = add(sum,
-			 * p, TEN_LONG);
-			 */
-
 			sum = add(sum, product(new Num(iterator.next(), TEN_LONG), power(base10, i++)),
 					TEN_LONG);
 		}
@@ -625,14 +625,24 @@ public class Num implements Comparable<Num> {
 		return sb.toString();
 	}
 
+	/**
+	 * @return the base
+	 */
 	public long base() {
 		return base;
 	}
 
+	/**
+	 * @return whether the number is zero or not
+	 */
 	public boolean isZero() {
 		return digits.size() == 0;
 	}
 
+	/**
+	 * Returns the number of digits for a given number
+	 * @return
+	 */
 	public int getNumberOfDigits() {
 		return digits.size();
 	}
