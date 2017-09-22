@@ -18,7 +18,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  *
  */
 public class LP1L4 {
-	//List of constants
+	// List of constants
 	private static final String ADD = "+";
 	private static final String SUBTRACT = "-";
 	private static final String MULTIPLY = "*";
@@ -31,9 +31,9 @@ public class LP1L4 {
 	static Num[] variableMap = new Num[26];
 	static HashMap<Integer, Integer> LineNoForLabel = new HashMap<>();
 
-
 	/**
 	 * Performs the evaluation of postfix expression using stack
+	 * 
 	 * @param expression
 	 * @return
 	 */
@@ -68,7 +68,7 @@ public class LP1L4 {
 					break;
 
 				case MULTIPLY:
-					operandStack.push(Num.karatsubaMultiplication(operand1, operand2));
+					operandStack.push(Num.product(operand1, operand2));
 					break;
 
 				case DIVIDE:
@@ -98,6 +98,7 @@ public class LP1L4 {
 	/**
 	 * Return whether the given operator is in the following list of operators
 	 * Add,subtract, multiply,divide,mod,exponent,square root
+	 * 
 	 * @param token
 	 * @return
 	 */
@@ -107,7 +108,8 @@ public class LP1L4 {
 	}
 
 	/**
-	 * Evaluate the statements from the input based on the labels and assign the values to the variables
+	 * Evaluate the statements from the input based on the labels and assign the
+	 * values to the variables
 	 */
 	static void evaluateStatements() {
 		for (int i = 0; i < inputArray.size(); i++) {
@@ -158,6 +160,7 @@ public class LP1L4 {
 
 	/**
 	 * Parses the given statements based on the tokens from the tokenizer class
+	 * 
 	 * @param in
 	 * @throws Exception
 	 */
@@ -202,7 +205,9 @@ public class LP1L4 {
 	}
 
 	/**
-	 * Performs the parsing of the right hand side of the variable containing the expression
+	 * Performs the parsing of the right hand side of the variable containing the
+	 * expression
+	 * 
 	 * @param in
 	 * @param inp
 	 * @throws Exception
@@ -261,6 +266,7 @@ public class LP1L4 {
 
 	/**
 	 * Main method for testing
+	 * 
 	 * @param args
 	 * @throws Exception
 	 */

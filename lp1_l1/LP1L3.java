@@ -64,7 +64,7 @@ public class LP1L3 {
 					break;
 
 				case MULTIPLY:
-					operandStack.push(Num.multiply(operand1, operand2));
+					operandStack.push(Num.product(operand1, operand2));
 					break;
 
 				case DIVIDE:

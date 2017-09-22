@@ -308,6 +308,7 @@ public class Num implements Comparable<Num> {
 	}
 
 	/**
+	 * Performs normal multiplication for the numbers with number of digits <=10
 	 * @param a
 	 * @param b
 	 * @return
@@ -343,23 +344,6 @@ public class Num implements Comparable<Num> {
 		}
 		return result;
 	}
-
-	static Num multiply(Num a, Num b) {
-		Num product = new Num(ZERO_LONG);
-
-		if (a.getNumberOfDigits() > b.getNumberOfDigits()) {
-			Num c = a;
-			a = b;
-			b = c;
-		}
-
-		while (!a.isZero()) {
-			product = add(product, b);
-			a = subtract(a, new Num(ONE_LONG));
-		}
-		return product;
-	}
-
 	/**
 	 * Performs the Karatsuba multiplication by recursively dividing the numbers
 	 *
