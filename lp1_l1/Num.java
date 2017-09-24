@@ -12,7 +12,7 @@ import java.util.LinkedList;
  *
  */
 public class Num implements Comparable<Num> {
-	static long defaultBase = 10000;
+	static long defaultBase = 2000000000;
 	static long base = defaultBase;
 	static Num ZERO = new Num(0L);
 	static Num ONE = new Num(1L);

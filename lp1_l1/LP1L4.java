@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
 
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Timer;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Tokenizer;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Tokenizer.Token;
 
@@ -278,6 +279,8 @@ public class LP1L4 {
 
 		in = new Scanner(System.in);
 		formInputArray(in);
+		Timer t = new Timer();
 		evaluateStatements();
+		System.out.println(t.end());
 	}
 }
