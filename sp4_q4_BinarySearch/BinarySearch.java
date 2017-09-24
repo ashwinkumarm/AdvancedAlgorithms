@@ -1,7 +1,21 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp4_q4_BinarySearch;
 
+/**
+ * This class performs the binary search recursively to find the index of the
+ * largest number which is less than or equal to target(x)
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class BinarySearch {
 
+	/**
+	 * Performs the binary search on the given array
+	 * 
+	 * @param arr
+	 * @param x
+	 * @return
+	 */
 	public static <T extends Comparable<? super T>> int binarySearch(T[] arr, T x) {
 		return recursiveBinarySearch(arr, 0, arr.length - 1, x);
 	}
@@ -28,11 +42,11 @@ public class BinarySearch {
 		// Compare middle element of A[p..r] to x to decide which half of the
 		// array to search
 		if (p <= r) {
-			
-			//If last element is smaller than x, return r
+
+			// If last element is smaller than x, return r
 			if (A[r].compareTo(x) < 0)
 				return r;
-			
+
 			int q = (p + r) / 2;
 			int cmp1 = A[q].compareTo(x);
 			int cmp2 = A[q + 1].compareTo(x);
@@ -48,16 +62,20 @@ public class BinarySearch {
 		}
 	}
 
+	/**
+	 * Main method for testing
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
 		int a[] = { 1, 2, 3, 6, 7, 9, 10, 14, 15, 16, 18 };
-		Integer[] iarr = new Integer[a.length];
+		Integer[] arr = new Integer[a.length];
 
 		for (int i = 0; i < a.length; i++) {
-			iarr[i] = new Integer(a[i]);
+			arr[i] = new Integer(a[i]);
 		}
 		int x = 0;
-		int index = binarySearch(iarr, x);
+		int index = binarySearch(arr, x);
 		if (index != -1) {
 			System.out.println("Index of the larget number less than or equal to " + x + ": " + index);
 		} else

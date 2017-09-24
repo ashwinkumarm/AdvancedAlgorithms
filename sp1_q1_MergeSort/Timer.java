@@ -5,7 +5,7 @@ public class Timer {
 	long startTime, endTime, elapsedTime;
 	long memAvailable, memUsed;
 
-	Timer() {
+	public Timer() {
 		startTime = System.currentTimeMillis();
 	}
 

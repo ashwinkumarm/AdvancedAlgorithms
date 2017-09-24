@@ -1,8 +1,10 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp4_q3_MergeSortVariations;
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Random;
 import java.util.Scanner;
+
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort.Timer;
 
 public class MergeSortVariations {
 	static Integer inf = Integer.MAX_VALUE;
@@ -128,27 +130,48 @@ public class MergeSortVariations {
 		}
 	}
 
+	/**
+	 * Main method for testing
+	 * 
+	 * @param args
+	 * @throws FileNotFoundException
+	 */
 	public static void main(String args[]) throws FileNotFoundException {
-		Scanner in;
-		if (args.length > 0) {
-			File inputFile = new File(args[0]);
-			in = new Scanner(inputFile);
-		} else {
-			in = new Scanner(System.in);
-			int[] A;
-			System.out.println("Enter the size of the input array: ");
-			int size = in.nextInt();
-			System.out.println("Enter the elements of the input array: ");
-			int count = 0;
-			A = new int[size];
-			while (count < size) {
-				A[count] = in.nextInt();
-				count++;
-			}
-			mergeSortAlgorithm4(A);
-			for (int i = 0; i < A.length; i++)
-				System.out.print(A[i] + " ");
+		Random rand = new Random();
+		System.out.println("Enter the size of the array: ");
+		Scanner in = new Scanner(System.in);
+		int size = in.nextInt();
+		int[] arr = new int[size];
+		for (int i = 0; i < size; i++) {
+			arr[i] = rand.nextInt(500);
 		}
 		in.close();
+		int[] inputArray = arr;
+		Timer t = new Timer();
+		mergeSortAlgorithm1(inputArray);
+		System.out.println("\nTime and Memory taken by MergeSort Type1:\n" + t.end());
+		/*for(int i=0;i<size;i++)
+			System.out.print(inputArray[i]+" ");*/
+		
+		inputArray = arr;
+		t.start();
+		mergeSortAlgorithm2(inputArray);
+		System.out.println("\nTime and Memory taken by MergeSort Type2:\n" + t.end());
+		/*for(int i=0;i<size;i++)
+			System.out.print(inputArray[i]+" ");*/
+		
+		inputArray = arr;
+		t.start();
+		mergeSortAlgorithm3(inputArray);
+		System.out.println("\nTime and Memory taken by MergeSort Type3:\n" + t.end());
+		/*for(int i=0;i<size;i++)
+			System.out.print(inputArray[i]+" ");*/
+		
+		inputArray = arr;
+		t.start();
+		mergeSortAlgorithm4(inputArray);
+		System.out.println("\nTime and Memory taken by MergeSort Type4:\n" + t.end());
+		/*for(int i=0;i<size;i++)
+			System.out.print(inputArray[i]+" ");*/
 	}
 }
