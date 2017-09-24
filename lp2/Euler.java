@@ -4,15 +4,36 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp2
 
 import java.util.List;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.*;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
+
 import java.util.LinkedList;
 
-public class Euler {
+public class Euler extends GraphAlgorithm<Euler.EulerVertex>{
 	int VERBOSE;
 	List<Graph.Edge> tour;
+	Graph.Vertex startVertex;
 
+	static class EulerVertex {
+
+		Graph.Vertex element;
+		List<Graph.Edge> subTour;
+
+		EulerVertex(Graph.Vertex u) {
+			element = u;
+			subTour = new LinkedList<>();
+		}
+
+	}
+	
 	// Constructor
-	Euler(Graph g, Graph.Vertex start) {
+	public Euler(Graph g, Graph.Vertex start) {
+		super(g);
+		startVertex = start;
+		node = new EulerVertex[g.size()];
+		for (Graph.Vertex u : g) {
+			node[u.getName()] = new EulerVertex(u);
+		}
 		VERBOSE = 1;
 		tour = new LinkedList<>();
 	}
@@ -20,10 +41,10 @@ public class Euler {
 	// To do: function to find an Euler tour
 	public List<Graph.Edge> findEulerTour() {
 		findTours();
-		if (VERBOSE > 9) {
+		if (VERBOSE > 0) {
 			printTours();
 		}
-		stitchTours();
+		//stitchTours();
 		return tour;
 	}
 
@@ -33,14 +54,47 @@ public class Euler {
 	 * "inDegree = 5, outDegree = 3 at Vertex 37" or
 	 * "Graph is not strongly connected"
 	 */
-	boolean isEulerian() {
-		System.out.println("Graph is not Eulerian");
-		System.out.println("Reason: Graph is not strongly connected");
-		return false;
+	public boolean isEulerian() {
+		
+		//check whether the given graph is strongly connected or not
+		if(ConnectedComponentsOfGraph.stronglyConnectedComponents(g) == 0){
+			System.out.println("Graph is not Eulerian");
+			System.out.println("Reason: Graph is not strongly connected");
+			return false;
+		}
+
+		// check if indegree == outdegree at every vertex 
+		for (Graph.Vertex v : g) {
+			int indegree = v.revAdj.size();
+			int outdegree = v.adj.size();
+			
+			if(indegree != outdegree){
+				System.out.println("Graph is not Eulerian");
+				System.out.println("Reason: the indegree("+indegree+") is not equal to outdegree("+outdegree+") at vertex "+ v.toString());
+				return false;
+			}
+		}	
+		return true;  
 	}
 
+	void findTours(){
+		findTours(startVertex, getSubTour(startVertex));
+		for (Graph.Vertex u : g) {
+			findTours(u,getSubTour(u));
+		}
+	}
 	// Find tours starting at vertices with unexplored edges
-	void findTours() {
+	void findTours(Graph.Vertex u, List<Graph.Edge> subTour) {
+
+		for (Graph.Edge e : u.adj) {
+			if(!e.seen){
+				subTour.add(e);
+				e.seen = true;
+				Graph.Vertex v = e.otherEnd(u);
+				findTours(v, subTour);
+			}
+		}
+
 	}
 
 	/*
@@ -52,6 +106,11 @@ public class Euler {
 	 * Just use System.out.print(u) and System.out.print(e)
 	 */
 	void printTours() {
+		for (Graph.Vertex u : g) {
+			if(!getSubTour(u).isEmpty()){
+				System.out.println(u.toString()+": "+ getSubTour(u));
+			}
+		}
 	}
 
 	// Stitch tours into a single tour using the algorithm discussed in class
@@ -60,5 +119,9 @@ public class Euler {
 
 	void setVerbose(int v) {
 		VERBOSE = v;
+	}
+	
+	List<Graph.Edge> getSubTour(Graph.Vertex u){
+		return getVertex(u).subTour;
 	}
 }
