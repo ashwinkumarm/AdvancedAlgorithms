@@ -12,7 +12,7 @@ import java.util.LinkedList;
  *
  */
 public class Num implements Comparable<Num> {
-	static long defaultBase = 100;
+	static long defaultBase = 10000;
 	static long base = defaultBase;
 	static Num ZERO = new Num(0L);
 	static Num ONE = new Num(1L);
@@ -277,7 +277,7 @@ public class Num implements Comparable<Num> {
 			dupA.digits.add(0, ZERO_LONG);
 			N--;
 		}
-		return dupA;
+		return trimZero(dupA);
 	}
 
 	/**
@@ -335,7 +335,7 @@ public class Num implements Comparable<Num> {
 	 * @param b
 	 * @return
 	 */
-	/*static Num multiplyGradeSchool(Num a, Num b) {
+	static Num multiplyGradeSchool(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
 
 		Iterator<Long> aIterator = a.digits.iterator();
@@ -365,7 +365,7 @@ public class Num implements Comparable<Num> {
 			aIterator = a.digits.iterator();
 		}
 		return result;
-	}*/
+	}
 	
 	/**
 	 * Performs normal multiplication for the numbers with number of digits <=1
@@ -397,12 +397,14 @@ public class Num implements Comparable<Num> {
 	 * @return
 	 */
 	static Num karatsubaMultiplication(Num a, Num b) {
+		if(a.isZero() || b.isZero())
+			return ZERO;
 		long len1 = a.getNumberOfDigits();
 		long len2 = b.getNumberOfDigits();
-		long m = Math.min(len1, len2);
+		long m = Math.max(len1, len2);
 
 		if (m <= 1) {
-			return multiply(a, b);
+			return multiplyGradeSchool(a, b);
 		}
 
 		m = (m / 2) + (m % 2);
