@@ -25,12 +25,14 @@ public class BinarySearch {
 	 */
 
 	public static <T extends Comparable<? super T>> int recursiveBinarySearch(T[] A, int p, int r, T x) {
-		//If last element is smaller than x, return r
-		if (A[r].compareTo(x) < 0)
-			return r;
 		// Compare middle element of A[p..r] to x to decide which half of the
 		// array to search
 		if (p <= r) {
+			
+			//If last element is smaller than x, return r
+			if (A[r].compareTo(x) < 0)
+				return r;
+			
 			int q = (p + r) / 2;
 			int cmp1 = A[q].compareTo(x);
 			int cmp2 = A[q + 1].compareTo(x);
@@ -54,7 +56,7 @@ public class BinarySearch {
 		for (int i = 0; i < a.length; i++) {
 			iarr[i] = new Integer(a[i]);
 		}
-		int x = 17;
+		int x = 0;
 		int index = binarySearch(iarr, x);
 		if (index != -1) {
 			System.out.println("Index of the larget number less than or equal to " + x + ": " + index);
