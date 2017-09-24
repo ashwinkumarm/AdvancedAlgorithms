@@ -7,7 +7,7 @@ import java.util.Scanner;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort.Timer;
 
 /**
- * This class performs 4 differrent versions of merge sort
+ * This class performs 4 different versions of merge sort
  * 
  * @author Ashwin, Arun, Deepak, Haritha
  *
@@ -73,7 +73,8 @@ public class MergeSortVariations {
 	 * @param A
 	 */
 	static void mergeSortVersion2(int[] A) {
-		mergeSortVersion2(A, 0, A.length - 1);
+		int[] tmp = new int[A.length];
+		mergeSortVersion2(A,tmp, 0, A.length - 1);
 	}
 
 	/**
@@ -84,12 +85,12 @@ public class MergeSortVariations {
 	 * @param l
 	 * @param r
 	 */
-	private static void mergeSortVersion2(int[] A, int l, int r) {
+	private static void mergeSortVersion2(int[] A,int[] tmp, int l, int r) {
 		if (l < r) {
 			int mid = (l + r) / 2;
-			mergeSortVersion2(A, l, mid);
-			mergeSortVersion2(A, mid + 1, r);
-			merge2(A, new int[A.length], l, mid, r);
+			mergeSortVersion2(A, tmp, l, mid);
+			mergeSortVersion2(A, tmp, mid + 1, r);
+			merge2(A, tmp, l, mid, r);
 		}
 	}
 
@@ -122,7 +123,8 @@ public class MergeSortVariations {
 	 * @param A
 	 */
 	static void mergeSortVersion3(int A[]) {
-		mergeSortVersion3(A, 0, A.length - 1);
+		int[] tmp = new int[A.length];
+		mergeSortVersion3(A, tmp, 0, A.length - 1);
 	}
 
 	/**
@@ -133,14 +135,14 @@ public class MergeSortVariations {
 	 * @param l
 	 * @param r
 	 */
-	private static void mergeSortVersion3(int[] A, int l, int r) {
-		if ((r - l) < 50) {
+	private static void mergeSortVersion3(int[] A,int[] tmp, int l, int r) {
+		if ((r - l) < 18) {
 			insertionSort(A, l, r);
 		} else {
 			int mid = (l + r) / 2;
-			mergeSortVersion3(A, l, mid);
-			mergeSortVersion3(A, mid + 1, r);
-			merge3(A, new int[A.length], l, mid, r);
+			mergeSortVersion3(A, tmp, l, mid);
+			mergeSortVersion3(A, tmp, mid + 1, r);
+			merge3(A, tmp, l, mid, r);
 		}
 	}
 
@@ -210,7 +212,7 @@ public class MergeSortVariations {
 	 * @param r
 	 */
 	private static void mergeSortVersion4(int[] A, int[] B, int l, int r) {
-		if ((r - l) < 5) {
+		if ((r - l) < 18) {
 			insertionSort(A, l, r);
 		} else {
 			int mid = (l + r) / 2;
