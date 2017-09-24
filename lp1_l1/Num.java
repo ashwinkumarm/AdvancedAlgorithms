@@ -16,7 +16,6 @@ public class Num implements Comparable<Num> {
 	static long base = defaultBase;
 	static Num ZERO = new Num(0L);
 	static Num ONE = new Num(1L);
-	static Num TWO = new Num(2L);
 	static long ZERO_LONG = 0L;
 	static long ONE_LONG = 1L;
 	static long TEN_LONG = 10L;
@@ -63,8 +62,9 @@ public class Num implements Comparable<Num> {
 
 		// Convert a number into a number of given base
 		Num num = new Num(ZERO_LONG);
+		Num TEN = new Num(TEN_LONG);
 		for (int i = cursor; i < len; i++)
-			num = add(product(num, new Num(10L)), new Num(Character.getNumericValue(inputDigits[i])));
+			num = add(product(num, TEN), new Num(Character.getNumericValue(inputDigits[i])));
 		this.digits = num.digits;
 	}
 
@@ -335,7 +335,7 @@ public class Num implements Comparable<Num> {
 	 * @param b
 	 * @return
 	 */
-	static Num multiplyGradeSchool(Num a, Num b) {
+	/*static Num multiplyGradeSchool(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
 
 		Iterator<Long> aIterator = a.digits.iterator();
@@ -365,6 +365,28 @@ public class Num implements Comparable<Num> {
 			aIterator = a.digits.iterator();
 		}
 		return result;
+	}*/
+	
+	/**
+	 * Performs normal multiplication for the numbers with number of digits <=1
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	static Num multiply(Num a, Num b) {
+		Num product = new Num(ZERO_LONG);
+
+		if (a.getNumberOfDigits() > b.getNumberOfDigits()) {
+			Num c = a;
+			a = b;
+			b = c;
+		}
+
+		while (!a.isZero()) {
+			product = add(product, b);
+			a = subtract(a, new Num(ONE_LONG));
+		}
+		return product;
 	}
 
 	/**
@@ -379,16 +401,16 @@ public class Num implements Comparable<Num> {
 		long len2 = b.getNumberOfDigits();
 		long m = Math.min(len1, len2);
 
-		if (m <= 100) {
-			return multiplyGradeSchool(a, b);
+		if (m <= 1) {
+			return multiply(a, b);
 		}
 
 		m = (m / 2) + (m % 2);
 		// Divides the two operands into low parts and high parts
-		Num aHigh = rightShift(a, m);
-		Num aLow = subtractPositiveNos(a, leftShift(aHigh, m));
-		Num bHigh = rightShift(b, m);
-		Num bLow = subtractPositiveNos(b, leftShift(bHigh, m));
+		Num aHigh = getLastHalf(a, m);
+		Num aLow = getFirstHalf(a, m);
+		Num bHigh = getLastHalf(b, m);
+		Num bLow = getFirstHalf(b, m);
 
 		Num abLow = karatsubaMultiplication(aLow, bLow);
 		Num abHigh = karatsubaMultiplication(aHigh, bHigh);
@@ -396,6 +418,45 @@ public class Num implements Comparable<Num> {
 
 		return addPositiveNos(leftShift(abHigh, 2 * m),
 				addPositiveNos(leftShift(subtractPositiveNos(subtractPositiveNos(abcd, abHigh), abLow), m), abLow));
+	}
+
+	/**
+	 * Returns the first m Least Significant Digits
+	 * @param a
+	 * @param m
+	 * @return
+	 */
+	private static Num getFirstHalf(Num a, long m) {
+		int len = a.getNumberOfDigits();
+		if (len < m)
+			return a;
+		Num fh = new Num(ZERO_LONG);
+		Iterator<Long> aIterator = a.digits.iterator();
+		while (m != 0) {
+			fh.digits.add(aIterator.next());
+			m--;
+		}
+		return trimZero(fh);
+	}
+
+	/**
+	 * Returns the first m Most Significant Digits
+	 * @param a
+	 * @param m
+	 * @return
+	 */
+	private static Num getLastHalf(Num a, long m) {
+		int len = a.getNumberOfDigits();
+		if (len < m)
+			return ZERO;
+		m = len - m;
+		Num lh = new Num(ZERO_LONG);
+		Iterator<Long> aIterator = a.digits.descendingIterator();
+		while (m != 0) {
+			lh.digits.addFirst(aIterator.next());
+			m--;
+		}
+		return lh;
 	}
 
 	// Use divide and conquer
@@ -410,7 +471,7 @@ public class Num implements Comparable<Num> {
 	 */
 	static Num power(Num a, long n) {
 		if (n == ZERO_LONG)
-			return new Num(ONE_LONG);
+			return ONE;
 		else if (n == ONE_LONG)
 			return a;
 		else {
