@@ -197,8 +197,8 @@ public class MergeSortVariations {
 	 * @param A
 	 */
 	static void mergeSortVersion4(int A[]) {
-		int B[] = new int[A.length];
-		System.arraycopy(A, 0, B, 0, A.length);
+		int B[] = A;
+		//System.arraycopy(A, 0, B, 0, A.length);
 		mergeSortVersion4(A, B, 0, A.length - 1);
 	}
 
