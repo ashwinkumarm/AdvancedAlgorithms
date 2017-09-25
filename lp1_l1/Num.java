@@ -12,7 +12,7 @@ import java.util.LinkedList;
  *
  */
 public class Num implements Comparable<Num> {
-	static long defaultBase = 2000000000;
+	static long defaultBase = 1000000000;
 	static long base = defaultBase;
 	static Num ZERO = new Num(0L);
 	static Num ONE = new Num(1L);
@@ -64,7 +64,7 @@ public class Num implements Comparable<Num> {
 		Num num = new Num(ZERO_LONG);
 		Num TEN = new Num(TEN_LONG);
 		for (int i = cursor; i < len; i++)
-			num = add(product(num, TEN), new Num(Character.getNumericValue(inputDigits[i])));
+			num = add(multiplyGradeSchool(num, TEN), new Num(Character.getNumericValue(inputDigits[i])));
 		this.digits = num.digits;
 	}
 
@@ -272,12 +272,11 @@ public class Num implements Comparable<Num> {
 	 * @return
 	 */
 	static Num leftShift(Num a, long N) {
-		Num dupA = copyNum(a);
 		while (N > 0) {
-			dupA.digits.add(0, ZERO_LONG);
+			a.digits.add(0, ZERO_LONG);
 			N--;
 		}
-		return trimZero(dupA);
+		return trimZero(a);
 	}
 
 	/**
@@ -289,30 +288,13 @@ public class Num implements Comparable<Num> {
 	 * @return
 	 */
 	static Num rightShift(Num a, long N) {
-		Num dupA = copyNum(a);
-		Iterator<Long> aIterator = dupA.digits.iterator();
+		Iterator<Long> aIterator = a.digits.iterator();
 		while (N > 0 && aIterator.hasNext()) {
 			aIterator.next();
 			aIterator.remove();
 			N--;
 		}
-		return dupA;
-	}
-
-	/**
-	 * Makes a copy of the given number
-	 *
-	 * @param a
-	 * @return
-	 */
-	static Num copyNum(Num a) {
-		Num ta = new Num(ZERO_LONG);
-		ta.digits.clear();
-		Iterator<Long> aIterator = a.digits.iterator();
-		while (aIterator.hasNext()) {
-			ta.digits.add(aIterator.next());
-		}
-		return ta;
+		return a;
 	}
 
 	/**
@@ -345,7 +327,7 @@ public class Num implements Comparable<Num> {
 		while (bIterator.hasNext()) {
 			long carry = ZERO_LONG;
 			long digit;
-			Num partial = new Num(ZERO_LONG);
+			Num partial = new Num(0L);
 			long bDigit = bIterator.next();
 
 			while (aIterator.hasNext()) {
@@ -357,7 +339,7 @@ public class Num implements Comparable<Num> {
 			if (carry > 0)
 				partial.digits.add(carry);
 
-			partial = leftShift(partial, shift);
+			leftShift(partial, shift);
 
 			// Append this partial product to the list
 			result = add(result, partial);
@@ -403,7 +385,7 @@ public class Num implements Comparable<Num> {
 		long len2 = b.getNumberOfDigits();
 		long m = Math.max(len1, len2);
 
-		if (m <= 1) {
+		if (len1<=1 || len2 <= 1) {
 			return multiplyGradeSchool(a, b);
 		}
 
@@ -416,14 +398,14 @@ public class Num implements Comparable<Num> {
 
 		Num abLow = karatsubaMultiplication(aLow, bLow);
 		Num abHigh = karatsubaMultiplication(aHigh, bHigh);
-		Num abcd = karatsubaMultiplication(addPositiveNos(aLow, aHigh), addPositiveNos(bLow, bHigh));
+		Num abcd = subtractPositiveNos(subtractPositiveNos(
+				karatsubaMultiplication(addPositiveNos(aLow, aHigh), addPositiveNos(bLow, bHigh)), abHigh), abLow);
 
-		return addPositiveNos(leftShift(abHigh, 2 * m),
-				addPositiveNos(leftShift(subtractPositiveNos(subtractPositiveNos(abcd, abHigh), abLow), m), abLow));
+		return addPositiveNos(leftShift(abHigh, 2 * m), addPositiveNos(leftShift(abcd, m), abLow));
 	}
 
 	/**
-	 * Returns the first m Least Significant Digits
+	 * Returns the m Least Significant Digits
 	 * @param a
 	 * @param m
 	 * @return
@@ -580,8 +562,8 @@ public class Num implements Comparable<Num> {
 	static Num power(Num a, Num n) {
 		if (!n.isZero()) {
 			long a0 = n.digits.getFirst();
-			Num s = rightShift(n, ONE_LONG);
-			return product(power(power(a, s), base), power(a, a0));
+			rightShift(n, ONE_LONG);
+			return product(power(power(a, n), base), power(a, a0));
 		}
 		return ONE;
 	}
@@ -694,7 +676,7 @@ public class Num implements Comparable<Num> {
 		long i = 0;
 		Num base10 = new Num(oldbase);
 		while (iterator.hasNext()) {
-			sum = add(sum, product(new Num(iterator.next()), power(base10, i++)));
+			sum = add(sum, product(power(base10, i++),new Num(iterator.next())));
 		}
 		Iterator<Long> iteratorBaseTen = sum.digits.descendingIterator();
 		while (iteratorBaseTen.hasNext())
