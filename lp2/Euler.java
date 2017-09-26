@@ -8,6 +8,9 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp2
  */
 
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Queue;
+
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.*;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -16,17 +19,21 @@ public class Euler extends GraphAlgorithm<Euler.EulerVertex>{
 	int VERBOSE;
 	List<Graph.Edge> tour;
 	Graph.Vertex startVertex;
-
+	static Queue<Graph.Vertex> q;
+	
 	static class EulerVertex {
 
 		Graph.Vertex element;
 		List<Graph.Edge> subTour; // tour starting a vertex if any
 		boolean isTourExplored; // flag to indicate if a tour starting at vertex has been explored or not
-
+		int currentIndexOfAdjEdgeList;
+		
 		EulerVertex(Graph.Vertex u) {
 			element = u;
 			subTour = new LinkedList<>();
 			isTourExplored = false;
+			q = new LinkedList<>();
+			currentIndexOfAdjEdgeList = 0;
 		}
 
 	}
@@ -84,7 +91,8 @@ public class Euler extends GraphAlgorithm<Euler.EulerVertex>{
 
 	void findTours(){
 		findSubTour(startVertex, getSubTour(startVertex));
-		for (Graph.Vertex u : g) {
+		while(!q.isEmpty()) {
+			Graph.Vertex u = q.poll();
 			findSubTour(u,getSubTour(u));
 		}
 	}
@@ -92,16 +100,18 @@ public class Euler extends GraphAlgorithm<Euler.EulerVertex>{
 	void findSubTour(Graph.Vertex start, List<Graph.Edge> subTour) {
 		
 		Graph.Vertex u = start;
-		Iterator<Graph.Edge> edgeIterator = start.iterator();
+		ListIterator<Graph.Edge> edgeIterator = start.adj.listIterator(getCurrentIndex(start));
 		
 		while(edgeIterator.hasNext()){
+			setCurrentIndex(u, edgeIterator.nextIndex());
 			Graph.Edge e = edgeIterator.next();
-				if(!e.seen){
-					subTour.add(e);
-					e.seen = true;
-					Graph.Vertex v = e.otherEnd(u);
-					edgeIterator = v.iterator();
-					u = v;
+			if(!e.seen){
+				q.add(u);
+				subTour.add(e);
+				e.seen = true;
+				Graph.Vertex v = e.otherEnd(u);
+				edgeIterator = v.adj.listIterator(getCurrentIndex(v));
+				u = v;		
 			}
 		}
 	}
@@ -155,6 +165,14 @@ public class Euler extends GraphAlgorithm<Euler.EulerVertex>{
 	
 	boolean getIsTourExplored(Graph.Vertex u){
 		return getVertex(u).isTourExplored;
+	}
+	
+	void setCurrentIndex(Graph.Vertex u, int index){
+		getVertex(u).currentIndexOfAdjEdgeList = index;
+	}
+	
+	public int getCurrentIndex(Graph.Vertex u) {
+		return getVertex(u).currentIndexOfAdjEdgeList;
 	}
 	
 	void setIsTourExplored(Graph.Vertex u, boolean flag){
