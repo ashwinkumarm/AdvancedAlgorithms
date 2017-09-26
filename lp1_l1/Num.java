@@ -12,7 +12,7 @@ import java.util.LinkedList;
  *
  */
 public class Num implements Comparable<Num> {
-	static long defaultBase = 100;
+	static long defaultBase = 1000000000;
 	static long base = defaultBase;
 	static Num ZERO = new Num(0L);
 	static Num ONE = new Num(1L);
@@ -64,7 +64,7 @@ public class Num implements Comparable<Num> {
 		Num num = new Num(ZERO_LONG);
 		Num TEN = new Num(TEN_LONG);
 		for (int i = cursor; i < len; i++)
-			num = add(product(num, TEN), new Num(Character.getNumericValue(inputDigits[i])));
+			num = add(multiplyGradeSchool(num, TEN), new Num(Character.getNumericValue(inputDigits[i])));
 		this.digits = num.digits;
 	}
 
@@ -272,12 +272,11 @@ public class Num implements Comparable<Num> {
 	 * @return
 	 */
 	static Num leftShift(Num a, long N) {
-		Num dupA = copyNum(a);
 		while (N > 0) {
-			dupA.digits.add(0, ZERO_LONG);
+			a.digits.add(0, ZERO_LONG);
 			N--;
 		}
-		return dupA;
+		return trimZero(a);
 	}
 
 	/**
@@ -289,30 +288,13 @@ public class Num implements Comparable<Num> {
 	 * @return
 	 */
 	static Num rightShift(Num a, long N) {
-		Num dupA = copyNum(a);
-		Iterator<Long> aIterator = dupA.digits.iterator();
+		Iterator<Long> aIterator = a.digits.iterator();
 		while (N > 0 && aIterator.hasNext()) {
 			aIterator.next();
 			aIterator.remove();
 			N--;
 		}
-		return dupA;
-	}
-
-	/**
-	 * Makes a copy of the given number
-	 *
-	 * @param a
-	 * @return
-	 */
-	static Num copyNum(Num a) {
-		Num ta = new Num(ZERO_LONG);
-		ta.digits.clear();
-		Iterator<Long> aIterator = a.digits.iterator();
-		while (aIterator.hasNext()) {
-			ta.digits.add(aIterator.next());
-		}
-		return ta;
+		return a;
 	}
 
 	/**
@@ -335,7 +317,7 @@ public class Num implements Comparable<Num> {
 	 * @param b
 	 * @return
 	 */
-	/*static Num multiplyGradeSchool(Num a, Num b) {
+	static Num multiplyGradeSchool(Num a, Num b) {
 		Num result = new Num(ZERO_LONG);
 
 		Iterator<Long> aIterator = a.digits.iterator();
@@ -345,7 +327,7 @@ public class Num implements Comparable<Num> {
 		while (bIterator.hasNext()) {
 			long carry = ZERO_LONG;
 			long digit;
-			Num partial = new Num(ZERO_LONG);
+			Num partial = new Num(0L);
 			long bDigit = bIterator.next();
 
 			while (aIterator.hasNext()) {
@@ -357,7 +339,7 @@ public class Num implements Comparable<Num> {
 			if (carry > 0)
 				partial.digits.add(carry);
 
-			partial = leftShift(partial, shift);
+			leftShift(partial, shift);
 
 			// Append this partial product to the list
 			result = add(result, partial);
@@ -365,30 +347,8 @@ public class Num implements Comparable<Num> {
 			aIterator = a.digits.iterator();
 		}
 		return result;
-	}*/
-	
-	/**
-	 * Performs normal multiplication for the numbers with number of digits <=1
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	static Num multiply(Num a, Num b) {
-		Num product = new Num(ZERO_LONG);
-
-		if (a.getNumberOfDigits() > b.getNumberOfDigits()) {
-			Num c = a;
-			a = b;
-			b = c;
-		}
-
-		while (!a.isZero()) {
-			product = add(product, b);
-			a = subtract(a, new Num(ONE_LONG));
-		}
-		return product;
 	}
-
+	
 	/**
 	 * Performs the Karatsuba multiplication by recursively dividing the numbers
 	 *
@@ -397,12 +357,14 @@ public class Num implements Comparable<Num> {
 	 * @return
 	 */
 	static Num karatsubaMultiplication(Num a, Num b) {
+		if(a.isZero() || b.isZero())
+			return ZERO;
 		long len1 = a.getNumberOfDigits();
 		long len2 = b.getNumberOfDigits();
-		long m = Math.min(len1, len2);
+		long m = Math.max(len1, len2);
 
-		if (m <= 1) {
-			return multiply(a, b);
+		if (len1<=5 || len2 <=5) {
+			return multiplyGradeSchool(a, b);
 		}
 
 		m = (m / 2) + (m % 2);
@@ -414,14 +376,14 @@ public class Num implements Comparable<Num> {
 
 		Num abLow = karatsubaMultiplication(aLow, bLow);
 		Num abHigh = karatsubaMultiplication(aHigh, bHigh);
-		Num abcd = karatsubaMultiplication(addPositiveNos(aLow, aHigh), addPositiveNos(bLow, bHigh));
+		Num abcd = subtractPositiveNos(subtractPositiveNos(
+				karatsubaMultiplication(addPositiveNos(aLow, aHigh), addPositiveNos(bLow, bHigh)), abHigh), abLow);
 
-		return addPositiveNos(leftShift(abHigh, 2 * m),
-				addPositiveNos(leftShift(subtractPositiveNos(subtractPositiveNos(abcd, abHigh), abLow), m), abLow));
+		return addPositiveNos(leftShift(abHigh, 2 * m), addPositiveNos(leftShift(abcd, m), abLow));
 	}
 
 	/**
-	 * Returns the first m Least Significant Digits
+	 * Returns the m Least Significant Digits
 	 * @param a
 	 * @param m
 	 * @return
@@ -578,8 +540,8 @@ public class Num implements Comparable<Num> {
 	static Num power(Num a, Num n) {
 		if (!n.isZero()) {
 			long a0 = n.digits.getFirst();
-			Num s = rightShift(n, ONE_LONG);
-			return product(power(power(a, s), base), power(a, a0));
+			rightShift(n, ONE_LONG);
+			return product(power(power(a, n), base), power(a, a0));
 		}
 		return ONE;
 	}
@@ -692,7 +654,7 @@ public class Num implements Comparable<Num> {
 		long i = 0;
 		Num base10 = new Num(oldbase);
 		while (iterator.hasNext()) {
-			sum = add(sum, product(new Num(iterator.next()), power(base10, i++)));
+			sum = add(sum, product(power(base10, i++),new Num(iterator.next())));
 		}
 		Iterator<Long> iteratorBaseTen = sum.digits.descendingIterator();
 		while (iteratorBaseTen.hasNext())
