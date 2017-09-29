@@ -1,5 +1,13 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp5_q1_QuickSortPartitions;
 
+/**
+ * Class to implement Quick Sort
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
+
+
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
@@ -8,7 +16,15 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort.Timer;
 
 public class QuickSortPartitions {
-
+	
+	/**
+	 * Method implementing Lomuto's partition algorithm
+	 * 
+	 * @param A : int[] array
+	 * @param p : int start Index of the array
+	 * @param r : int end Index of the array
+	 * @return  : int pivot element
+	 */
 	public static int partition1(int[] A, int p, int r) {
 		
 		int i = randomIndexGenerator(p, r);
@@ -25,6 +41,15 @@ public class QuickSortPartitions {
 		return i + 1;
 	}
 
+
+	/**
+	 * Method implementing Hoare's partition algorithm
+	 * 
+	 * @param A : int[] array
+	 * @param p : int start Index of the array
+	 * @param r : int end Index of the array
+	 * @return  : int pivot element
+	 */
 	public static int partition2(int[] A, int p, int r) {
 		int i = randomIndexGenerator(p, r);
 		int x = A[i];
@@ -59,13 +84,27 @@ public class QuickSortPartitions {
 			quickSortWithPartition2(A, q + 1, r);
 		}
 	}
-
+	
+	/**
+	 * swap the two numbers in the array
+	 * 
+	 * @param i : int index of the first element to be swapped
+	 * @param r : int index of the second element to be swapped
+	 * @param A : int[] array
+	 */
 	public static void swap(int i, int r, int[] A) {
 		int tmp = A[i];
 		A[i] = A[r];
 		A[r] = tmp;
 	}
-
+	
+	/**
+	 * Method to generate randon Index from the array
+	 * 
+	 * @param fromIndex : int start index of the array
+	 * @param toIndex : int end index of the array
+	 * @return : int random index
+	 */
 	public static int randomIndexGenerator(int fromIndex, int toIndex) {
 		Random rand = new Random();
 		int index = rand.nextInt(toIndex - fromIndex + 1) + fromIndex;
