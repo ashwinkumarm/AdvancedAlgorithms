@@ -197,6 +197,7 @@ public class SelectAlgorithms {
 		System.out.println(t);
 		System.out.println("\n_________________________");
 		
+		in.close();
 
 	}
 
