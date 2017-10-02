@@ -48,10 +48,11 @@ public class DualPivotSort {
 		 
 		        if (A[i] < x1) {
 		            QuickSortPartitions.swap(k, i, A);
-		            k++;
+		            k++; 
+		            i++;
 		        }
 		        else if (A[i] > x2) {
-		            while (A[j] > x2 && i < j){
+		        	while (A[j] > x2 && i < j){
 		                j--;
 		            }
 		            QuickSortPartitions.swap(i, j, A);
@@ -59,9 +60,12 @@ public class DualPivotSort {
 		            if (A[k] < x1) {
 		            	QuickSortPartitions.swap(k, i, A);
 		                k++;
+		                i++;
 		            }
 		        }
-		        i++;
+		        else {
+		        	i++;
+		        }
 		    }
 		    k--;
 		    j++;
