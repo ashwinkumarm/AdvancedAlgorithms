@@ -7,7 +7,7 @@ public class ArrayIterator<T> implements Iterator<T> {
 	T[] arr;
 	int startIndex, endIndex, cursor;
 
-	ArrayIterator(T[] a) {
+	public ArrayIterator(T[] a) {
 		arr = a;
 		startIndex = 0;
 		endIndex = a.length - 1;

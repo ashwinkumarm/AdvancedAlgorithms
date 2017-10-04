@@ -9,7 +9,7 @@ import java.util.Comparator;
  * @param <T>
  *
  */
-public class BinaryHeap<T extends Index> {
+public class BinaryHeapForIndex<T extends Index> {
 
 	T array[];
 	int heapSize = 0;
@@ -25,7 +25,7 @@ public class BinaryHeap<T extends Index> {
 	 */
 	// TODO: Remove
 	@SuppressWarnings("unchecked")
-	public BinaryHeap(int capacity, Comparator<T> comparator) {
+	public BinaryHeapForIndex(int capacity, Comparator<T> comparator) {
 		array = (T[]) new Object[capacity];
 		this.comparator = comparator;
 	}
@@ -37,7 +37,7 @@ public class BinaryHeap<T extends Index> {
 	 * @param A
 	 * @param comparator
 	 */
-	public BinaryHeap(T a[], Comparator<T> comparator, int n) {
+	public BinaryHeapForIndex(T a[], Comparator<T> comparator, int n) {
 		array = a;
 		heapSize = n;
 		this.comparator = comparator;
@@ -206,7 +206,7 @@ public class BinaryHeap<T extends Index> {
 	 * descending order max heap ==> ascending order
 	 */
 	public static <T extends Index> void heapSort(T[] A, Comparator<T> comp) {
-		BinaryHeap<T> heap = new BinaryHeap<>(A, comp, A.length);
+		BinaryHeapForIndex<T> heap = new BinaryHeapForIndex<>(A, comp, A.length);
 		// buildHeap() method has already called in the constructor.
 		T tmp = heap.peek();
 		for (int i = 1; i < heap.array.length; i++) {

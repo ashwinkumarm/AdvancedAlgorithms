@@ -74,12 +74,10 @@ public class BinaryHeap<T> {
 				smallest++;
 			if (comparator.compare(x, array[smallest]) < 1)
 				break;
-			// TODO : move
 			array[i] = array[smallest];
 			i = smallest;
 			smallest = leftChild(i);
 		}
-		// TODO :move
 		array[i] = x;
 	}
 
@@ -92,11 +90,9 @@ public class BinaryHeap<T> {
 	void percolateUp(int i) {
 		T x = array[i];
 		while (i > 0 && comparator.compare(array[i], array[parent(i)]) == 1) {
-			// TODO : move pq[i] <- pq[parent(i)]
 			array[i] = array[parent(i)];
 			i = parent(i);
 		}
-		// TODO : move pq[i] <- X
 		array[i] = x;
 	}
 
@@ -177,9 +173,18 @@ public class BinaryHeap<T> {
 	 * @param x
 	 */
 	public void replace(T x) {
-		if (comparator.compare(x, array[ZERO_INDEX]) < 0)
+		if (comparator.compare(x, array[ZERO_INDEX]) > 0)
 			array[ZERO_INDEX] = x;
 		percolateDown(ZERO_INDEX);
+	}
+
+	/**
+	 * Returns the array representation of the binary heap.
+	 *
+	 * @return
+	 */
+	public T[] toArray() {
+		return array;
 	}
 
 	/**

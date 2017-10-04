@@ -2,7 +2,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6
 
 import java.util.Comparator;
 
-public class IndexedHeap<T extends Index> extends BinaryHeap<T> {
+public class IndexedHeap<T extends Index> extends BinaryHeapForIndex<T> {
 	/** Build a priority queue with a given array q */
 	public IndexedHeap(T[] q, Comparator<T> comp, int n) {
 		super(q, comp, n);
