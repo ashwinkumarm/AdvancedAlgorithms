@@ -156,6 +156,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 			to.revAdj.add(e);
 		} else {
 			from.adj.add(e);
+			e = new Edge(to, from, weight);
 			to.adj.add(e);
 		}
 	}
@@ -171,7 +172,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 	public void setDirected(boolean directed) {
 		this.directed = directed;
 	}
-	
+
 	/**
 	 * Method to create iterator for vertices of graph
 	 */
