@@ -156,7 +156,6 @@ public class Graph implements Iterable<Graph.Vertex> {
 			to.revAdj.add(e);
 		} else {
 			from.adj.add(e);
-			e = new Edge(to, from, weight);
 			to.adj.add(e);
 		}
 	}

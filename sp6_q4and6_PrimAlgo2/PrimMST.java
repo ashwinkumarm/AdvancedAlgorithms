@@ -18,8 +18,9 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 		super(g);
 		node = new PrimVertex[g.size()];
 		// Create array for storing vertex properties
+		int index = 0;
 		for (Graph.Vertex u : g) {
-			node[u.getName()] = new PrimVertex(u, Integer.MAX_VALUE, 0, false, null);
+			node[u.getName()] = new PrimVertex(u, Integer.MAX_VALUE, index++, false, null);
 		}
 	}
 
@@ -31,17 +32,19 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 		for (Graph.Edge e : s)
 			edgeQueue.add(e);
 		Edge e;
-		PrimVertex v;
+		PrimVertex u, v;
 		while (!edgeQueue.isEmpty()) {
 			e = edgeQueue.remove();
+			u = getVertex(e.from);
 			v = getVertex(e.to);
-			if (v.seen == true)
+			if (u.seen && v.seen)
 				continue;
+			v = u.seen ? v : u;
 			v.seen = true;
 			// MST is implicitly stored by parent pointers
 			v.parent = e.from;
 			wmst += e.weight;
-			for (Graph.Edge e2 : e.to)
+			for (Graph.Edge e2 : v.vertex)
 				if (getVertex(e2.otherEnd(v.vertex)).seen != true)
 					edgeQueue.add(e2);
 		}
@@ -72,7 +75,9 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 		// Node v in V-S (Priority Queue) stores in v.d, the weight of a
 		// smallest edge that connects v to some u in S
 		VertexComparator comp = new VertexComparator();
-		IndexedHeap<PrimVertex> vertexQueue = new IndexedHeap<>(node, comp, node.length);
+		PrimVertex[] vertexArray = new PrimVertex[node.length];
+		System.arraycopy(node, 0, vertexArray, 0, node.length);
+		IndexedHeap<PrimVertex> vertexQueue = new IndexedHeap<>(vertexArray, comp, node.length);
 		getVertex(s).d = 0;
 		PrimVertex v, v2;
 		while (!vertexQueue.isEmpty()) {
@@ -80,7 +85,7 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 			v.seen = true;
 			wmst += v.d;
 			for (Graph.Edge e : v.vertex) {
-				v2 = getVertex(e.to);
+				v2 = getVertex(e.otherEnd(v.vertex));
 				if (v2.seen != true && v2.d > e.weight) {
 					v2.d = e.weight;
 					v2.parent = v.vertex;
@@ -125,7 +130,7 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 
 		Timer timer = new Timer();
 		PrimMST mst = new PrimMST(g);
-		int wmst = mst.prim1(s);
+		int wmst = mst.prim2(s);
 		timer.end();
 		System.out.println(wmst);
 	}
