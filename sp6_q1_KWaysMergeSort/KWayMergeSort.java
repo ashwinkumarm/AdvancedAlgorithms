@@ -7,6 +7,7 @@ import java.util.Scanner;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort.Shuffle;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort.Timer;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.MergeSortVariations;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Node;
 
 /**
  * Class to implements Merge sort by splitting the array A 
@@ -22,46 +23,50 @@ public class KWayMergeSort {
 	
 	public static int[] mergeKSortedArrays(int[][] subA, int k, int sortedArray[]){
 		
-		PriorityQueue<Integer> queue = new PriorityQueue<>();
-		int subArraySize = subA[0].length;
+		PriorityQueue<Node> queue = new PriorityQueue<>(k);
 		int l = 0;
-		for(int j=0; j< subArraySize; j++) {
-			int i = 0;
-			while(i < k) {
-				if(queue.size() < k) {
-					queue.add(subA[i][j]);
-					i++;
-				}
-				else {
-					sortedArray[l] = queue.poll();
-					l++;
-				}				
-			}
+		int i = 0;
+		for (int[] arr : subA) {
+			Node n = new Node(arr[0], 1, i, arr.length);
+			queue.add(n);
+			i++;
+		}
+		
+		Node tmp = queue.poll();
+		while(tmp != null){
 			
-		}
-		while(!queue.isEmpty()){
-			sortedArray[l] = queue.poll();
+			sortedArray[l] = tmp.getElement();
 			l++;
+			if(tmp.hasNext()){
+				int arrayIndex = tmp.getArrayIndex();
+				int nextIndex = tmp.getNextIndex();
+				tmp.setElement(subA[arrayIndex][nextIndex]);
+				tmp.setNextIndex(nextIndex+1);
+				queue.add(tmp);
+			}
+				tmp = queue.poll();
+		
 		}
+		
 		return sortedArray;
 		
 	}
 	
-	public static int[][] fragmentArray(int A[],int k){
+	public static int[][] fragmentArray(int A[],int sizeOfSubarray){
 		
-		int subArraySize = A.length/k;
-		if(A.length%k != 0){
-			k = k+1;
-		}
+		int k = (int)Math.ceil((double)A.length/sizeOfSubarray);
 		
-		int subA[][] = new int[k][];
-		int l = 0;
-		for(int i=0; i<k; i++){
-			for(int j =0; j<subArraySize ; j++ ){
-				subA[i][j] = A[l];
-				l++;
-			}
-		}
+        int[][] subA = new int[k][];
+
+        for(int i = 0; i < k; ++i) {
+            int start = i * sizeOfSubarray;
+            int length = Math.min(A.length - start, sizeOfSubarray);
+
+            int[] temp = new int[length];
+            System.arraycopy(A, start, temp, 0, length);
+            subA[i] = temp;
+        }
+        
 		return subA;
 	}
 	
@@ -71,7 +76,7 @@ public class KWayMergeSort {
 			MergeSortVariations.mergeSortVersion4(array);
 		}
 		int sortedArray[] = new int[A.length]; 
-		mergeKSortedArrays(subA, k, sortedArray);
+		mergeKSortedArrays(subA, subA.length, sortedArray);
 		return sortedArray;
 	}
 	
