@@ -182,8 +182,7 @@ public class BinaryHeapForIndex<T extends Index> {
 	 * @param x
 	 */
 	public void replace(T x) {
-		if (comparator.compare(x, array[ZERO_INDEX]) < 0)
-			array[ZERO_INDEX] = x;
+		array[ZERO_INDEX] = x;
 		percolateDown(ZERO_INDEX);
 	}
 

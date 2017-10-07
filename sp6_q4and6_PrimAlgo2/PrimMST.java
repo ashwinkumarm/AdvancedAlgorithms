@@ -128,10 +128,23 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 		Graph g = Graph.readGraph(in);
 		Graph.Vertex s = g.getVertex(1);
 
-		Timer timer = new Timer();
 		PrimMST mst = new PrimMST(g);
-		int wmst = mst.prim2(s);
+
+		Timer timer = new Timer();
+		int wmst = mst.prim1(s);
 		timer.end();
-		System.out.println(wmst);
+		System.out.println("Java's Priority Queue");
+		System.out.println("MST weight: " + wmst);
+		System.out.println(timer);
+		System.out.println("---------------------");
+
+		PrimMST mst1 = new PrimMST(g);
+
+		timer.start();
+		wmst = mst1.prim2(s);
+		timer.end();
+		System.out.println("Indexed Heap");
+		System.out.println("MST weight: " + wmst);
+		System.out.println(timer);
 	}
 }
