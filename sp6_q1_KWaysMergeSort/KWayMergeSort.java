@@ -20,8 +20,14 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 public class KWayMergeSort {
 
 	
-	
-	public static int[] mergeKSortedArrays(int[][] subA, int k, int sortedArray[]){
+	/**
+	 * This method merges all the sorted sub arrays using a priority queue
+	 * 
+	 * @param subA : int[][]: input sorted sub arrays 
+	 * @param k :int : number of sub arrays
+	 * @param sortedArray :int: output sorted Array
+	 */
+	public static void mergeKSortedArrays(int[][] subA, int k, int sortedArray[]){
 		
 		PriorityQueue<Node> queue = new PriorityQueue<>(k);
 		int l = 0;
@@ -38,19 +44,23 @@ public class KWayMergeSort {
 			sortedArray[l] = tmp.getElement();
 			l++;
 			if(tmp.hasNext()){
-				int arrayIndex = tmp.getArrayIndex();
-				int nextIndex = tmp.getNextIndex();
-				tmp.setElement(subA[arrayIndex][nextIndex]);
-				tmp.setNextIndex(nextIndex+1);
+				tmp.setElement(subA);
+				tmp.setNextIndex(tmp.getNextIndex()+1);
 				queue.add(tmp);
 			}
 				tmp = queue.poll();
 		
 		}
 		
-		return sortedArray;
-		
 	}
+	
+	/**
+	 * This method partitions the array into k subarrays.
+	 * 
+	 * @param A : int[]: input array
+	 * @param sizeOfSubarray : int: max size of sub array.
+	 * @return : int[][]: sub arrays as 2D array.
+	 */
 	
 	public static int[][] fragmentArray(int A[],int sizeOfSubarray){
 		
@@ -70,6 +80,14 @@ public class KWayMergeSort {
 		return subA;
 	}
 	
+	/**
+	 * This method fragments the array and sorts them and then merges 
+	 * all the sub arrays together
+	 * 
+	 * @param A
+	 * @param k
+	 * @return
+	 */
 	public static int[] kWaysMergeSort(int A[], int k){
 		int subA[][] = fragmentArray(A, k);
 		for (int[] array : subA) {
@@ -88,6 +106,7 @@ public class KWayMergeSort {
 		}
 	}
 	
+	// Driver Code
 	public static void main(String[] args) {
 
 		Scanner in = new Scanner(System.in);
