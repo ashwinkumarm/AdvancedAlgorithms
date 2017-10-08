@@ -42,7 +42,7 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 			v = u.seen ? v : u;
 			v.seen = true;
 			// MST is implicitly stored by parent pointers
-			v.parent = e.from;
+			v.parent = e.otherEnd(v.vertex);
 			wmst += e.weight;
 			for (Graph.Edge e2 : v.vertex)
 				if (getVertex(e2.otherEnd(v.vertex)).seen != true)
@@ -77,8 +77,8 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 		VertexComparator comp = new VertexComparator();
 		PrimVertex[] vertexArray = new PrimVertex[node.length];
 		System.arraycopy(node, 0, vertexArray, 0, node.length);
-		IndexedHeap<PrimVertex> vertexQueue = new IndexedHeap<>(vertexArray, comp, node.length);
 		getVertex(s).d = 0;
+		IndexedHeap<PrimVertex> vertexQueue = new IndexedHeap<>(vertexArray, comp, node.length);
 		PrimVertex v, v2;
 		while (!vertexQueue.isEmpty()) {
 			v = vertexQueue.remove();
@@ -97,8 +97,7 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 	}
 
 	/**
-	 * Comparator based on priorities of the Vertices to create heap of
-	 * Vertices.
+	 * Comparator based on priorities of the Vertices to create heap of Vertices.
 	 *
 	 * @param <T>
 	 */
@@ -126,7 +125,7 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 		}
 
 		Graph g = Graph.readGraph(in);
-		Graph.Vertex s = g.getVertex(1);
+		Graph.Vertex s = g.getVertex(4);
 
 		PrimMST mst = new PrimMST(g);
 
