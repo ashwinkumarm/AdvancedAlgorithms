@@ -89,11 +89,8 @@ public class SelectComparison {
 	 * @param size
 	 */
 	public static void generateArray(Integer[] arr, int size) {
-		int j = size;
-		for (int i = 0; i < size; i++) {
-			arr[i] = j;
-			j--;
-		}
+		for (int i = 1; i <= size; i++)
+			arr[i-1] = i;
 	}
 
 	/**
@@ -114,6 +111,7 @@ public class SelectComparison {
 		Object[] result1 = javaPriorityQueueMinHeap(arr, k, Comparator.<Integer>naturalOrder());
 		t.end();
 
+		System.out.println("Random Ordered Input:\n");
 		System.out.println("Java's Priority Queue :");
 		System.out.println(Arrays.toString(result1));
 		System.out.println(t);
@@ -128,6 +126,29 @@ public class SelectComparison {
 
 		System.out.println("Priority Queue Implementation with replace():");
 		System.out.println(Arrays.toString(result2));
+		System.out.println(t);
+		System.out.println("___________________________\n");
+
+		generateArray(arr, size);
+
+		t.start();
+		Object[] result3 = javaPriorityQueueMinHeap(arr, k, Comparator.<Integer>naturalOrder());
+		t.end();
+
+		System.out.println("Increasing ordered Input:\n");
+		System.out.println("Java's Priority Queue :");
+		System.out.println(Arrays.toString(result3));
+		System.out.println(t);
+		System.out.println("-------------------------");
+
+		generateArray(arr, size);
+
+		t.start();
+		Object[] result4 = priorityQueueMinHeapWithReplace(arr, k, Comparator.<Integer>naturalOrder());
+		t.end();
+
+		System.out.println("Priority Queue Implementation with replace():");
+		System.out.println(Arrays.toString(result4));
 		System.out.println(t);
 		System.out.println("___________________________");
 		in.close();

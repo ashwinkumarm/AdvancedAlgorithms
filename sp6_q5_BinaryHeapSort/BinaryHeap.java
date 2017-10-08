@@ -89,7 +89,7 @@ public class BinaryHeap<T> {
 	 */
 	void percolateUp(int i) {
 		T x = array[i];
-		while (i > 0 && comparator.compare(array[i], array[parent(i)]) == 1) {
+		while (i > 0 && comparator.compare(x, array[parent(i)]) < 0) {
 			array[i] = array[parent(i)];
 			i = parent(i);
 		}
