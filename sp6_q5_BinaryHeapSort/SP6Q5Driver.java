@@ -9,7 +9,7 @@ import java.util.Random;
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
-public class Driver {
+public class SP6Q5Driver {
 
 	/**
 	 * main method.

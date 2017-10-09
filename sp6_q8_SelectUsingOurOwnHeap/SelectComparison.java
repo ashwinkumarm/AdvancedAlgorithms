@@ -15,16 +15,18 @@ public class SelectComparison {
 	/**
 	 * Select K largest number using Java's priorityQueue (Min Heap)
 	 *
+	 * @param <T>
+	 *
 	 * @param A
 	 *            : Integer[] array
 	 * @param k
 	 *            : int k number of largest elements
 	 * @return : Integer[] array with k largest elements
 	 */
-	public static Object[] javaPriorityQueueMinHeap(Integer A[], int k) {
+	public static <T> Object[] javaPriorityQueueMinHeap(T A[], int k, Comparator<T> comparator) {
 
-		PriorityQueue<Integer> queue = new PriorityQueue<>(k);
-		ArrayIterator<Integer> it = new ArrayIterator<>(A);
+		PriorityQueue<T> queue = new PriorityQueue<>(k, comparator);
+		ArrayIterator<T> it = new ArrayIterator<>(A);
 
 		while (k > 0) {
 			if (it.hasNext()) {
@@ -36,8 +38,8 @@ public class SelectComparison {
 		}
 
 		while (it.hasNext()) {
-			int x = it.next();
-			if (queue.peek() < x) {
+			T x = it.next();
+			if (comparator.compare(x, queue.peek()) > 0) {
 				queue.poll();
 				queue.add(x);
 			}
@@ -50,16 +52,18 @@ public class SelectComparison {
 	 * Select K largest number using our own priority queue (Min Heap) with
 	 * replace() method.
 	 *
+	 * @param <T>
+	 *
 	 * @param A
 	 *            : Integer[] array
 	 * @param k
 	 *            : int k number of largest elements
 	 * @return : Integer[] array with k largest elements
 	 */
-	public static Object[] priorityQueueMinHeapWithReplace(Integer A[], int k) {
+	public static <T> T[] priorityQueueMinHeapWithReplace(T A[], int k, Comparator<T> comparator) {
 
-		BinaryHeap<Integer> queue = new BinaryHeap<Integer>(k, Comparator.<Integer>naturalOrder());
-		ArrayIterator<Integer> it = new ArrayIterator<>(A);
+		BinaryHeap<T> queue = new BinaryHeap<>(k, comparator);
+		ArrayIterator<T> it = new ArrayIterator<>(A);
 
 		while (k > 0) {
 			if (it.hasNext()) {
@@ -71,8 +75,9 @@ public class SelectComparison {
 		}
 
 		while (it.hasNext()) {
-			int x = it.next();
-			queue.replace(x);
+			T x = it.next();
+			if (comparator.compare(x, queue.peek()) > 0)
+				queue.replace(x);
 		}
 		return queue.toArray();
 	}
@@ -84,11 +89,8 @@ public class SelectComparison {
 	 * @param size
 	 */
 	public static void generateArray(Integer[] arr, int size) {
-		int j = size;
-		for (int i = 0; i < size; i++) {
-			arr[i] = j;
-			j--;
-		}
+		for (int i = 1; i <= size; i++)
+			arr[i-1] = i;
 	}
 
 	/**
@@ -106,9 +108,10 @@ public class SelectComparison {
 		Shuffle.shuffle(arr);
 
 		Timer t = new Timer();
-		Object[] result1 = javaPriorityQueueMinHeap(arr, k);
+		Object[] result1 = javaPriorityQueueMinHeap(arr, k, Comparator.<Integer>naturalOrder());
 		t.end();
 
+		System.out.println("Random Ordered Input:\n");
 		System.out.println("Java's Priority Queue :");
 		System.out.println(Arrays.toString(result1));
 		System.out.println(t);
@@ -118,11 +121,34 @@ public class SelectComparison {
 		Shuffle.shuffle(arr);
 
 		t.start();
-		Object[] result2 = priorityQueueMinHeapWithReplace(arr, k);
+		Object[] result2 = priorityQueueMinHeapWithReplace(arr, k, Comparator.<Integer>naturalOrder());
 		t.end();
 
 		System.out.println("Priority Queue Implementation with replace():");
 		System.out.println(Arrays.toString(result2));
+		System.out.println(t);
+		System.out.println("___________________________\n");
+
+		generateArray(arr, size);
+
+		t.start();
+		Object[] result3 = javaPriorityQueueMinHeap(arr, k, Comparator.<Integer>naturalOrder());
+		t.end();
+
+		System.out.println("Increasing ordered Input:\n");
+		System.out.println("Java's Priority Queue :");
+		System.out.println(Arrays.toString(result3));
+		System.out.println(t);
+		System.out.println("-------------------------");
+
+		generateArray(arr, size);
+
+		t.start();
+		Object[] result4 = priorityQueueMinHeapWithReplace(arr, k, Comparator.<Integer>naturalOrder());
+		t.end();
+
+		System.out.println("Priority Queue Implementation with replace():");
+		System.out.println(Arrays.toString(result4));
 		System.out.println(t);
 		System.out.println("___________________________");
 		in.close();
