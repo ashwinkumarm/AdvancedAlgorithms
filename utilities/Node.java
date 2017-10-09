@@ -1,12 +1,18 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
+/**
+ * This class keeps track of the next element from every subarray.
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class Node implements Comparable<Node> {
 	
 
-	int element;
-	int nextIndex;
-	int arrayIndex;
-	int size;
+	int element; // current value in the subarray
+	int nextIndex; //index of the next element in the subarray
+	int arrayIndex; // index of the subarray to which the element belongs
+	int size; // number of element in the subarray
 	
 	public Node(int element, int nextIndex, int arrayIndex, int size){
 		this.element = element;
@@ -26,9 +32,13 @@ public class Node implements Comparable<Node> {
 	public int getElement() {
 		return element;
 	}
-
-	public void setElement(int element) {
-		this.element = element;
+	
+	/**
+	 * sets the next element in the sub array to element
+	 * @param subA : int[][] : reference to sub arrays
+	 */
+	public void setElement(int subA[][]) {
+		this.element = subA[getArrayIndex()][getNextIndex()];
 	}
 	
 	public int getNextIndex() {
