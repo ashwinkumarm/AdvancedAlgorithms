@@ -33,38 +33,44 @@ public class BinaryTree<T> {
 		root = new Entry<>(null, null, null);
 		size = 0;
 	}
-	
-	public void visit(Entry<T> entry){
+
+	public void visit(Entry<T> entry) {
 		System.out.println(entry.element);
 	}
-	
-	public void postOrder(){
+
+	public void postOrder() {
 		postOrder(root);
 	}
-	
-	public void preOrder(){
+
+	public void preOrder() {
 		preOrder(root);
 	}
-	
-	public void inOrder(){
+
+	public void inOrder() {
 		inOrder(root);
 	}
-	
-	public void postOrder(Entry<T> entry){
-		postOrder(entry.left);
-		postOrder(entry.right);
-		visit(entry);
-	}
-	
-	public void preOrder(Entry<T> entry){
-		visit(entry);
-		preOrder(entry.left);
-		preOrder(entry.right);
+
+	public void postOrder(Entry<T> r) {
+		if (r != null) {
+			postOrder(r.left);
+			postOrder(r.right);
+			visit(r);
+		}
 	}
 
-	public void inOrder(Entry<T> entry){
-		inOrder(entry.left);
-		visit(entry);
-		inOrder(entry.right);
+	public void preOrder(Entry<T> r) {
+		if (r != null) {
+			visit(r);
+			preOrder(r.left);
+			preOrder(r.right);
+		}
+	}
+
+	public void inOrder(Entry<T> r) {
+		if (r != null) {
+			inOrder(r.left);
+			visit(r);
+			inOrder(r.right);
+		}
 	}
 }
