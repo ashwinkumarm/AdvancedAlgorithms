@@ -90,10 +90,13 @@ public class HuffmanCoding {
 	 */
 	public static void printCodes(HuffmanTree tree, StringBuilder code) {
 		if (tree != null) {
+			// Check if the tree is an instanceof LeafNode
 			if (tree instanceof HuffmanTree.LeafNode) {
 				HuffmanTree.LeafNode leaf = (HuffmanTree.LeafNode) tree;
 				System.out.println(leaf.value + "    " + leaf.frequency + "   " + code.toString());
-			} else if (tree instanceof HuffmanTree.InnerNode) {
+			}
+			// Check if the tree is an instanceof InnerNode
+			else if (tree instanceof HuffmanTree.InnerNode) {
 				HuffmanTree.InnerNode node = (HuffmanTree.InnerNode) tree;
 				code.append('0');
 				printCodes(node.left, code);
@@ -107,6 +110,7 @@ public class HuffmanCoding {
 
 	/**
 	 * Main method for testing
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {

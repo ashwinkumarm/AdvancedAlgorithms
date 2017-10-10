@@ -2,6 +2,13 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6
 
 import java.util.Comparator;
 
+/**
+ * This class supports the indexed heap
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ * @param <T>
+ */
 public class IndexedHeap<T extends Index> extends BinaryHeapForIndex<T> {
 	/** Build a priority queue with a given array q */
 	public IndexedHeap(T[] q, Comparator<T> comp, int n) {

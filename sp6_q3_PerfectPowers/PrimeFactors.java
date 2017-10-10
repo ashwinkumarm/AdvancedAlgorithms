@@ -9,7 +9,13 @@ import java.util.PriorityQueue;
  *
  */
 public class PrimeFactors {
-	
+
+	/**
+	 * This method finds the prime factors upto n
+	 * 
+	 * @param arr
+	 * @param n
+	 */
 	public static void primeFactors(int[] arr, int n) {
 		PriorityQueue<Integer> pq = new PriorityQueue<>();
 
@@ -36,10 +42,15 @@ public class PrimeFactors {
 		}
 
 	}
-	
-	public static void main(String[] args){
-		int[] a = {3,5,7};
-		primeFactors(a,Integer.MAX_VALUE);
+
+	/**
+	 * Main method for testing
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		int[] a = { 3, 5, 7 };
+		primeFactors(a, Integer.MAX_VALUE);
 	}
 
 }

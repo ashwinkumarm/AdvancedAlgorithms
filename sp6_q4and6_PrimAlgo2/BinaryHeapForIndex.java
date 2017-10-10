@@ -3,7 +3,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6
 import java.util.Comparator;
 
 /**
- * Implementation of a Binary Heap using an array.
+ * This class implements the Binary Heap using an array.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  * @param <T>
@@ -17,22 +17,21 @@ public class BinaryHeapForIndex<T extends Index> {
 	Comparator<T> comparator;
 
 	/**
-	 * Constructor to create a new binary heap with the given capacity and
-	 * priority set based on the comparator.
+	 * Constructor to create a new binary heap with the given capacity and priority
+	 * set based on the comparator.
 	 *
 	 * @param capacity
 	 * @param comparator
 	 */
 	// TODO: Remove
-	@SuppressWarnings("unchecked")
 	public BinaryHeapForIndex(int capacity, Comparator<T> comparator) {
 		array = (T[]) new Object[capacity];
 		this.comparator = comparator;
 	}
 
 	/**
-	 * Constructor to construct a binary heap within the given array priority
-	 * set based on the comparator.
+	 * Constructor to construct a binary heap within the given array priority set
+	 * based on the comparator.
 	 *
 	 * @param A
 	 * @param comparator
@@ -59,10 +58,10 @@ public class BinaryHeapForIndex<T extends Index> {
 	/**
 	 * Percolates down the hole. Takes O(lg n) time. When it is called,
 	 * percolateDown assumes that the binary trees rooted at LEFT.i and RIGHT.i
-	 * satisfy the order property, but heap order property may be violated at
-	 * index i with its immediate children. PercolateDown lets the value at A[i]
-	 * “float down” in the heap so that the subtree rooted at index i obeys the
-	 * heap order property.
+	 * satisfy the order property, but heap order property may be violated at index
+	 * i with its immediate children. PercolateDown lets the value at A[i] ï¿½float
+	 * downï¿½ in the heap so that the subtree rooted at index i obeys the heap order
+	 * property.
 	 *
 	 * @param i
 	 */
@@ -109,8 +108,8 @@ public class BinaryHeapForIndex<T extends Index> {
 	}
 
 	/**
-	 * Adds the given element into the binary heap and preserves and structure
-	 * and heap order property.
+	 * Adds the given element into the binary heap and preserves and structure and
+	 * heap order property.
 	 *
 	 * @param x
 	 */
@@ -123,12 +122,12 @@ public class BinaryHeapForIndex<T extends Index> {
 	}
 
 	/**
-	 * Fact : for a binary heap, elements from A[floor(n/2)+1,...n] represent
-	 * the leaf nodes. So before calling buildMinHeap each of those elements
-	 * represent a 1-element minheap. As said in the comment of minheapify these
-	 * elements already satisfy min-heap order property, but when we add add an
-	 * element from A[n/2], heap order property will be violated and thus we
-	 * call minheap(i); Similarly we continue for n/2-1,n/2-2,...1.
+	 * Fact : for a binary heap, elements from A[floor(n/2)+1,...n] represent the
+	 * leaf nodes. So before calling buildMinHeap each of those elements represent a
+	 * 1-element minheap. As said in the comment of minheapify these elements
+	 * already satisfy min-heap order property, but when we add add an element from
+	 * A[n/2], heap order property will be violated and thus we call minheap(i);
+	 * Similarly we continue for n/2-1,n/2-2,...1.
 	 *
 	 * @param A
 	 */
@@ -138,9 +137,8 @@ public class BinaryHeapForIndex<T extends Index> {
 	}
 
 	/**
-	 * Removes the min element (i.e., maximum priority element) from the binary
-	 * heap and preserves the structure and order property through
-	 * percolateDown.
+	 * Removes the min element (i.e., maximum priority element) from the binary heap
+	 * and preserves the structure and order property through percolateDown.
 	 *
 	 * @return
 	 */
@@ -176,8 +174,8 @@ public class BinaryHeapForIndex<T extends Index> {
 
 	/**
 	 * Replaces root of binary heap by x if x has higher priority (smaller) than
-	 * root, and restore heap order. Otherwise do nothing. This operation is
-	 * used in finding largest k elements in a stream.
+	 * root, and restore heap order. Otherwise do nothing. This operation is used in
+	 * finding largest k elements in a stream.
 	 *
 	 * @param x
 	 */
@@ -198,11 +196,11 @@ public class BinaryHeapForIndex<T extends Index> {
 	}
 
 	/**
-	 * Get the minimum element from the root node one by one and then minHeapify
-	 * to preserve the heap order structure - O(n log n)
+	 * Get the minimum element from the root node one by one and then minHeapify to
+	 * preserve the heap order structure - O(n log n)
 	 *
-	 * Sorted order depends on comparator used to buid heap. min heap ==>
-	 * descending order max heap ==> ascending order
+	 * Sorted order depends on comparator used to buid heap. min heap ==> descending
+	 * order max heap ==> ascending order
 	 */
 	public static <T extends Index> void heapSort(T[] A, Comparator<T> comp) {
 		BinaryHeapForIndex<T> heap = new BinaryHeapForIndex<>(A, comp, A.length);

@@ -10,6 +10,14 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q5_BinaryHeapSort.BinaryHeap;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ArrayIterator;
 
+/**
+ * This class performs the comparison between the two versions of selection
+ * algorithms using add and remove operations of Priority Queue and using
+ * replace operations of Priority queue
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class SelectComparison {
 
 	/**
@@ -90,11 +98,11 @@ public class SelectComparison {
 	 */
 	public static void generateArray(Integer[] arr, int size) {
 		for (int i = 1; i <= size; i++)
-			arr[i-1] = i;
+			arr[i - 1] = i;
 	}
 
 	/**
-	 * Main method.
+	 * Main method for testing
 	 *
 	 * @param args
 	 */

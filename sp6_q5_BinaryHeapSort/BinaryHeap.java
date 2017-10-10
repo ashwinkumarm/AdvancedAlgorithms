@@ -3,7 +3,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6
 import java.util.Comparator;
 
 /**
- * Implementation of a Binary Heap using an array.
+ * This class implements the Binary Heap using an array.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  * @param <T>
@@ -24,7 +24,6 @@ public class BinaryHeap<T> {
 	 * @param comparator
 	 */
 	// TODO: Remove
-	@SuppressWarnings("unchecked")
 	public BinaryHeap(int capacity, Comparator<T> comparator) {
 		array = (T[]) new Object[capacity];
 		this.comparator = comparator;
@@ -61,7 +60,7 @@ public class BinaryHeap<T> {
 	 * percolateDown assumes that the binary trees rooted at LEFT.i and RIGHT.i
 	 * satisfy the order property, but heap order property may be violated at
 	 * index i with its immediate children. PercolateDown lets the value at A[i]
-	 * “float down” in the heap so that the subtree rooted at index i obeys the
+	 * ï¿½float downï¿½ in the heap so that the subtree rooted at index i obeys the
 	 * heap order property.
 	 *
 	 * @param i

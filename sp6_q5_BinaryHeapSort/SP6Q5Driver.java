@@ -17,7 +17,6 @@ public class SP6Q5Driver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// Integer a[] = { 45, 89, 21, 6, 3, 54, 57, 2, 11, 7, 43, 9, 99 };
 		Random rand = new Random();
 		Integer a[] = new Integer[100];
 		for (int i = 0; i < 50; i++)

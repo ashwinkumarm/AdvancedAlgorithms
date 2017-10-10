@@ -5,12 +5,27 @@ import java.util.Comparator;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
+/**
+ * This class stores the Prim Vertex used in Prims algorithm
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 class PrimVertex implements Comparator<PrimVertex>, Index {
 	Graph.Vertex vertex;
 	int d, index;
 	boolean seen;
 	Graph.Vertex parent;
 
+	/**
+	 * Constructor for initializing the vertex, d, index, seen and parent members
+	 * 
+	 * @param vertex
+	 * @param d
+	 * @param index
+	 * @param seen
+	 * @param parent
+	 */
 	public PrimVertex(Vertex vertex, int d, int index, boolean seen, Graph.Vertex parent) {
 		super();
 		this.vertex = vertex;
@@ -41,6 +56,5 @@ class PrimVertex implements Comparator<PrimVertex>, Index {
 	public String toString() {
 		return "PrimVertex [vertex=" + vertex + "]";
 	}
-
 
 }

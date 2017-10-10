@@ -11,6 +11,13 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Timer;
 
+/**
+ * This class performs two versions of Prims algorithm for finding the minimum spanning tree
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ * @param <T>
+ */
 public class PrimMST extends GraphAlgorithm<PrimVertex> {
 	static final int Infinity = Integer.MAX_VALUE;
 
@@ -24,6 +31,13 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 		}
 	}
 
+	/**
+	 * This method performs the version1 of Prims algorithm that is based on the
+	 * weights of the edges
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public int prim1(Graph.Vertex s) {
 		int wmst = 0;
 		EdgeComparator comp = new EdgeComparator();
@@ -69,6 +83,13 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 		}
 	}
 
+	/**
+	 * This method performs the version2 of Prims algorithm that is based on the
+	 * weights of vertices
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public int prim2(Graph.Vertex s) {
 		int wmst = 0;
 
@@ -114,6 +135,12 @@ public class PrimMST extends GraphAlgorithm<PrimVertex> {
 		}
 	}
 
+	/**
+	 * Main method for testing
+	 * 
+	 * @param args
+	 * @throws FileNotFoundException
+	 */
 	public static void main(String[] args) throws FileNotFoundException {
 		Scanner in;
 
