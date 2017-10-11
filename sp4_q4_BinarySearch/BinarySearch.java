@@ -61,7 +61,47 @@ public class BinarySearch {
 			return -1;
 		}
 	}
-
+	
+	public static int recursiveBinarySearch(int[] A, int p, int r, int x) {
+		// Compare middle element of A[p..r] to x to decide which half of the array to search
+		if(p <= r) {
+		    int q = (p+r)/2;
+		    if(A[q] < x) {  // A[q] is too small, x is not in left half
+			return recursiveBinarySearch(A, q+1, r, x);
+		    } else if (A[q] == x) {  // x found
+			return q;
+		    } else { // A[q] > x, so x is not in the right half
+			return recursiveBinarySearch(A, p, q-1, x);
+		    }
+		} else { // empty array, return false
+		    return -1;
+		}
+	}
+	
+	public  static int findNoOfOccurences(int[] arr, int p, int r, int x) {
+		int index = recursiveBinarySearch(arr,p, r, x);
+		int occurence = 0;
+		if(index != -1){
+			occurence++;
+			if(index !=p && index != arr.length-1){
+				if(arr[index-1] == x ){
+					while(index > p && arr[index-1] == x){
+					occurence++;
+					index--;
+					}
+				}
+				else if (index < r){
+					while(index < r && arr[index+1] == x){
+					occurence++;
+					index++;
+					}
+				}
+			}
+		}
+		
+		return occurence;
+	}
+	
 	/**
 	 * Main method for testing
 	 * @param args
