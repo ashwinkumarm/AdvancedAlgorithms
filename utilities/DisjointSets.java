@@ -1,8 +1,8 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
-public class DisjointSets<T extends DisjointNode<T>> {
+public class DisjointSets<T extends DisjointNode> {
 
-	T[] s;
+	DisjointNode[] s;
 
 	/**
 	 * Construct the disjoint sets object.
@@ -11,44 +11,45 @@ public class DisjointSets<T extends DisjointNode<T>> {
 	 *            the initial number of disjoint sets
 	 */
 	public DisjointSets(int numElements) {
-		s = (T[]) new Object[numElements];
+		s = new DisjointNode[numElements];
 	}
 
 	public void makeSet(T u) {
 		s[u.index] = u;
+		u.p = u;
 	}
 
 	/**
-	 * Union two disjoint sets using the height heuristic. For simplicity, we
-	 * assume root1 and root2 are distinct and represent set names.
+	 * Union two disjoint sets using the rank heuristic.
 	 *
-	 * @param root1
+	 * @param x
 	 *            the root of set 1.
-	 * @param root2
+	 * @param y
 	 *            the root of set 2.
 	 */
 	public void union(int x, int y) {
-		if (s[x].rank > s[y].rank) // root2 is deeper
-			s[y].p = s[x];// Make root2 new root
-		else if (s[y].rank > s[x].rank)
-			s[x].p = s[y];
-		else
-			s[x].rank++;
-		s[y].p = s[x];
+		DisjointNode u = s[x], v = s[y];
+		if (u.rank > v.rank) // root2 is deeper
+			v.p = u;// Make root2 new root
+		else if (v.rank > u.rank)
+			u.p = v;
+		else {
+			u.rank++;
+			v.p = u;
+		}
 	}
 
 	/**
-	 * Perform a find. Error checks omitted again for simplicity.Since union by
-	 * height method is used, path compression is not done.
+	 * Performs a find.
 	 *
 	 * @param x
 	 *            the element being searched for.
 	 * @return the set containing x.
 	 */
 	public int find(int x) {
-		if (s[x].equals(s[x].p))
-			return x;
-		else
-			return find(s[x].p.index);
+		DisjointNode u = s[x];
+		if (u.index != u.p.index)
+			u.p = s[find(u.p.index)]; // path compresssion
+		return u.p.index;
 	}
 }

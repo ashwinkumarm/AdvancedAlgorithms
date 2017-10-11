@@ -20,7 +20,7 @@ public class KruskalMST {
 	List<Graph.Edge> allEdges;
 	DisjointSets<KruskalVertex> set;
 
-	class KruskalVertex extends DisjointNode<KruskalVertex> {
+	class KruskalVertex extends DisjointNode {
 		Graph.Vertex vertex;
 
 		KruskalVertex(Graph.Vertex v, int index, KruskalVertex p, int rank) {
@@ -38,7 +38,7 @@ public class KruskalMST {
 		while (it.hasNext()) {
 			v = it.next();
 			set.makeSet(new KruskalVertex(v, getIndex(v), null, 0));
-			for (Graph.Edge e : it.next())
+			for (Graph.Edge e : v)
 				allEdges.add(e);
 		}
 		Collections.sort(allEdges, comp);
@@ -59,14 +59,12 @@ public class KruskalMST {
 				wmst += e.weight;
 				set.union(ru, rv);
 			}
-
 		}
-
 		return wmst;
 	}
 
 	private int getIndex(Vertex v) {
-		return v.getName() - 1;
+		return v.getName();
 	}
 
 	/**
@@ -96,13 +94,12 @@ public class KruskalMST {
 		} else {
 			in = new Scanner(System.in);
 		}
-
 		Graph g = Graph.readGraph(in);
-
 		Timer timer = new Timer();
 		KruskalMST mst = new KruskalMST(g);
 		int wmst = mst.kruskal();
 		timer.end();
 		System.out.println(wmst);
+		System.out.println(timer);
 	}
 }

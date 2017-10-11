@@ -24,6 +24,7 @@ public class BinaryHeapForIndex<T extends Index> {
 	 * @param comparator
 	 */
 	// TODO: Remove
+	@SuppressWarnings("unchecked")
 	public BinaryHeapForIndex(int capacity, Comparator<T> comparator) {
 		array = (T[]) new Object[capacity];
 		this.comparator = comparator;
