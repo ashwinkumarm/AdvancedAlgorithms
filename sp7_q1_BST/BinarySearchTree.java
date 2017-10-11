@@ -13,7 +13,6 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 		return new BSTIterator<>(root);
 	}
 
-
 	private class BSTIterator<E> implements Iterator<E> {
 		Stack<Entry<E>> stack;
 		Entry<E> entry;
