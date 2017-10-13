@@ -30,7 +30,7 @@ public class BinaryTree<T> {
 	 * Constructor to initialize the list
 	 */
 	public BinaryTree() {
-		root = new Entry<>(null, null, null);
+		root = null;
 		size = 0;
 	}
 
