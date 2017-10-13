@@ -7,7 +7,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTree<T> {
 
-	Stack<Entry<T>> stack;
+	protected Stack<Entry<T>> stack;
 
 	public Iterator<T> iterator() {
 		return new BSTIterator<>(root);

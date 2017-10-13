@@ -12,12 +12,10 @@ public class FindPairsOfElementInArray {
 
 		int pairs = 0;
 		for (int i = 0; i < A.length - 1; i++) {
-			if (i > 0 && A[i] != A[i - 1]) {
-				int diff = X - A[i];
-				int occurence = BinarySearch.findNoOfOccurences(A, i + 1, A.length - 1, diff);
-				if (occurence > 0) {
-					pairs += occurence;
-				}
+			int diff = X - A[i];
+			int occurence = BinarySearch.findNoOfOccurences(A, i + 1, A.length - 1, diff);
+			if (occurence > 0) {
+				pairs += occurence;
 			}
 		}
 		return pairs;
@@ -36,16 +34,17 @@ public class FindPairsOfElementInArray {
 
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
-		int size = in.nextInt();
-		int[] arr = new int[size];
-		generateArray(size, arr, in);
+		// int size = in.nextInt();
+		// int[] arr = new int[size];
+		// generateArray(size, arr, in);
+		int[] arr = { 1, 1, 1, 1, 1 };
 		int X = in.nextInt();
-		System.out.println("\n Find Pairs that sum to: \t" + X);
+		System.out.println("\n Find Pairs that sum to: " + X);
 
 		Timer t = new Timer();
 		int a = howMany(arr, X);
 		t.end();
-		System.out.println("No of Pairs" + a);
+		System.out.println("No of Pairs " + a);
 		System.out.println(t);
 		in.close();
 
