@@ -94,6 +94,7 @@ public class BinarySearch {
 					while(index < r && arr[index+1] == x){
 					occurence++;
 					index++;
+					
 					}
 				}
 			}

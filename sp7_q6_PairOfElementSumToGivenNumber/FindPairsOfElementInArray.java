@@ -4,36 +4,36 @@ import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort.Timer;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp4_q4_BinarySearch.BinarySearch;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.MergeSortVariations;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp5_q2_QuickSortDualPivotPartition.DualPivotSort;
 
 public class FindPairsOfElementInArray {
 
-
-	public static int findHowMany(int[] A, int X){
+	public static int findHowMany(int[] A, int X) {
 
 		int pairs = 0;
-		for (int i=0 ; i < A.length-1 ; i++) {
-			int diff = X-A[i];
-			int occurence = BinarySearch.findNoOfOccurences(A,i+1,A.length-1, diff);
-			if(occurence>0){
-				pairs+=occurence;
+		for (int i = 0; i < A.length - 1; i++) {
+			if (i > 0 && A[i] != A[i - 1]) {
+				int diff = X - A[i];
+				int occurence = BinarySearch.findNoOfOccurences(A, i + 1, A.length - 1, diff);
+				if (occurence > 0) {
+					pairs += occurence;
+				}
 			}
 		}
-		return pairs;		
+		return pairs;
 	}
 
-	public static int howMany(int[] A, int X) { 
-		MergeSortVariations.mergeSortVersion4(A);
+	public static int howMany(int[] A, int X) {
+		DualPivotSort.dpQuickSort(A, 0, A.length - 1);
 		return findHowMany(A, X);
 	}
-	
-	public static void generateArray(int size,int[] arr, Scanner in) {
-		for (int i = 0; i < size ; i++) {
+
+	public static void generateArray(int size, int[] arr, Scanner in) {
+		for (int i = 0; i < size; i++) {
 			arr[i] = in.nextInt();
 		}
 	}
-	
-	
+
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
 		int size = in.nextInt();
@@ -41,7 +41,7 @@ public class FindPairsOfElementInArray {
 		generateArray(size, arr, in);
 		int X = in.nextInt();
 		System.out.println("\n Find Pairs that sum to: \t" + X);
-		
+
 		Timer t = new Timer();
 		int a = howMany(arr, X);
 		t.end();
