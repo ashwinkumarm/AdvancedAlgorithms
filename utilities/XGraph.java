@@ -22,7 +22,7 @@ public class XGraph extends Graph {
 		List<XEdge> xadj;
 
 		XVertex(Vertex u) {
-			super(u.name);
+			super(u);
 			disabled = false;
 			xadj = new LinkedList<>();
 		}
@@ -43,12 +43,17 @@ public class XGraph extends Graph {
 		class XVertexIterator implements Iterator<Edge> {
 			XEdge cur;
 			Iterator<XEdge> it;
+			boolean ready;
 
 			XVertexIterator(XVertex u) {
 				this.it = u.xadj.iterator();
+				ready = false;
 			}
 
 			public boolean hasNext() {
+				if (ready) {
+					return true;
+				}
 				if (!it.hasNext()) {
 					return false;
 				}
@@ -56,14 +61,22 @@ public class XGraph extends Graph {
 				while (cur.isDisabled() && it.hasNext()) {
 					cur = it.next();
 				}
+				ready = true;
 				return !cur.isDisabled();
 			}
 
 			public Edge next() {
+				if (!ready) {
+					if (!hasNext()) {
+						throw new java.util.NoSuchElementException();
+					}
+				}
+				ready = false;
 				return cur;
 			}
 
 			public void remove() {
+				throw new java.lang.UnsupportedOperationException();
 			}
 		}
 	}
@@ -86,8 +99,9 @@ public class XGraph extends Graph {
 	XVertex[] xv; // vertices of graph
 
 	public XGraph(Graph g) {
-		super(g.n);
-		xv = new XVertex[2 * g.size()]; // Extra space is allocated in array for nodes to be added later
+		super(g);
+		xv = new XVertex[2 * g.size()]; // Extra space is allocated in array for
+										// nodes to be added later
 		for (Vertex u : g) {
 			xv[u.getName()] = new XVertex(u);
 		}
@@ -113,7 +127,11 @@ public class XGraph extends Graph {
 		XVertex xcur;
 
 		XGraphIterator(XGraph xg) {
-			this.it = new ArrayIterator<XVertex>(xg.xv, 0, xg.size() - 1); // Iterate over existing elements only
+			this.it = new ArrayIterator<XVertex>(xg.xv, 0, xg.size() - 1); // Iterate
+																			// over
+																			// existing
+																			// elements
+																			// only
 		}
 
 		public boolean hasNext() {
@@ -153,7 +171,7 @@ public class XGraph extends Graph {
 	public static void main(String[] args) {
 		Graph g = Graph.readGraph(new Scanner(System.in));
 		XGraph xg = new XGraph(g);
-		Vertex src = xg.getVertex(1);
+		Vertex src = xg.getVertex(3);
 
 		System.out.println("Node : Dist : Edges");
 		BFS b = new BFS(xg, src);
@@ -165,6 +183,8 @@ public class XGraph extends Graph {
 		System.out.println("\nDisabling vertices 8 and 9");
 		xg.disable(8);
 		xg.disable(9);
+		xg.disable(7);
+		xg.disable(4);
 		b.reinitialize(src);
 		b.bfs();
 		farthest = DiameterTree.findFarthest(b);
@@ -182,5 +202,4 @@ public class XGraph extends Graph {
 		}
 
 	}
-
 }
