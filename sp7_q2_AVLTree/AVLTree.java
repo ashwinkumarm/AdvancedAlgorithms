@@ -4,22 +4,23 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_
 
 public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
 
-	static public class AVLNode<T> extends Entry<T>{
-		/*public T element;
+	static public class AVLNode<T> extends Entry<T> {
+
+		public T element;
 		public AVLNode<T> left;
-		public AVLNode<T> right;*/
+		public AVLNode<T> right;
 		int height;
 
 		public AVLNode(T x, AVLNode<T> left, AVLNode<T> right) {
-			super(x,left,right);
-			/*element = x;
-			this.left = left;
-			this.right = right;*/
+			super(x, left, right);
+			/*
+			 * element = x; this.left = left; this.right = right;
+			 */
 			height = -1;
 		}
 	}
 
-	protected Entry<T> root;
+	protected AVLNode<T> root;
 	public int size;
 
 	public AVLTree() {
@@ -28,33 +29,41 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 	}
 
 	public boolean insert(T x) {
-		insert(root, x);
+		root = insert(root, x);
 		return true;
 	}
 
-	public void insert(Entry<T> root, T x) {
+	public AVLNode<T> insert(AVLNode<T> root, T x) {
+		AVLNode<T> entry = null;
 		if (add(x)) {
-			Entry<T> entry = stack.pop();
+			entry = (AVLNode<T>) stack.pop();
+			if (entry.left.element.compareTo(x) == 0) {
+				entry.left.height = 0;
+			} else
+				entry.right.height = 0;
+
 			while (entry != null) {
-				int balance = height(entry);
+				AVLNode<T> parent = (AVLNode<T>) stack.pop();
+				int balance = getHeight(entry.left) - getHeight(entry.right);
 				// Left Left case
 				if (balance > 1 && x.compareTo(entry.left.element) < 0)
-					rightRotate(entry);
+					parent.left = rightRotate(entry);
 
 				// Right Right Case
 				if (balance < -1 && x.compareTo(entry.right.element) > 0)
-					leftRotate(entry);
+					parent.right = leftRotate(entry);
 
 				// Left Right Case
 				if (balance > 1 && x.compareTo(entry.left.element) > 0) {
-					doubleRightRotate(entry);
+					parent.left = doubleRightRotate(entry);
 				}
 
 				// Right Left Case
 				if (balance < -1 && x.compareTo(entry.right.element) < 0) {
-					doubleLeftRotate(entry);
+					parent.right = doubleLeftRotate(entry);
 				}
-				entry = stack.pop();
+				if (parent != null)
+					entry = parent;
 			}
 			/*
 			 * AVLNode<T> newNode = new AVLNode<>(x, null, null); if (root == null) { root =
@@ -77,10 +86,11 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 			 * root;
 			 */
 		}
+		return entry != null ? entry : root;
 	}
 
-	public Entry<T> leftRotate(Entry<T> node) {
-		Entry<T> otherNode = node.left;
+	public AVLNode<T> leftRotate(AVLNode<T> node) {
+		AVLNode<T> otherNode = node.left;
 		node.left = otherNode.right;
 		otherNode.right = node;
 
@@ -89,8 +99,8 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return otherNode;
 	}
 
-	public Entry<T> rightRotate(Entry<T> node) {
-		Entry<T> otherNode = node.right;
+	public AVLNode<T> rightRotate(AVLNode<T> node) {
+		AVLNode<T> otherNode = node.right;
 		node.right = otherNode.left;
 		otherNode.left = node;
 
@@ -99,17 +109,17 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return otherNode;
 	}
 
-	public Entry<T> doubleLeftRotate(Entry<T> node) {
+	public AVLNode<T> doubleLeftRotate(AVLNode<T> node) {
 		node.left = rightRotate(node.left);
 		return leftRotate(node);
 	}
 
-	public Entry<T> doubleRightRotate(Entry<T> node) {
+	public AVLNode<T> doubleRightRotate(AVLNode<T> node) {
 		node.right = leftRotate(node.right);
 		return rightRotate(node);
 	}
 
-	public int getHeight(Entry<T> node) {
+	public int getHeight(AVLNode<T> node) {
 		return node == null ? -1 : node.height;
 	}
 
