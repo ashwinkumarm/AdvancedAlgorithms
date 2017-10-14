@@ -171,7 +171,7 @@ public class XGraph extends Graph {
 	public static void main(String[] args) {
 		Graph g = Graph.readGraph(new Scanner(System.in));
 		XGraph xg = new XGraph(g);
-		Vertex src = xg.getVertex(3);
+		Vertex src = xg.getVertex(2);
 
 		System.out.println("Node : Dist : Edges");
 		BFS b = new BFS(xg, src);
@@ -181,10 +181,9 @@ public class XGraph extends Graph {
 		System.out.println("Source: " + src + " Farthest: " + farthest + " Distance: " + b.distance(farthest));
 
 		System.out.println("\nDisabling vertices 8 and 9");
-		xg.disable(8);
-		xg.disable(9);
 		xg.disable(7);
-		xg.disable(4);
+		xg.disable(8);
+		
 		b.reinitialize(src);
 		b.bfs();
 		farthest = DiameterTree.findFarthest(b);
