@@ -31,7 +31,6 @@ public class DMSTGraph extends Graph {
 			disabled = true;
 		}
 
-		@Override
 		public Iterator<Edge> iterator() {
 			return new DMSTVertexIterator(this);
 		}
@@ -81,6 +80,10 @@ public class DMSTGraph extends Graph {
 	public static class DMSTEdge extends Edge {
 
 		boolean disabled;
+		
+		void disabled(){
+			disabled = true;
+		}
 
 		DMSTEdge(Vertex from, Vertex to, int weight) {
 			super(from, to, weight);
