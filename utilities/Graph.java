@@ -104,7 +104,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 		public Vertex to; // tail vertex
 		public int weight; // weight of edge
 		int name; // name of edge
-
+		public boolean seen;
 		/**
 		 * Constructor for Edge
 		 * 
@@ -120,7 +120,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 			to = v;
 			weight = w;
 			name = -1; // This version of constructor is for backward
-						// compatibility
+			seen = false;			// compatibility
 		}
 
 		/**
