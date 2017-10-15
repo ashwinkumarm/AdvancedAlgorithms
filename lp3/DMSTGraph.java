@@ -108,7 +108,7 @@ public class DMSTGraph extends Graph {
 		// Make copy of edges
 		for (Vertex u : g) {
 			int minEdgeWeight = Integer.MAX_VALUE;
-			for (Edge e : u) {
+			for (Edge e : u.revAdj) {
 				if (minEdgeWeight > e.weight) {
 					minEdgeWeight = e.weight;
 				}
@@ -163,8 +163,7 @@ public class DMSTGraph extends Graph {
 
 	}
 
-	@Override
-	public Vertex getVertex(int n) {
+	public DMSTVertex getDMSTVertex(int n) {
 		return dmstVertexArray[n - 1];
 	}
 

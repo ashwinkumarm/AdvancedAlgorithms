@@ -89,6 +89,9 @@ public class XGraph extends Graph {
 			disabled = false;
 		}
 
+		void edgeDisable(XEdge e){
+			e.disabled = true;
+		}
 		boolean isDisabled() {
 			XVertex xfrom = (XVertex) from;
 			XVertex xto = (XVertex) to;
@@ -177,7 +180,7 @@ public class XGraph extends Graph {
 		BFS b = new BFS(xg, src);
 		b.bfs();
 		Vertex farthest = DiameterTree.findFarthest(b);
-		xg.printGraph(b);
+		xg.printGraph(b,xg);
 		System.out.println("Source: " + src + " Farthest: " + farthest + " Distance: " + b.distance(farthest));
 
 		System.out.println("\nDisabling vertices 8 and 9");
@@ -187,12 +190,12 @@ public class XGraph extends Graph {
 		b.reinitialize(src);
 		b.bfs();
 		farthest = DiameterTree.findFarthest(b);
-		xg.printGraph(b);
+		xg.printGraph(b,xg);
 		System.out.println("Source: " + src + " Farthest: " + farthest + " Distance: " + b.distance(farthest));
 	}
 
-	void printGraph(BFS b) {
-		for (Vertex u : this) {
+	void printGraph(BFS b, Graph xg) {
+		for (Vertex u : xg) {
 			System.out.print("  " + u + "  :   " + b.distance(u) + "  : ");
 			for (Edge e : u) {
 				System.out.print(e);

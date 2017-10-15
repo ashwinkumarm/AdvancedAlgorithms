@@ -15,17 +15,17 @@ public class FindDirectedMst {
 	
 	
 	public Graph minMst(DMSTGraph g, Vertex start) {
-		g = transformWeights(g, start);
-		g = findSubGraph(g);
-		if(isMST(g, start)){
+		DMSTGraph transformedGraph = transformWeights(g, start);
+		DMSTGraph subGraph = findSubGraph(transformedGraph);
+		if(isMST(subGraph, start)){
 			return g;
 		}
-	
+		
 		return g;
 	}
 	
 	public boolean isMST(DMSTGraph g, Vertex start){
-		BFS bfs = new BFS(g,start);
+		BFS bfs = new BFS(g,g.getDMSTVertex(start.getName() +1));
 		bfs.bfs();
 		BFSVertex[] vertexArr = bfs.node;
 		for(BFSVertex vertex : vertexArr){
@@ -38,15 +38,16 @@ public class FindDirectedMst {
 	
 	private DMSTGraph findSubGraph(DMSTGraph g) {
 		DMSTVertex[] vertexArr = g.getDMSTVertexArray();
-		for(DMSTVertex vertex : vertexArr){
-			Iterator<DMSTEdge> it = vertex.xadj.iterator();
-			while(it.hasNext()){
-				DMSTEdge edge = it.next();
-				if(edge.weight != 0){
-					edge.disabled();
+		for (DMSTVertex vertex : vertexArr) {
+			if (vertex != null) {
+				Iterator<DMSTEdge> it = vertex.xadj.iterator();
+				while (it.hasNext()) {
+					DMSTEdge edge = it.next();
+					if (edge.weight != 0) {
+						edge.disabled();
+					}
 				}
 			}
-			
 		}
 		return g;
 	}
@@ -55,8 +56,8 @@ public class FindDirectedMst {
 		DMSTVertex[] vertexArray = g.getDMSTVertexArray();
 		for (DMSTVertex vertex : vertexArray) {
 			// try to remove this if condition
-			if (vertex.getName() != start.getName()) {
-				for (Edge e : vertex.revAdj) {
+			if (vertex != null && vertex.getName() != start.getName() ) {
+				for (Edge e : vertex.xadj) {
 					e.weight = e.weight - vertex.minEdge;
 				}
 			}

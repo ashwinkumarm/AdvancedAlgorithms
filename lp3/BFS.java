@@ -7,9 +7,12 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3
 
 import java.util.Queue;
 
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
@@ -28,9 +31,9 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 		}
 	}
 
-	Graph.Vertex src;
+	DMSTGraph.DMSTVertex src;
 
-	public BFS(Graph g, Graph.Vertex src) {
+	public BFS(DMSTGraph g, DMSTGraph.DMSTVertex src) {
 		super(g);
 		this.src = src;
 		node = new BFSVertex[g.size()];
@@ -43,7 +46,7 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 	}
 
 	// reinitialize allows running BFS many times, with different sources
-	void reinitialize(Graph.Vertex newSource) {
+	void reinitialize(DMSTGraph.DMSTVertex newSource) {
 		src = newSource;
 		for (Graph.Vertex u : g) {
 			BFSVertex bu = getVertex(u);
@@ -55,12 +58,12 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 	}
 
 	void bfs() {
-		Queue<Graph.Vertex> q = new LinkedList<>();
+		Queue<DMSTGraph.DMSTVertex> q = new LinkedList<>();
 		q.add(src);
 		while (!q.isEmpty()) {
-			Graph.Vertex u = q.remove();
+			DMSTGraph.DMSTVertex u = q.remove();
 			for (Graph.Edge e : u) {
-				Graph.Vertex v = e.otherEnd(u);
+				DMSTGraph.DMSTVertex v = (DMSTVertex) e.otherEnd(u);
 				if (!seen(v)) {
 					visit(u, v);
 					q.add(v);
