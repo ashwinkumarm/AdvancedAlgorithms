@@ -17,23 +17,27 @@ public class FindDirectedMst {
 	public Graph minMst(DMSTGraph g, Vertex start) {
 		DMSTGraph transformedGraph = transformWeights(g, start);
 		DMSTGraph subGraph = findSubGraph(transformedGraph);
-		if(isMST(subGraph, start)){
+		DMSTVertex v = isMST(subGraph, start);
+		if(v == null){
 			return g;
-		}
+		}		
 		
 		return g;
 	}
 	
-	public boolean isMST(DMSTGraph g, Vertex start){
+	public DMSTVertex isMST(DMSTGraph g, Vertex start){
 		BFS bfs = new BFS(g,g.getDMSTVertex(start.getName() +1));
 		bfs.bfs();
 		BFSVertex[] vertexArr = bfs.node;
+		// should be changed definitely. This is just a work around.
+		int name = 0;
 		for(BFSVertex vertex : vertexArr){
+			name++;
 			if(!vertex.seen){
-				return false;
+				return g.getDMSTVertex(name);
 			}
 		}
-		return true;
+		return null;
 	}
 	
 	private DMSTGraph findSubGraph(DMSTGraph g) {

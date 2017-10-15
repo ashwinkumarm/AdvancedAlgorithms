@@ -107,15 +107,19 @@ public class DMSTGraph extends Graph {
 
 		// Make copy of edges
 		for (Vertex u : g) {
+			for (Edge e : u.adj) {
+				Vertex v = e.otherEnd(u);
+				DMSTVertex x1 = getVertex(u);
+				DMSTVertex x2 = getVertex(v);
+				x1.xadj.add(new DMSTEdge(x1, x2, e.weight));
+			}
+		}
+		for (Vertex u : g) {
 			int minEdgeWeight = Integer.MAX_VALUE;
 			for (Edge e : u.revAdj) {
 				if (minEdgeWeight > e.weight) {
 					minEdgeWeight = e.weight;
 				}
-				Vertex v = e.otherEnd(u);
-				DMSTVertex x1 = getVertex(u);
-				DMSTVertex x2 = getVertex(v);
-				x1.xadj.add(new DMSTEdge(x1, x2, e.weight));
 			}
 			dmstVertexArray[u.getName()].minEdge = minEdgeWeight;
 		}

@@ -60,6 +60,7 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 	void bfs() {
 		Queue<DMSTGraph.DMSTVertex> q = new LinkedList<>();
 		q.add(src);
+		getVertex(src).seen = true;
 		while (!q.isEmpty()) {
 			DMSTGraph.DMSTVertex u = q.remove();
 			for (Graph.Edge e : u) {
@@ -72,7 +73,7 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 		}
 	}
 
-	boolean seen(Graph.Vertex u) {
+	public boolean seen(Graph.Vertex u) {
 		return getVertex(u).seen;
 	}
 
