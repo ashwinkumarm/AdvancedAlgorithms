@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
 
@@ -14,13 +13,15 @@ public class DMSTGraph extends Graph {
 	public static class DMSTVertex extends Vertex {
 		int minEdge;
 		boolean disabled;
-		List<DMSTEdge> xadj;
+		List<DMSTEdge> DMSTadj;
+		List<DMSTEdge> DMSTrevadj;
 
 		public DMSTVertex(Vertex u) {
 			super(u);
-			minEdge = -1;
+			minEdge = Integer.MAX_VALUE;
 			disabled = false;
-			xadj = new LinkedList<>();
+			DMSTadj = new LinkedList<>();
+			DMSTrevadj = new LinkedList<>();
 		}
 
 		boolean isDisabled() {
@@ -34,6 +35,10 @@ public class DMSTGraph extends Graph {
 		public Iterator<Edge> iterator() {
 			return new DMSTVertexIterator(this);
 		}
+		
+		public Iterator<Edge> revIterator(){
+			return new DMSTVertexRevIterator(this);
+		}
 
 		class DMSTVertexIterator implements Iterator<Edge> {
 			DMSTEdge cur;
@@ -41,7 +46,47 @@ public class DMSTGraph extends Graph {
 			boolean ready;
 
 			DMSTVertexIterator(DMSTVertex u) {
-				this.it = u.xadj.iterator();
+				this.it = u.DMSTadj.iterator();
+				ready = false;
+			}
+
+			public boolean hasNext() {
+				if (ready) {
+					return true;
+				}
+				if (!it.hasNext()) {
+					return false;
+				}
+				cur = it.next();
+				while (cur.isDisabled() && it.hasNext()) {
+					cur = it.next();
+				}
+				ready = true;
+				return !cur.isDisabled();
+			}
+
+			public Edge next() {
+				if (!ready) {
+					if (!hasNext()) {
+						throw new java.util.NoSuchElementException();
+					}
+				}
+				ready = false;
+				return cur;
+			}
+
+			public void remove() {
+				throw new java.lang.UnsupportedOperationException();
+			}
+		}
+
+		class DMSTVertexRevIterator implements Iterator<Edge> {
+			DMSTEdge cur;
+			Iterator<DMSTEdge> it;
+			boolean ready;
+
+			DMSTVertexRevIterator(DMSTVertex u) {
+				this.it = u.DMSTrevadj.iterator();
 				ready = false;
 			}
 
@@ -85,8 +130,8 @@ public class DMSTGraph extends Graph {
 			disabled = true;
 		}
 
-		DMSTEdge(Vertex from, Vertex to, int weight) {
-			super(from, to, weight);
+		DMSTEdge(Vertex from, Vertex to, int weight, int name) {
+			super(from, to, weight, name);
 		}
 
 		boolean isDisabled() {
@@ -105,16 +150,22 @@ public class DMSTGraph extends Graph {
 			dmstVertexArray[u.getName()] = new DMSTVertex(u);
 		}
 
+		int m = 0;
 		// Make copy of edges
 		for (Vertex u : g) {
 			for (Edge e : u.adj) {
 				Vertex v = e.otherEnd(u);
 				DMSTVertex x1 = getVertex(u);
 				DMSTVertex x2 = getVertex(v);
-				x1.xadj.add(new DMSTEdge(x1, x2, e.weight));
+				x1.DMSTadj.add(new DMSTEdge(x1, x2, e.weight,m));
+				x2.DMSTrevadj.add(new DMSTEdge(x1,x2,e.weight,m));
+				m++;
+				if(x2.minEdge > e.weight){
+					x2.minEdge = e.weight;
+				}
 			}
 		}
-		for (Vertex u : g) {
+		/*for (Vertex u : g) {
 			int minEdgeWeight = Integer.MAX_VALUE;
 			for (Edge e : u.revAdj) {
 				if (minEdgeWeight > e.weight) {
@@ -122,7 +173,7 @@ public class DMSTGraph extends Graph {
 				}
 			}
 			dmstVertexArray[u.getName()].minEdge = minEdgeWeight;
-		}
+		}*/
 	}
 	
 	DMSTVertex getVertex(Vertex u) {
@@ -134,6 +185,7 @@ public class DMSTGraph extends Graph {
 	public Iterator<Vertex> iterator() {
 		return new DMSTGraphIterator(this);
 	}
+	
 
 	class DMSTGraphIterator implements Iterator<Vertex> {
 		Iterator<DMSTVertex> it;
@@ -166,6 +218,7 @@ public class DMSTGraph extends Graph {
 		}
 
 	}
+	
 
 	public DMSTVertex getDMSTVertex(int n) {
 		return dmstVertexArray[n - 1];
