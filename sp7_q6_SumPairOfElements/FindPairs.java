@@ -1,4 +1,4 @@
-package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q6_PairOfElementSumToGivenNumber;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q6_SumPairOfElements;
 
 import java.util.Scanner;
 
@@ -6,7 +6,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp4_q4_BinarySearch.BinarySearch;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp5_q2_QuickSortDualPivotPartition.DualPivotSort;
 
-public class FindPairsOfElementInArray {
+public class FindPairs {
 
 	public static int findHowMany(int[] A, int X) {
 
