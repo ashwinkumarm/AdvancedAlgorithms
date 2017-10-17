@@ -35,7 +35,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 
 	public AVLNode<T> insert(AVLNode<T> root, T x) {
 		AVLNode<T> entry = null;
-		if (add(x)) {
+		if (add(x) != null) {
 			entry = (AVLNode<T>) stack.pop();
 			if (entry.left.element.compareTo(x) == 0) {
 				entry.left.height = 0;

@@ -44,26 +44,28 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 		}
 	}
 
-	public boolean add(T x) {
+	public Entry<T> add(T x) {
 
 		Entry<T> newEntry = new Entry<T>(x, null, null);
 		if (root == null) {
 			root = newEntry;
 			size = 1;
-			return true;
+			return newEntry;
 		}
 
 		Entry<T> entry = find(x);
 		if (x.compareTo(entry.element) == 0) {
 			entry.element = x;
-			return false;
+			return null;
 		} else if (x.compareTo(entry.element) < 0) {
 			entry.left = newEntry;
+			stack.push(entry);
 		} else {
 			entry.right = newEntry;
+			stack.push(entry);
 		}
 		size++;
-		return true;
+		return newEntry;
 
 		/*
 		 * Entry<T> current = root; Entry<T> parent; while (true) { parent = current; if
