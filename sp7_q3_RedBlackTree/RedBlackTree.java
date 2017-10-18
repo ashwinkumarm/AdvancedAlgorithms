@@ -6,13 +6,17 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 
 	static public class Node<T> extends Entry<T> {
 
-		public Node<T> parent;
 		NodeColor color;
 
-		public Node(T x, Node<T> left, Node<T> right, Node<T> parent, NodeColor color) {
+		public Node(T x, Node<T> left, Node<T> right, NodeColor color) {
 			super(x, left, right);
-			this.parent = parent;
 			this.color = color;
+		}
+		public void setColor( NodeColor color){
+			this.color = color;
+		}
+		public NodeColor getColor(){
+			return this.color;
 		}
 	}
 
@@ -25,10 +29,10 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 		Node<T> root = null;
 		Node<T> newNode = (Node<T>) super.add(x);
 		if (newNode != null) {
-			newNode.color = NodeColor.RED;
+			newNode.setColor(NodeColor.RED);
 			root = repair(newNode);
-			if (root.color == NodeColor.RED) {
-				root.color = NodeColor.BLACK;
+			if (root.getColor() == NodeColor.RED) {
+				root.setColor( NodeColor.BLACK);
 			}
 		}
 		return root;
@@ -36,9 +40,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 
 	public Node<T> repair(Node<T> t) {
 		
-		
-		
-		while(t.color == NodeColor.RED){
+		while(t.getColor() == NodeColor.RED){
 			
 			if(t == root){
 				return t;
@@ -47,11 +49,11 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 			Node<T> g_t = null;
 			Node<T> p_t = null;
 			Node<T> u_t = null;
-			Node<T> s_t = null;
+
 			
 			p_t = (Node<T>)stack.pop();
 			
-			if(p_t == null || p_t.color == NodeColor.BLACK){
+			if(p_t == root || p_t.getColor() == NodeColor.BLACK){
 				return p_t;
 			}
 			
@@ -64,17 +66,64 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 				u_t = (Node<T>)g_t.left;
 			}
 			
-			if(t.element.compareTo(p_t.element)<0){
-				s_t = (Node<T>)p_t.right;
-			} 
-			else{
-				s_t = (Node<T>)p_t.left;
+			
+			if(u_t.getColor() == NodeColor.RED){
+				p_t.setColor(NodeColor.BLACK);
+				u_t.setColor(NodeColor.BLACK);
+				g_t.setColor(NodeColor.RED);
+				t = g_t;
+			}
+			
+			else if(u_t.getColor() == NodeColor.BLACK){
+				if(g_t.left == p_t && p_t.left == t){ //LL case
+					singleRightRotate(g_t, p_t);
+				}
+				else if(g_t.right == p_t && p_t.right == t){ //RR case
+					singleLeftRotate(g_t, p_t);
+				}
+				else if(g_t.left == p_t && p_t.right == t){ //LR case
+					doubleRotateLeftRight(g_t, p_t, t);
+					
+				}
+				else if(g_t.right == p_t && p_t.left == t){ // RL case
+					doubleRotateRightLeft(g_t, p_t, t);
+				}
+				break;
 			}
 			
 		}
-		
-		return null;
+		return (Node<T>)root;
 	}
-
+	
+	public void singleRightRotate(Node<T> g_t, Node<T> p_t){ //LL Case
+		g_t.left = p_t.right;
+		p_t.right = g_t;
+		p_t.setColor(NodeColor.BLACK);
+		g_t.setColor(NodeColor.RED);
+		if(g_t == root) {
+			root = p_t;
+		}
+	}
+	
+	public void singleLeftRotate(Node<T> g_t, Node<T> p_t){ //RR Case
+		g_t.right = p_t.left;
+		p_t.left = g_t;
+		p_t.setColor(NodeColor.BLACK);
+		g_t.setColor(NodeColor.RED);
+		if(g_t == root) {
+			root = p_t;
+		}
+	}
+	
+	public void doubleRotateLeftRight(Node<T> g_t, Node<T> p_t, Node<T> t){ //RL Case
+		singleLeftRotate(p_t, t);
+		singleRightRotate(g_t, t);
+	}
+	
+	public void doubleRotateRightLeft(Node<T> g_t, Node<T> p_t, Node<T> t){ // LR Case
+		singleRightRotate(p_t, t);
+		singleLeftRotate(g_t, t);
+	}
+	
 
 }
