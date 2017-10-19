@@ -22,19 +22,19 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 	}
 
 	public boolean insert(T x) {
+		Entry<T> newEntry = new Entry<T>(x, null, null);
 		if (root == null) {
-			add(x);
+			add(newEntry);
 			return true;
-		}
-		else {
-			root = insert(root, x);
+		} else {
+			insert((Entry<T>) root, newEntry, x);
 			return true;
 		}
 	}
 
-	public Entry<T> insert(BinarySearchTree.Entry<T> root, T x) {
+	public Entry<T> insert(Entry<T> root, Entry<T> newEntry, T x) {
 		Entry<T> entry = null;
-		if (add(x)) {
+		if (add(newEntry)) {
 			if (stack != null && !stack.isEmpty()) {
 				entry = (Entry<T>) stack.pop();
 				while (!stack.isEmpty() && entry != null) {
@@ -42,11 +42,11 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 					int balance = getHeight(entry.left) - getHeight(entry.right);
 					// Left Left case
 					if (balance > 1 && x.compareTo(entry.left.element) < 0)
-						parent.left = rightRotate(entry);
+						parent.left = leftRotate(entry);
 
 					// Right Right Case
 					if (balance < -1 && x.compareTo(entry.right.element) > 0)
-						parent.right = leftRotate(entry);
+						parent.right = rightRotate(entry);
 
 					// Left Right Case
 					if (balance > 1 && x.compareTo(entry.left.element) > 0) {
@@ -62,24 +62,26 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 						entry = parent;
 				}
 				/*
-				 * Entry<T> newNode = new Entry<>(x, null, null); if (root == null) { root =
-				 * newNode;
-				 * 
+				 * Entry<T> newNode = new Entry<>(x, null, null); if (root ==
+				 * null) { root = newNode;
+				 *
 				 * root.height = 0; return root;
-				 * 
-				 * } else if (x.compareTo(root.element) < 0) { root.left = insert(root.left, x);
-				 * 
+				 *
+				 * } else if (x.compareTo(root.element) < 0) { root.left =
+				 * insert(root.left, x);
+				 *
 				 * if ((getHeight(root.left) - getHeight(root.right)) == 2) { if
-				 * (x.compareTo(root.left.element) < 0) root = leftRotate(root); else root =
-				 * doubleLeftRotate(root); } } else if (x.compareTo(root.element) > 0) {
-				 * root.right = insert(root.right, x);
-				 * 
+				 * (x.compareTo(root.left.element) < 0) root = leftRotate(root);
+				 * else root = doubleLeftRotate(root); } } else if
+				 * (x.compareTo(root.element) > 0) { root.right =
+				 * insert(root.right, x);
+				 *
 				 * if ((getHeight(root.right) - getHeight(root.left)) == 2) { if
-				 * (x.compareTo(root.right.element) > 0) root = rightRotate(root); else root =
-				 * doubleRightRotate(root); } }
-				 * 
-				 * root.height = Math.max(getHeight(root.left), getHeight(root.right))+1; return
-				 * root;
+				 * (x.compareTo(root.right.element) > 0) root =
+				 * rightRotate(root); else root = doubleRightRotate(root); } }
+				 *
+				 * root.height = Math.max(getHeight(root.left),
+				 * getHeight(root.right))+1; return root;
 				 */
 			}
 		}
