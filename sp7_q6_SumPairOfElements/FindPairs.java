@@ -1,29 +1,23 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q6_SumPairOfElements;
 
 import java.util.Scanner;
+import java.util.TreeMap;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort.Timer;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp4_q4_BinarySearch.BinarySearch;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp5_q2_QuickSortDualPivotPartition.DualPivotSort;
 
 public class FindPairs {
 
-	public static int findHowMany(int[] A, int X) {
-
-		int pairs = 0;
-		for (int i = 0; i < A.length - 1; i++) {
-			int diff = X - A[i];
-			int occurence = BinarySearch.findNoOfOccurences(A, i + 1, A.length - 1, diff);
-			if (occurence > 0) {
-				pairs += occurence;
-			}
-		}
-		return pairs;
-	}
-
 	public static int howMany(int[] A, int X) {
-		DualPivotSort.dpQuickSort(A, 0, A.length - 1);
-		return findHowMany(A, X);
+		TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
+		for (int i = 0; i < A.length; i++) {
+			if (!map.containsKey(A[i]))
+				map.put(A[i], 0);
+			map.put(A[i], map.get(A[i]) + 1);
+
+		}
+		int count = 0;
+		
+		return 0;
 	}
 
 	public static void generateArray(int size, int[] arr, Scanner in) {

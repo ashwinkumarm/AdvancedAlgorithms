@@ -45,19 +45,19 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 		}
 	}
 
-	public Entry<T> add(T x) {
+	public boolean add(T x) {
 
 		Entry<T> newEntry = new Entry<T>(x, null, null);
 		if (root == null) {
 			root = newEntry;
 			size = 1;
-			return newEntry;
+			return true;
 		}
 
 		Entry<T> entry = find(x);
 		if (x.compareTo(entry.element) == 0) {
 			entry.element = x;
-			return null;
+			return false;
 		} else if (x.compareTo(entry.element) < 0) {
 			entry.left = newEntry;
 			stack.push(entry);
@@ -66,16 +66,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 			stack.push(entry);
 		}
 		size++;
-		return newEntry;
-
-		/*
-		 * Entry<T> current = root; Entry<T> parent; while (true) { parent =
-		 * current; if (value.compareTo(current.element) == 0) { return false; }
-		 * else if (value.compareTo(current.element) < 0) { current =
-		 * current.left; if (current == null) { parent.left = newEntry; size++;
-		 * return true; } } else { current = current.right; if (current == null)
-		 * { parent.right = newEntry; size++; return true; } } }
-		 */
+		return true;
 	}
 
 	public T remove(T x) {
@@ -133,8 +124,8 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 	}
 
 	/**
-	 * Is there an element that is equal to x in the tree? Element in tree that
-	 * is equal to x is returned, null otherwise.
+	 * Is there an element that is equal to x in the tree? Element in tree that is
+	 * equal to x is returned, null otherwise.
 	 */
 	public T get(T x) {
 		Entry<T> entry = find(x);
