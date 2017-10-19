@@ -4,13 +4,12 @@ public class BinaryTree<T> {
 
 	public static class Entry<T> {
 		public T element;
-		public Entry<T> left;
-		public Entry<T> right;
+		public Entry<T> left, right;
 
 		/**
 		 *
 		 * Constructor to initialize an entry in the tree
-		 * 
+		 *
 		 * @param x
 		 * @param nxt
 		 * @param prv
@@ -35,7 +34,7 @@ public class BinaryTree<T> {
 	}
 
 	public void visit(Entry<T> entry) {
-		System.out.println(entry.element);
+		System.out.print(" " + entry.element);
 	}
 
 	public void postOrder() {

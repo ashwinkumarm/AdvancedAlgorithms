@@ -1,6 +1,7 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST;
 
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.Stack;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BinaryTree;
@@ -68,12 +69,12 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 		return newEntry;
 
 		/*
-		 * Entry<T> current = root; Entry<T> parent; while (true) { parent = current; if
-		 * (value.compareTo(current.element) == 0) { return false; } else if
-		 * (value.compareTo(current.element) < 0) { current = current.left; if (current
-		 * == null) { parent.left = newEntry; size++; return true; } } else { current =
-		 * current.right; if (current == null) { parent.right = newEntry; size++; return
-		 * true; } } }
+		 * Entry<T> current = root; Entry<T> parent; while (true) { parent =
+		 * current; if (value.compareTo(current.element) == 0) { return false; }
+		 * else if (value.compareTo(current.element) < 0) { current =
+		 * current.left; if (current == null) { parent.left = newEntry; size++;
+		 * return true; } } else { current = current.right; if (current == null)
+		 * { parent.right = newEntry; size++; return true; } } }
 		 */
 	}
 
@@ -131,10 +132,18 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 		return entry;
 	}
 
+	/**
+	 * Is there an element that is equal to x in the tree? Element in tree that
+	 * is equal to x is returned, null otherwise.
+	 */
+	public T get(T x) {
+		Entry<T> entry = find(x);
+		return entry.element.compareTo(x) == 0 ? entry.element : null;
+	}
+
 	public boolean contains(T x) {
 		Entry<T> entry = find(x);
-		return entry.element.compareTo(x) == 0 ? true : false;
-
+		return entry != null && entry.element.compareTo(x) == 0;
 	}
 
 	public T min() {
@@ -175,4 +184,54 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 			parent.right = child;
 		}
 	}
+
+	public Comparable[] toArray() {
+		Comparable[] arr = new Comparable[size];
+		toArray(root, arr, 0);
+		return arr;
+	}
+
+	// Inorder traversal of tree
+	int toArray(Entry<T> node, Comparable[] arr, int i) {
+		if (node != null) {
+			i = toArray(node.left, arr, i);
+			arr[i++] = node.element;
+			i = toArray(node.right, arr, i);
+		}
+		return i;
+	}
+
+	public void printTree() {
+		System.out.print("[" + size + "]");
+		inOrder(root);
+		System.out.println();
+	}
+
+	public static void main(String[] args) {
+		BinarySearchTree<Integer> t = new BinarySearchTree<>();
+		Scanner in = new Scanner(System.in);
+		while (in.hasNext()) {
+			int x = in.nextInt();
+			if (x > 0) {
+				System.out.print("Add " + x + " : ");
+				t.add(x);
+				t.printTree();
+			} else if (x < 0) {
+				System.out.print("Remove " + x + " : ");
+				t.remove(-x);
+				t.printTree();
+			} else {
+				Comparable[] arr = t.toArray();
+				System.out.print("Final: ");
+				for (int i = 0; i < t.size; i++) {
+					System.out.print(arr[i] + " ");
+				}
+				System.out.println();
+				in.close();
+				return;
+			}
+		}
+		in.close();
+	}
+
 }
