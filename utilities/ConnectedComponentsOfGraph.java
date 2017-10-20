@@ -82,6 +82,7 @@ public class ConnectedComponentsOfGraph {
 				stronglyConnectedComponents[index] = new HashSet<>();
 			stronglyConnectedComponents[index].add(dv.element);
 		}
+		result.stronglyConnectedComponents = stronglyConnectedComponents;
 		return result;
 	}
 
@@ -99,10 +100,13 @@ public class ConnectedComponentsOfGraph {
 
 		// if graph is not empty we call the topological sort method
 		if (graph.n > 0) {
-
-			int cno = stronglyConnectedComponents(graph).getStronglyConnectedComponents().length;
+			SCCResult result = stronglyConnectedComponents(graph);
+			int cno = result.getStronglyConnectedComponents().length;
 			if (cno > 1) {
 				System.out.println("\nNumber of strongly connected components in a given graph: " + cno);
+				System.out.println("They are ");
+				for (int i = 0; i < cno; i++)
+					System.out.println("SCC " + (i + 1) + ": " + result.getStronglyConnectedComponents()[i]);
 			} else {
 				System.out.println("The given graph is not strongly connected");
 			}
