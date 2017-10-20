@@ -23,6 +23,60 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return true;
 	}
 
+	public T delete(T x) {
+		T deletedElement = remove(x);
+		Entry<T> entry = null, newRoot = null;
+		T prevChild;
+		if (deletedElement != null) {
+			if (stack != null) {
+				entry = (Entry<T>) stack.pop();
+				while (entry != null) {
+					newRoot = null;
+					prevChild = entry.element;
+					int balance = getBalance(entry);
+					// Left Left case
+					if (balance > 1 && getBalance(entry.left) >= 0)
+						newRoot = rightRotate(entry);
+
+					// Right Right Case
+					else if (balance < -1 && getBalance(entry.right) <= 0)
+						newRoot = leftRotate(entry);
+
+					// Left Right Case
+					else if (balance > 1 && getBalance(entry.left) < 0)
+						newRoot = LeftRightRotate(entry);
+
+					// Right Left Case
+					else if (balance < -1 && getBalance(entry.right) > 0)
+						newRoot = RightLeftRotate(entry);
+
+					Entry<T> parent = (Entry<T>) stack.pop();
+					if (parent == null) {
+						if (newRoot != null) {
+							newRoot.height = 1 + Math.max(getHeight(newRoot.left), getHeight(newRoot.right));
+							root = newRoot;
+							break;
+						} else {
+							entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
+							root = entry;
+							break;
+						}
+					}
+
+					if (newRoot != null && parent.left.element.compareTo(prevChild) == 0) {
+						parent.left = newRoot;
+					} else if (newRoot != null && parent.right.element.compareTo(prevChild) == 0) {
+						parent.right = newRoot;
+					}
+					entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
+					entry = parent;
+				}
+			}
+
+		}
+		return deletedElement;
+	}
+
 	public Entry<T> insert(Entry<T> newEntry, T x) {
 		Entry<T> entry = null, newRoot = null;
 		T prevChild;
@@ -32,7 +86,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 				while (entry != null) {
 					newRoot = null;
 					prevChild = entry.element;
-					int balance = getHeight(entry.left) - getHeight(entry.right);
+					int balance = getBalance(entry);
 					// Left Left case
 					if (balance > 1 && x.compareTo(entry.left.element) < 0)
 						newRoot = rightRotate(entry);
@@ -108,6 +162,12 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return node == null ? -1 : node.height;
 	}
 
+	public int getBalance(BinarySearchTree.Entry<T> entry) {
+		if (entry == null)
+			return 0;
+		return getHeight(entry.left) - getHeight(entry.right);
+	}
+
 	public static void main(String args[]) {
 
 		AVLTree<Integer> tree = new AVLTree<Integer>();
@@ -120,7 +180,8 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		tree.insert(new Integer(3));
 		tree.insert(new Integer(6));
 		tree.insert(new Integer(7));
-
+		tree.inOrder();
+		System.out.println("\n "+tree.delete(7));
 		tree.inOrder();
 	}
 }
