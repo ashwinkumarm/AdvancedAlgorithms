@@ -6,7 +6,6 @@ import java.util.List;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
-
 public class DMSTGraph extends Graph {
 	DMSTVertex[] dmstVertexArray;
 
@@ -35,8 +34,8 @@ public class DMSTGraph extends Graph {
 		public Iterator<Edge> iterator() {
 			return new DMSTVertexIterator(this);
 		}
-		
-		public Iterator<Edge> revIterator(){
+
+		public Iterator<Edge> revIterator() {
 			return new DMSTVertexRevIterator(this);
 		}
 
@@ -125,8 +124,8 @@ public class DMSTGraph extends Graph {
 	public static class DMSTEdge extends Edge {
 
 		boolean disabled;
-		
-		void disabled(){
+
+		void disabled() {
 			disabled = true;
 		}
 
@@ -150,42 +149,30 @@ public class DMSTGraph extends Graph {
 			dmstVertexArray[u.getName()] = new DMSTVertex(u);
 		}
 
-		int m = 0;
 		// Make copy of edges
+		DMSTEdge dmstEdge;
 		for (Vertex u : g) {
 			for (Edge e : u.adj) {
 				Vertex v = e.otherEnd(u);
 				DMSTVertex x1 = getVertex(u);
 				DMSTVertex x2 = getVertex(v);
-				x1.DMSTadj.add(new DMSTEdge(x1, x2, e.weight,m));
-				x2.DMSTrevadj.add(new DMSTEdge(x1,x2,e.weight,m));
-				m++;
-				if(x2.minEdge > e.weight){
+				dmstEdge = new DMSTEdge(x1, x2, e.weight, e.getName());
+				x1.DMSTadj.add(dmstEdge);
+				x2.DMSTrevadj.add(dmstEdge);
+				if (x2.minEdge > e.weight)
 					x2.minEdge = e.weight;
-				}
 			}
 		}
-		/*for (Vertex u : g) {
-			int minEdgeWeight = Integer.MAX_VALUE;
-			for (Edge e : u.revAdj) {
-				if (minEdgeWeight > e.weight) {
-					minEdgeWeight = e.weight;
-				}
-			}
-			dmstVertexArray[u.getName()].minEdge = minEdgeWeight;
-		}*/
 	}
-	
+
 	DMSTVertex getVertex(Vertex u) {
 		return Vertex.getVertex(dmstVertexArray, u);
 	}
-
 
 	@Override
 	public Iterator<Vertex> iterator() {
 		return new DMSTGraphIterator(this);
 	}
-	
 
 	class DMSTGraphIterator implements Iterator<Vertex> {
 		Iterator<DMSTVertex> it;
@@ -218,7 +205,6 @@ public class DMSTGraph extends Graph {
 		}
 
 	}
-	
 
 	public DMSTVertex getDMSTVertex(int n) {
 		return dmstVertexArray[n - 1];
@@ -227,6 +213,5 @@ public class DMSTGraph extends Graph {
 	public DMSTVertex[] getDMSTVertexArray() {
 		return dmstVertexArray;
 	}
-
 
 }

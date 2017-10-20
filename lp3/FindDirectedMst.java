@@ -3,35 +3,45 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3
 import java.util.HashSet;
 import java.util.Iterator;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.BFS.BFSVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTVertex;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ConnectedComponentsOfGraph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
-
-// Very inefficient codes. Lots of iterations of nodes. Should optimize later. 
+/**
+ * This class performs the Chu and Liu | Edmonds Algorithm (improved by Tarjan's
+ * algorithm) for finding the optimat branching in the given directed graph.
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class FindDirectedMst {
-	
-	//Should think of a better way - Used for disabling the edges of DMSTadj. DMSTadj is used in running bfs.
-	HashSet<Integer> set = new HashSet<Integer>();
+
 	HashSet<Integer> cycle = new HashSet<Integer>();
-	
+
 	public Graph minMst(DMSTGraph g, Vertex start) {
-		DMSTGraph transformedGraph = transformWeights(g, start);
-		DMSTGraph subGraph = findSubGraph(transformedGraph);
-		DMSTVertex v = isMST(subGraph, start);
-		if(v == null){
-			return g;
-		}		
-		cycle.add(v.getName());
-		StringBuilder sb = new StringBuilder();
-		sb.append(v.getName() );
-		String cycle = detectCycle(sb,v);
+		transformWeights(g, start);
+		ConnectedComponentsOfGraph.SCCResult sccResult = ConnectedComponentsOfGraph.stronglyConnectedComponents(g);
+		if (sccResult.getNumberOfComponents() == 1) {
+			// TODO: This is the MST. Have to order the edges.
+		} else {
+			DMSTVertex shrinkedVetrex;
+			int n = 1;
+			for (HashSet<Graph.Vertex> scc : sccResult.getStronglyConnectedComponents()) {
+				for (Graph.Vertex dmstVertex : scc)
+					((DMSTVertex) dmstVertex).disable();
+				shrinkedVetrex = new DMSTVertex(new Vertex(n++));
+				//findMinimumEdgeBetweenSCCs();
+				// disable the other edges between the sccs and keep only the
+				// minimum edge
+			}
+		}
+
 		return g;
 	}
-	
+
 	public String detectCycle(StringBuilder sb, DMSTVertex v) {
 		while (v != null) {
 			Iterator<Edge> it = v.revIterator();
@@ -51,54 +61,28 @@ public class FindDirectedMst {
 		}
 		return null;
 	}
-		
-	public DMSTVertex isMST(DMSTGraph g, Vertex start){
-		BFS bfs = new BFS(g,g.getDMSTVertex(start.getName() +1));
-		bfs.bfs();
-		BFSVertex[] vertexArr = bfs.node;
-		// should be changed definitely. This is just a work around.
-		int name = 0;
-		for(BFSVertex vertex : vertexArr){
-			name++;
-			if(!vertex.seen){
-				return g.getDMSTVertex(name);
-			}
-		}
-		return null;
-	}
-	
-	private DMSTGraph findSubGraph(DMSTGraph g) {
-		DMSTVertex[] vertexArr = g.getDMSTVertexArray();
-		for (DMSTVertex vertex : vertexArr) {
-			if (vertex != null) {
-				Iterator<DMSTEdge> it = vertex.DMSTadj.iterator();
-				while (it.hasNext()) {
-					DMSTEdge edge = it.next();
-					if (set.contains(edge.getName())) {
-						edge.disabled();
-					}
+
+	/**
+	 * This method transforms the weights of all edges such that every vertex
+	 * except the root has atleast one incoming 0-weight edge.
+	 *
+	 * @param g
+	 * @param start
+	 * @return
+	 */
+	public void transformWeights(DMSTGraph g, Vertex start) {
+		DMSTVertex dmstVertex;
+		DMSTEdge dmstEdge;
+		for (Vertex vertex : g) {
+			dmstVertex = (DMSTVertex) vertex;
+			if (dmstVertex.getName() != start.getName()) {
+				for (Edge edge : dmstVertex) {
+					dmstEdge = (DMSTEdge) edge;
+					dmstEdge.weight = dmstEdge.weight - ((DMSTVertex) dmstEdge.otherEnd(dmstVertex)).minEdge;
+					if (dmstEdge.weight != 0)
+						dmstEdge.disabled();
 				}
 			}
 		}
-		return g;
 	}
-
-	public DMSTGraph transformWeights(DMSTGraph g, Vertex start) {
-		DMSTVertex[] vertexArray = g.getDMSTVertexArray();
-		for (DMSTVertex vertex : vertexArray) {
-			// try to remove this if condition
-			if (vertex != null && vertex.getName() != start.getName() ) {
-				for (DMSTEdge e : vertex.DMSTrevadj) { 
-					e.weight = e.weight - vertex.minEdge;
-					if(e.weight != 0){
-						e.disabled();
-						set.add(e.getName());
-						
-					}
-				}
-			}
-		}
-		return g;
-	}
-
 }

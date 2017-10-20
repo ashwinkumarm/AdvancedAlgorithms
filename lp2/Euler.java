@@ -75,7 +75,7 @@ public class Euler extends GraphAlgorithm<Euler.EulerVertex> {
 	public boolean isEulerian() {
 
 		// check whether the given graph is strongly connected or not
-		if (ConnectedComponentsOfGraph.stronglyConnectedComponents(g) == 0) {
+		if (ConnectedComponentsOfGraph.stronglyConnectedComponents(g).getStronglyConnectedComponents().length == 1) {
 			System.out.println("Graph is not Eulerian");
 			System.out.println("Reason: Graph is not strongly connected");
 			return false;

@@ -2,7 +2,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.uti
 
 /**
  * Graph class customized to do DFS
- * 
+ *
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
@@ -15,7 +15,7 @@ public class DFSStronglyConnected extends GraphAlgorithm<DFSStronglyConnected.DF
 	public static int cno;
 
 	// Class to store information about a vertex in this algorithm
-	static class DFSVertex {
+	static class DFSVertex{
 
 		Graph.Vertex element;
 		Graph.Vertex parent;
@@ -44,28 +44,28 @@ public class DFSStronglyConnected extends GraphAlgorithm<DFSStronglyConnected.DF
 	public void reinitialize(Graph g) {
 		for (Graph.Vertex u : g) {
 			DFSVertex du = getVertex(u);
-			du.cno = -1;
+			du.cno = 0;
 			du.parent = null;
 			du.seen = false;
 		}
 	}
 
-	public void dfsVisit(Graph.Vertex u, List<Graph.Vertex> decFinList) {
-		dfsVisit(u, decFinList, false);
+	public void dfsVisit(Graph.Vertex u, List<DFSVertex> connectedComponents) {
+		dfsVisit(u, connectedComponents, false);
 	}
 
-	public void dfsVisitReverse(Graph.Vertex u, List<Graph.Vertex> decFinList) {
+	public void dfsVisitReverse(Graph.Vertex u, List<DFSVertex> decFinList) {
 		dfsVisit(u, decFinList, true);
 	}
 
 	/**
 	 * DFS algorithm which keeps track of the vertex start and finish time and
 	 * stores the visited vertices to the start of the list passed in the parameter
-	 * 
+	 *
 	 * @param u
-	 * @param decFinList
+	 * @param connectedComponents
 	 */
-	public void dfsVisit(Graph.Vertex u, List<Graph.Vertex> decFinList, boolean flag) {
+	public void dfsVisit(Graph.Vertex u, List<DFSVertex> connectedComponents, boolean flag) {
 		DFSVertex du = getVertex(u);
 		du.seen = true;
 		du.cno = cno;
@@ -75,19 +75,19 @@ public class DFSStronglyConnected extends GraphAlgorithm<DFSStronglyConnected.DF
 			DFSVertex dv =  getVertex(v);
 			if (!dv.seen) {
 				setParent(u, v);
-				dfsVisit(v, decFinList, flag);
+				dfsVisit(v, connectedComponents, flag);
 			}
 		}
-		decFinList.add(0, u);
+		connectedComponents.add(0, du);
 	}
 
 	/**
 	 * This method sets the component number statTime and visitStatus while visiting
 	 * a vertex
-	 * 
+	 *
 	 * @param u
 	 */
-	
+
 	public void setParent(Graph.Vertex u, Graph.Vertex v) {
 		getVertex(v).parent = u;
 	}
