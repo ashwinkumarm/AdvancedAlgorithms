@@ -16,8 +16,14 @@ public class FindPairs {
 
 		}
 		int count = 0;
-		
-		return 0;
+		for (int i = 0; i < A.length; i++) {
+			if (map.get(X - A[i]) != null)
+				count += map.get(X - A[i]);
+			if (X - A[i] == A[i])
+				count--;
+		}
+
+		return count / 2;
 	}
 
 	public static void generateArray(int size, int[] arr, Scanner in) {
@@ -31,7 +37,7 @@ public class FindPairs {
 		// int size = in.nextInt();
 		// int[] arr = new int[size];
 		// generateArray(size, arr, in);
-		int[] arr = { 1, 1, 1, 1, 1 };
+		int[] arr = { 3, 3, 4, 5, 3, 5 };
 		int X = in.nextInt();
 		System.out.println("\n Find Pairs that sum to: " + X);
 

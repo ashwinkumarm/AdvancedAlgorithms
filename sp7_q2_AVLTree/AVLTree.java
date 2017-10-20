@@ -1,5 +1,7 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q2_AVLTree;
 
+import java.util.Scanner;
+
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
 
 public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
@@ -19,7 +21,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 
 	public boolean insert(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
-		root = insert(newEntry, x);
+		insert(newEntry, x);
 		return true;
 	}
 
@@ -77,7 +79,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return deletedElement;
 	}
 
-	public Entry<T> insert(Entry<T> newEntry, T x) {
+	public void insert(Entry<T> newEntry, T x) {
 		Entry<T> entry = null, newRoot = null;
 		T prevChild;
 		if (add(newEntry)) {
@@ -107,24 +109,23 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 					if (parent == null) {
 						if (newRoot != null) {
 							newRoot.height = 1 + Math.max(getHeight(newRoot.left), getHeight(newRoot.right));
-							return newRoot;
+							root = newRoot;
 						} else {
 							entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
-							return entry;
+							// root = entry;
 						}
+						return;
 					}
-
-					if (newRoot != null && parent.left.element.compareTo(prevChild) == 0) {
-						parent.left = newRoot;
-					} else if (newRoot != null && parent.right.element.compareTo(prevChild) == 0) {
-						parent.right = newRoot;
+						if (newRoot != null && parent.left.element.compareTo(prevChild) == 0) {
+							parent.left = newRoot;
+						} else if (newRoot != null && parent.right.element.compareTo(prevChild) == 0) {
+							parent.right = newRoot;
+						}
+						entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
+						entry = parent;
 					}
-					entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
-					entry = parent;
 				}
 			}
-		}
-		return (Entry<T>) root;
 	}
 
 	public Entry<T> rightRotate(Entry<T> node) {
@@ -170,18 +171,30 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 
 	public static void main(String args[]) {
 
-		AVLTree<Integer> tree = new AVLTree<Integer>();
+		AVLTree<Integer> t = new AVLTree<Integer>();
 
-		tree.insert(new Integer(2));
-		tree.insert(new Integer(1));
-		tree.insert(new Integer(4));
-		tree.insert(new Integer(5));
-		tree.insert(new Integer(9));
-		tree.insert(new Integer(3));
-		tree.insert(new Integer(6));
-		tree.insert(new Integer(7));
-		tree.inOrder();
-		System.out.println("\n "+tree.delete(7));
-		tree.inOrder();
+		Scanner in = new Scanner(System.in);
+		while (in.hasNext()) {
+			int x = in.nextInt();
+			if (x > 0) {
+				System.out.print("Add " + x + " : ");
+				t.insert(x);
+				t.printTree();
+			} else if (x < 0) {
+				System.out.print("Remove " + x + " : ");
+				t.delete(-x);
+				t.printTree();
+			} else {
+				Comparable[] arr = t.toArray();
+				System.out.print("Final: ");
+				for (int i = 0; i < t.size; i++) {
+					System.out.print(arr[i] + " ");
+				}
+				System.out.println();
+				in.close();
+				return;
+			}
+		}
+		in.close();
 	}
 }
