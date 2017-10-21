@@ -12,6 +12,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_
  *
  */
 public class ElementsExactlyOnce {
+
 	/**
 	 * This method returns an array that has those elements of the input array
 	 * that occur exactly once.
@@ -21,13 +22,14 @@ public class ElementsExactlyOnce {
 	static <T extends Comparable<? super T>> T[] exactlyOnce(T[] A) {
 		BSTMap<T, Integer> map = new BSTMap<T, Integer>();
 		int n = 0;
+		Integer val;
 		for (int i = 0; i < A.length; i++) {
-			if (!map.containsKey(A[i])) {
+			if ((val = map.get(A[i])) == null) {
 				n++;
 				map.put(A[i], 1);
 			} else {
 				n--;
-				map.put(A[i], map.get(A[i]) + 1);
+				map.put(A[i], val + 1);
 			}
 		}
 

@@ -9,18 +9,18 @@ public class FindPairs {
 
 	public static int howMany(int[] A, int X) {
 		TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
+		Integer val;
 		for (int i = 0; i < A.length; i++) {
-			if (!map.containsKey(A[i]))
+			if ((val = map.get(A[i])) == null)
 				map.put(A[i], 1);
 			else
-				map.put(A[i], map.get(A[i]) + 1);
+				map.put(A[i], val + 1);
 		}
 
 		int count = 0;
-		Integer diffCount;
 		for (int i = 0; i < A.length; i++) {
-			if ((diffCount = map.get(X - A[i])) != null)
-				count += diffCount;
+			if ((val = map.get(X - A[i])) != null)
+				count += val;
 			if (X - A[i] == A[i])
 				count--;
 		}
@@ -35,7 +35,7 @@ public class FindPairs {
 
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
-		int[] arr = { 3, 3, 4, 5, 3, 5 };
+		int[] arr = { 3, 3, 4, 5, 3, 5, 1 };
 		int X = in.nextInt();
 		System.out.println("\nFind Pairs that sum to: " + X);
 

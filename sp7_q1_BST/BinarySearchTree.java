@@ -131,7 +131,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 	 */
 	public T get(T x) {
 		Entry<T> entry = find(x);
-		return entry.element.compareTo(x) == 0 ? entry.element : null;
+		return (entry != null && entry.element.compareTo(x) == 0) ? entry.element : null;
 	}
 
 	public boolean contains(T x) {
