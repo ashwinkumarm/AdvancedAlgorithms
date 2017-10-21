@@ -19,6 +19,15 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 		return true;
 	}
 
+	public T delete(T x) {
+		if (root == null)
+			return null;
+		T removedElement = remove(x);
+		if (stack != null)
+			root = splay(root, stack.pop().element);
+		return removedElement;
+	}
+
 	public Entry<T> splay(Entry<T> root, T x) {
 		Entry<T> newRoot = null, parent = null, g_parent = null;
 		T prevChild;
@@ -105,7 +114,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 				t.printTree();
 			} else if (x < 0) {
 				System.out.print("Remove " + x + " : ");
-				// t.delete(-x);
+				t.delete(-x);
 				t.printTree();
 			} else {
 				Comparable[] arr = t.toArray();
