@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFSWIthColoring;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphVertexColor;
 
@@ -31,13 +31,13 @@ public class DFSCheckDAG {
 	public static boolean isDAG(Graph g) { 
 		
 		Iterator<Graph.Vertex> it = g.iterator();
-		DFS dfsGraph = new DFS(g);
+		DFSWIthColoring dfsGraph = new DFSWIthColoring(g);
 		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>();
 		Graph.Vertex u;
 		while (it.hasNext()) {
 			u = it.next();
 			if (dfsGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
-				DFS.cno++;
+				DFSWIthColoring.cno++;
 				if(!dfsGraph.dfsVisitAndIsDAG(u, decFinishList)){
 					return false;
 				}

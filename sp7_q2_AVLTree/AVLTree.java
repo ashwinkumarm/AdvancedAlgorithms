@@ -6,7 +6,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_
 
 public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
 
-	static class Entry<T> extends BinarySearchTree.Entry<T> {
+	public static class Entry<T> extends BinarySearchTree.Entry<T> {
 		int height;
 
 		public Entry(T x, Entry<T> left, Entry<T> right) {
@@ -21,8 +21,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 
 	public boolean insert(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
-		insert(newEntry, x);
-		return true;
+		return insert(newEntry, x);
 	}
 
 	public T delete(T x) {
@@ -79,7 +78,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return deletedElement;
 	}
 
-	public void insert(Entry<T> newEntry, T x) {
+	public boolean insert(Entry<T> newEntry, T x) {
 		Entry<T> entry = null, newRoot = null;
 		T prevChild;
 		if (add(newEntry)) {
@@ -114,18 +113,20 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 							entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
 							// root = entry;
 						}
-						return;
+						return true;
 					}
-						if (newRoot != null && parent.left.element.compareTo(prevChild) == 0) {
-							parent.left = newRoot;
-						} else if (newRoot != null && parent.right.element.compareTo(prevChild) == 0) {
-							parent.right = newRoot;
-						}
-						entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
-						entry = parent;
+					if (newRoot != null && parent.left.element.compareTo(prevChild) == 0) {
+						parent.left = newRoot;
+					} else if (newRoot != null && parent.right.element.compareTo(prevChild) == 0) {
+						parent.right = newRoot;
 					}
+					entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
+					entry = parent;
 				}
 			}
+			return true;
+		}
+		return false;
 	}
 
 	public Entry<T> rightRotate(Entry<T> node) {

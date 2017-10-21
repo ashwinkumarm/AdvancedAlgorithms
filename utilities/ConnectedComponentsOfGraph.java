@@ -10,36 +10,18 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.uti
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFSStronglyConnected.DFSVertex;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS.DFSVertex;
 
 public class ConnectedComponentsOfGraph {
-
-	/**
-	 * Class used to hold the result required by the calling program. *
-	 */
-	public static class SCCResult {
-		List<DFSVertex> connectedComponents;
-		int numberOfComponents;
-		HashSet<Graph.Vertex>[] stronglyConnectedComponents;
-
-		public List<DFSVertex> getConnectedComponents() {
-			return connectedComponents;
-		}
-
-		public int getNumberOfComponents() {
-			return numberOfComponents;
-		}
-
-		public HashSet<Graph.Vertex>[] getStronglyConnectedComponents() {
-			return stronglyConnectedComponents;
-		}
-	}
+	public List<DFSVertex> dfsFinList;
+	public int numberOfComponents;
+	public List<DFSVertex> dfsFinListReverse;
+	public int numberOfSCCs;
 
 	/**
 	 * This method runs DFS on the given graph and get the list of vertices in
@@ -51,39 +33,30 @@ public class ConnectedComponentsOfGraph {
 	 * @return cno
 	 */
 
-	public static SCCResult stronglyConnectedComponents(Graph g) {
+	public int stronglyConnectedComponents(Graph g) {
 		Iterator<Graph.Vertex> it = g.iterator();
-		DFSStronglyConnected dfsGraph = new DFSStronglyConnected(g);
-		SCCResult result = new SCCResult();
-		result.connectedComponents = new LinkedList<DFSVertex>();
+		DFS dfsGraph = new DFS(g);
+		dfsFinList = new LinkedList<DFSVertex>();
 		Graph.Vertex u;
 		while (it.hasNext()) {
 			u = it.next();
 			if (!dfsGraph.getVertex(u).seen) {
-				DFSStronglyConnected.cno++;
-				dfsGraph.dfsVisit(u, result.connectedComponents);
+				DFS.cno++;
+				dfsGraph.dfsVisit(u, dfsFinList);
 			}
 		}
-		result.numberOfComponents = DFSStronglyConnected.cno;
-		DFSStronglyConnected.cno = 0;
+		numberOfComponents = DFS.cno;
+		DFS.cno = 0;
 		dfsGraph.reinitialize(g);
-		List<DFSVertex> dfsFinList = new LinkedList<DFSVertex>();
-		for (DFSVertex dv : result.connectedComponents) {
+		dfsFinListReverse = new LinkedList<DFSVertex>();
+		for (DFSVertex dv : dfsFinList) {
 			if (!dfsGraph.getVertex(dv.element).seen) {
-				DFSStronglyConnected.cno++;
-				dfsGraph.dfsVisitReverse(dv.element, dfsFinList);
+				DFS.cno++;
+				dfsGraph.dfsVisitReverse(dv.element, dfsFinListReverse);
 			}
 		}
-		HashSet<Graph.Vertex>[] stronglyConnectedComponents = new HashSet[DFSStronglyConnected.cno];
-		int index;
-		for (DFSVertex dv : dfsFinList) {
-			index = dv.cno - 1;
-			if (stronglyConnectedComponents[index] == null)
-				stronglyConnectedComponents[index] = new HashSet<>();
-			stronglyConnectedComponents[index].add(dv.element);
-		}
-		result.stronglyConnectedComponents = stronglyConnectedComponents;
-		return result;
+		numberOfSCCs = DFS.cno;
+		return numberOfSCCs;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -100,13 +73,9 @@ public class ConnectedComponentsOfGraph {
 
 		// if graph is not empty we call the topological sort method
 		if (graph.n > 0) {
-			SCCResult result = stronglyConnectedComponents(graph);
-			int cno = result.getStronglyConnectedComponents().length;
+			int cno = new ConnectedComponentsOfGraph().stronglyConnectedComponents(graph);
 			if (cno > 1) {
 				System.out.println("\nNumber of strongly connected components in a given graph: " + cno);
-				System.out.println("They are ");
-				for (int i = 0; i < cno; i++)
-					System.out.println("SCC " + (i + 1) + ": " + result.getStronglyConnectedComponents()[i]);
 			} else {
 				System.out.println("The given graph is not strongly connected");
 			}

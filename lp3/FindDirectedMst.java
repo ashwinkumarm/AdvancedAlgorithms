@@ -6,6 +6,7 @@ import java.util.Iterator;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ConnectedComponentsOfGraph;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS.DFSVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
@@ -23,22 +24,32 @@ public class FindDirectedMst {
 
 	public Graph minMst(DMSTGraph g, Vertex start) {
 		transformWeights(g, start);
-		ConnectedComponentsOfGraph.SCCResult sccResult = ConnectedComponentsOfGraph.stronglyConnectedComponents(g);
-		if (sccResult.getNumberOfComponents() == 1) {
+		ConnectedComponentsOfGraph componentsOfGraph = new ConnectedComponentsOfGraph();
+		componentsOfGraph.stronglyConnectedComponents(g);
+		HashSet<Graph.Vertex>[] stronglyConnectedComponents = new HashSet[componentsOfGraph.numberOfSCCs];
+		int index;
+		for (DFSVertex dv : componentsOfGraph.dfsFinListReverse) {
+			index = dv.getCno() - 1;
+			if (stronglyConnectedComponents[index] == null)
+				stronglyConnectedComponents[index] = new HashSet<>();
+			stronglyConnectedComponents[index].add(dv.getElement());
+		}
+		if (componentsOfGraph.numberOfComponents == 1) {
 			// TODO: This is the MST. Have to order the edges.
 		} else {
 			DMSTVertex shrinkedVetrex;
 			int n = 1;
-			for (HashSet<Graph.Vertex> scc : sccResult.getStronglyConnectedComponents()) {
+			for (HashSet<Graph.Vertex> scc : stronglyConnectedComponents)
+				System.out.println("SCC: " + scc);
+			for (HashSet<Graph.Vertex> scc : stronglyConnectedComponents) {
 				for (Graph.Vertex dmstVertex : scc)
 					((DMSTVertex) dmstVertex).disable();
 				shrinkedVetrex = new DMSTVertex(new Vertex(n++));
-				//findMinimumEdgeBetweenSCCs();
+				// findMinimumEdgeBetweenSCCs();
 				// disable the other edges between the sccs and keep only the
 				// minimum edge
 			}
 		}
-
 		return g;
 	}
 
