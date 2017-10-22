@@ -9,16 +9,16 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 		super();
 	}
 
-	public boolean insert(T x) {
+	public boolean add(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
-		boolean isAdded = add(newEntry);
+		boolean isAdded = super.add(newEntry);
 		if (isAdded && stack != null)
 			splay(newEntry);
 		return isAdded;
 	}
 
-	public T delete(T x) {
-		T removedElement = remove(x);
+	public T remove(T x) {
+		T removedElement = super.remove(x);
 		if (removedElement != null && stack != null)
 			splay(stack.pop());
 		return removedElement;
@@ -104,11 +104,11 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 			int x = in.nextInt();
 			if (x > 0) {
 				System.out.print("Add " + x + " : ");
-				t.insert(x);
+				t.add(x);
 				t.printTree();
 			} else if (x < 0) {
 				System.out.print("Remove " + x + " : ");
-				t.delete(-x);
+				t.remove(-x);
 				t.printTree();
 			} else {
 				Comparable[] arr = t.toArray();
