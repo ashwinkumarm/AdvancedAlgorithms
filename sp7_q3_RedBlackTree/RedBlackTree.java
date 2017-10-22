@@ -1,129 +1,158 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q3_RedBlackTree;
+import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
 
+
 public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
+	static class Entry<T> extends BinarySearchTree.Entry<T> {
+		boolean isRed;
 
-	static public class Node<T> extends Entry<T> {
-
-		NodeColor color;
-
-		public Node(T x, Node<T> left, Node<T> right, NodeColor color) {
+		Entry(T x, Entry<T> left, Entry<T> right) {
 			super(x, left, right);
-			this.color = color;
-		}
-		public void setColor( NodeColor color){
-			this.color = color;
-		}
-		public NodeColor getColor(){
-			return this.color;
+			isRed = true;
 		}
 	}
 
-	public RedBlackTree() {
-		root = null;
-		size = 0;
+	RedBlackTree() {
+		super();
 	}
-
-	public Node<T> add(T x) {
-		Node<T> root = null;
-		Node<T> newNode = (Node<T>) super.add(x);
-		if (newNode != null) {
-			newNode.setColor(NodeColor.RED);
-			root = repair(newNode);
-			if (root.getColor() == NodeColor.RED) {
-				root.setColor( NodeColor.BLACK);
+	Entry<T> rootRBT;
+	
+	public Entry<T> insert(T x){
+		Entry<T> newEntry = new Entry<T>(x,null,null);
+		if(add(newEntry) && stack != null){
+			Entry<T> parent = (Entry<T>) stack.peek();
+			if(parent != null && parent.isRed){
+				repair(newEntry, parent);
 			}
 		}
-		return root;
-	}
-
-	public Node<T> repair(Node<T> t) {
 		
-		while(t.getColor() == NodeColor.RED){
-			
-			if(t == root){
-				return t;
-			}
-			
-			Node<T> g_t = null;
-			Node<T> p_t = null;
-			Node<T> u_t = null;
+		rootRBT = (Entry<T>) root;
+		rootRBT.isRed = false;
+		return rootRBT;
+	}
+	
+	public void repair(Entry<T> t, Entry<T> parent) {
+		
+		if (parent == rootRBT) {
+			return;
+		}
 
-			
-			p_t = (Node<T>)stack.pop();
-			
-			if(p_t == root || p_t.getColor() == NodeColor.BLACK){
-				return p_t;
+		Entry<T> prevGrandParent = null;
+		
+		while (t.isRed) {
+			parent = (Entry<T>) stack.pop();
+			if (t == rootRBT || parent == rootRBT || !parent.isRed) {
+				return;
 			}
-			
-			g_t = (Node<T>)stack.pop();
-			
-			if(p_t.element.compareTo(g_t.element) < 0){
-				u_t = (Node<T>)g_t.right;
-			} 
-			else{
-				u_t = (Node<T>)g_t.left;
-			}
-			
-			
-			if(u_t.getColor() == NodeColor.RED){
-				p_t.setColor(NodeColor.BLACK);
-				u_t.setColor(NodeColor.BLACK);
-				g_t.setColor(NodeColor.RED);
-				t = g_t;
-			}
-			
-			else if(u_t.getColor() == NodeColor.BLACK){
-				if(g_t.left == p_t && p_t.left == t){ //LL case
-					singleRightRotate(g_t, p_t);
-				}
-				else if(g_t.right == p_t && p_t.right == t){ //RR case
-					singleLeftRotate(g_t, p_t);
-				}
-				else if(g_t.left == p_t && p_t.right == t){ //LR case
-					doubleRotateLeftRight(g_t, p_t, t);
-					
-				}
-				else if(g_t.right == p_t && p_t.left == t){ // RL case
-					doubleRotateRightLeft(g_t, p_t, t);
-				}
-				break;
-			}
-			
-		}
-		return (Node<T>)root;
-	}
-	
-	public void singleRightRotate(Node<T> g_t, Node<T> p_t){ //LL Case
-		g_t.left = p_t.right;
-		p_t.right = g_t;
-		p_t.setColor(NodeColor.BLACK);
-		g_t.setColor(NodeColor.RED);
-		if(g_t == root) {
-			root = p_t;
-		}
-	}
-	
-	public void singleLeftRotate(Node<T> g_t, Node<T> p_t){ //RR Case
-		g_t.right = p_t.left;
-		p_t.left = g_t;
-		p_t.setColor(NodeColor.BLACK);
-		g_t.setColor(NodeColor.RED);
-		if(g_t == root) {
-			root = p_t;
-		}
-	}
-	
-	public void doubleRotateLeftRight(Node<T> g_t, Node<T> p_t, Node<T> t){ //RL Case
-		singleLeftRotate(p_t, t);
-		singleRightRotate(g_t, t);
-	}
-	
-	public void doubleRotateRightLeft(Node<T> g_t, Node<T> p_t, Node<T> t){ // LR Case
-		singleRightRotate(p_t, t);
-		singleLeftRotate(g_t, t);
-	}
-	
 
+			Entry<T> grandParent = (Entry<T>) stack.pop();
+			prevGrandParent = new Entry<T>(grandParent.element, (Entry<T>)grandParent.left,(Entry<T>) grandParent.right);
+			Entry<T> uncleOfT = (Entry<T>) ((Entry<T>) grandParent.right == parent ? grandParent.left
+					: grandParent.right);
+
+			if (uncleOfT != null && uncleOfT.isRed) {
+				grandParent.isRed = true;
+				parent.isRed = false;
+				uncleOfT.isRed = false;
+				t = grandParent;
+				continue;
+			}
+
+			else if (uncleOfT == null || !uncleOfT.isRed) {
+				if (t.isLeftChild && parent.isLeftChild) {
+					grandParent  = rotateRight(grandParent);
+					Entry<T>rightChild = (Entry<T>)grandParent.right;
+					rightChild.isRed = false;
+					grandParent.isRed = true;
+					updateTree(prevGrandParent, grandParent);
+					return;
+				} else if (t.isRightChild && parent.isRightChild) {
+					grandParent = rotateLeft(grandParent);
+					Entry<T>leftChild = (Entry<T>)grandParent.left;
+					leftChild.isRed = true;
+					grandParent.isRed = false;
+					updateTree(prevGrandParent, grandParent);
+					return;
+				} else if (t.isRightChild && parent.isLeftChild) {
+					grandParent.left = rotateLeft(parent);
+					Entry<T> currRoot = rotateRight(grandParent);
+					Entry<T>rightChild = (Entry<T>)currRoot.right;
+					currRoot.isRed = false;
+					rightChild.isRed = true;
+					updateTree(prevGrandParent, currRoot);
+					return;
+				} else if (t.isLeftChild && parent.isRightChild) {
+					grandParent.right = rotateRight(parent);
+					Entry<T> currRoot  = rotateLeft(grandParent);
+					Entry<T>leftChild = (Entry<T>)currRoot.left;
+					currRoot.isRed = false;
+					leftChild.isRed = true;
+					updateTree(prevGrandParent, currRoot);
+					return;
+				}
+			}
+		}
+	}
+	
+	
+	public void updateTree(Entry<T> prevGrandParent, Entry<T> currRoot){
+		Entry<T> greatGp = (Entry<T>)stack.pop();
+		if(greatGp!= null && prevGrandParent != null){
+			if(greatGp.left.element.compareTo(prevGrandParent.element) == 0){
+				greatGp.left = currRoot;
+			}else{
+				greatGp.right = currRoot;
+			}
+		}
+	}
+	public Entry<T> rotateRight(Entry<T> t){
+		Entry<T> tLeft = (Entry<T>) t.left;
+		t.left = tLeft.right;
+		tLeft.right = t;
+		if(t == root) {
+			root = tLeft;
+		}
+		return tLeft;
+	}
+
+	public Entry<T> rotateLeft(Entry<T> t) {
+		Entry<T> tRight = (Entry<T>) t.right;
+		t.right = tRight.left;
+		tRight.left = t;
+		if(t == root) {
+			root = tRight;
+		}
+		return tRight;
+	}
+	
+	
+	public static void main(String[] args){
+		RedBlackTree<Integer> t = new RedBlackTree<Integer>();
+
+		Scanner in = new Scanner(System.in);
+		while (in.hasNext()) {
+			int x = in.nextInt();
+			if (x > 0) {
+				System.out.print("Add " + x + " : ");
+				t.insert(x);
+				t.printTree();
+			} else if (x < 0) {
+				System.out.print("Remove " + x + " : ");
+				//t.delete(-x);
+				t.printTree();
+			} else {
+				Comparable[] arr = t.toArray();
+				System.out.print("Final: ");
+				for (int i = 0; i < t.size; i++) {
+					System.out.print(arr[i] + " ");
+				}
+				System.out.println();
+				in.close();
+				return;
+			}
+		}
+		in.close();
+	}
 }
