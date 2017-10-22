@@ -7,11 +7,22 @@ import java.util.Stack;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BinaryTree;
 
 public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTree<T> {
+	
+	static class Entry<T> extends BinaryTree.Entry<T> {
+		boolean isLeftChild;
+		boolean isRightChild;
+
+		Entry(T x, Entry<T> left, Entry<T> right) {
+			super(x, left, right);
+			isLeftChild = false;
+			isRightChild = false;
+		}
+	}
 
 	protected Stack<Entry<T>> stack;
 
 	public Iterator<T> iterator() {
-		return new BSTIterator<>(root);
+		return new BSTIterator<>((Entry<T>)root);
 	}
 
 	private class BSTIterator<E> implements Iterator<E> {
@@ -23,7 +34,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 			entry = root;
 			while (entry != null) {
 				stack.push(entry);
-				entry = entry.left;
+				entry = (Entry<E>) entry.left;
 			}
 		}
 
@@ -35,10 +46,10 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 			Entry<E> entry = stack.pop();
 			E value = entry.element;
 			if (entry.right != null) {
-				entry = entry.right;
+				entry = (Entry<E>) entry.right;
 				while (entry != null) {
 					stack.push(entry);
-					entry = entry.left;
+					entry = (Entry<E>) entry.left;
 				}
 			}
 			return value;
@@ -62,9 +73,11 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 			return false;
 		} else if (newEntry.element.compareTo(entry.element) < 0) {
 			entry.left = newEntry;
+			newEntry.isLeftChild = true;
 			stack.push(entry);
 		} else {
 			entry.right = newEntry;
+			newEntry.isRightChild = true;
 			stack.push(entry);
 		}
 		size++;
@@ -84,7 +97,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 			byPass(entry);
 		} else {
 			stack.push(entry);
-			Entry<T> minRight = find(entry.right, entry.element);
+			Entry<T> minRight = find((Entry<T>) entry.right, entry.element);
 			entry.element = minRight.element;
 			byPass(minRight);
 		}
@@ -95,7 +108,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 	public Entry<T> find(T x) {
 		stack = new Stack<Entry<T>>();
 		stack.push(null);
-		return find(root, x);
+		return find((Entry<T>) root, x);
 	}
 
 	public Entry<T> find(Entry<T> entry, T x) {
@@ -108,7 +121,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 					break;
 				} else {
 					stack.push(entry);
-					entry = entry.left;
+					entry = (Entry<T>) entry.left;
 				}
 			} else if (x.compareTo(entry.element) == 0) {
 				break;
@@ -117,7 +130,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 					break;
 				} else {
 					stack.push(entry);
-					entry = entry.right;
+					entry = (Entry<T>) entry.right;
 				}
 			}
 
@@ -142,54 +155,65 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 	public T min() {
 		if (root == null)
 			return null;
-		Entry<T> entry = root;
+		Entry<T> entry = (Entry<T>) root;
 		while (entry.left != null)
-			entry = entry.left;
+			entry = (Entry<T>) entry.left;
 		return entry.element;
 	}
 
 	public T max() {
 		if (root == null)
 			return null;
-		Entry<T> entry = root;
+		Entry<T> entry = (Entry<T>) root;
 		while (entry.right != null)
-			entry = entry.right;
+			entry = (Entry<T>) entry.right;
 		return entry.element;
 	}
 
 	public int height(Entry<T> entry) {
 		if (entry == null)
 			return -1;
-		int lh = height(entry.left);
-		int rh = height(entry.right);
+		int lh = height((Entry<T>) entry.left);
+		int rh = height((Entry<T>) entry.right);
 		return 1 + Math.max(lh, rh);
 	}
 
 	public void byPass(Entry<T> entry) {
 
 		Entry<T> parent = stack.peek();
-		Entry<T> child = entry.left == null ? entry.right : entry.left;
+		Entry<T> child = (Entry<T>)(entry.left == null ? entry.right : entry.left);
 		if (parent == null) {// t is root
+			child.isLeftChild = false;
+			child.isRightChild = false;
 			root = child;
 		} else if (parent.left == entry) {
 			parent.left = child;
+			if(child != null ){
+				child.isLeftChild = true;
+				child.isRightChild = false;
+			}
+			
 		} else {
 			parent.right = child;
+			if (child != null) {
+				child.isLeftChild = false;
+				child.isRightChild = true;
+			}
 		}
 	}
 
 	public Comparable[] toArray() {
 		Comparable[] arr = new Comparable[size];
-		toArray(root, arr, 0);
+		toArray((Entry<T>) root, arr, 0);
 		return arr;
 	}
 
 	// Inorder traversal of tree
 	int toArray(Entry<T> node, Comparable[] arr, int i) {
 		if (node != null) {
-			i = toArray(node.left, arr, i);
+			i = toArray((Entry<T>) node.left, arr, i);
 			arr[i++] = node.element;
-			i = toArray(node.right, arr, i);
+			i = toArray((Entry<T>) node.right, arr, i);
 		}
 		return i;
 	}
