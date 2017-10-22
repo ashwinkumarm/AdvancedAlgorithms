@@ -28,6 +28,8 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 		return removedElement;
 	}
 
+	//TODO: Add methods for contains, get, min, max
+
 	public Entry<T> splay(Entry<T> root, T x) {
 		Entry<T> newRoot = null, parent = null, g_parent = null;
 		T prevChild;

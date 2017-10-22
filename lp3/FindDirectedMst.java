@@ -1,7 +1,10 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTVertex;
@@ -22,35 +25,77 @@ public class FindDirectedMst {
 
 	HashSet<Integer> cycle = new HashSet<Integer>();
 
+	class ConnectedPair {
+		int from;
+		int to;
+
+		public ConnectedPair(int from, int to) {
+			super();
+			this.from = from;
+			this.to = to;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			ConnectedPair con = (ConnectedPair) obj;
+			if (this.from == con.from && this.to == con.to)
+				return true;
+			else
+				return false;
+		}
+	}
+
+	/**
+	 * @param g
+	 * @param start
+	 * @return
+	 */
 	public Graph minMst(DMSTGraph g, Vertex start) {
 		transformWeights(g, start);
-		ConnectedComponentsOfGraph componentsOfGraph = new ConnectedComponentsOfGraph();
-		componentsOfGraph.stronglyConnectedComponents(g);
-		HashSet<Graph.Vertex>[] stronglyConnectedComponents = new HashSet[componentsOfGraph.numberOfSCCs];
+		ConnectedComponentsOfGraph.stronglyConnectedComponents(g);
+		HashSet<Graph.Vertex>[] stronglyConnectedComponents = new HashSet[ConnectedComponentsOfGraph.numberOfSCCs];
 		int index;
-		for (DFSVertex dv : componentsOfGraph.dfsFinListReverse) {
+		for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinListReverse) {
 			index = dv.getCno() - 1;
 			if (stronglyConnectedComponents[index] == null)
 				stronglyConnectedComponents[index] = new HashSet<>();
 			stronglyConnectedComponents[index].add(dv.getElement());
 		}
-		if (componentsOfGraph.numberOfComponents == 1) {
+		if (ConnectedComponentsOfGraph.numberOfComponents == 1) {
 			// TODO: This is the MST. Have to order the edges.
 		} else {
-			DMSTVertex shrinkedVetrex;
-			int n = 1;
 			for (HashSet<Graph.Vertex> scc : stronglyConnectedComponents)
 				System.out.println("SCC: " + scc);
+			int name;
 			for (HashSet<Graph.Vertex> scc : stronglyConnectedComponents) {
 				for (Graph.Vertex dmstVertex : scc)
 					((DMSTVertex) dmstVertex).disable();
-				shrinkedVetrex = new DMSTVertex(new Vertex(n++));
-				// findMinimumEdgeBetweenSCCs();
-				// disable the other edges between the sccs and keep only the
-				// minimum edge
+				name = g.n++;
+				g.getVertexArray()[name] = new DMSTVertex(new Vertex(name));
 			}
+			findMinimumEdgeBetweenSCCs(g);
 		}
 		return g;
+	}
+
+	private void findMinimumEdgeBetweenSCCs(DMSTGraph g) {
+		List<DFSVertex> dfsFinListReverse = ConnectedComponentsOfGraph.dfsFinListReverse;
+		HashMap<ConnectedPair, Edge> minEdge = new HashMap<>();
+		ConnectedPair con;
+		Edge prevMin;
+		for (DFSVertex dv : dfsFinListReverse) {
+			for (Edge e : dv.getElement()) {
+				con = new ConnectedPair(dv.getCno(), ConnectedComponentsOfGraph.dfsGraph.getVertex(e.to).getCno());
+				if ((prevMin = minEdge.get(con)) == null)
+					minEdge.put(con, e);
+				else if (prevMin.weight > e.weight)
+					minEdge.put(con, e);
+			}
+		}
+
+		for (Entry<ConnectedPair, Edge> entry : minEdge.entrySet())
+			g.addEdge(g.getVertex(entry.getKey().from + 1), g.getVertex(entry.getKey().to + 1),
+					entry.getValue().weight);
 	}
 
 	public String detectCycle(StringBuilder sb, DMSTVertex v) {

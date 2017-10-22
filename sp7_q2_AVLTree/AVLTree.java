@@ -3,6 +3,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7
 import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BinaryTree;
 
 public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
 
@@ -21,19 +22,14 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 
 	public boolean insert(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
-		return insert(newEntry, x);
+		boolean isAdded = add(newEntry);
+		if (isAdded && stack != null)
+			root = balance();
+		return isAdded;
 	}
 
 	public T delete(T x) {
 		T deletedElement = remove(x);
-		Entry<T> entry = null, newRoot = null;
-		T prevChild;
-		if (deletedElement != null) {
-			if (stack != null) {
-				entry = (Entry<T>) stack.pop();
-				while (entry != null) {
-					newRoot = null;
-					prevChild = entry.element;
 					int balance = getBalance(entry);
 					// Left Left case
 					if (balance > 1 && getBalance(entry.left) >= 0)
@@ -74,59 +70,34 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 				}
 			}
 
+		Entry<T> entry = null;
+		Entry<T> parent;
+			parent = (Entry<T>) stack.pop();
+					entry = LeftRightRotate(entry);
+				setParentChild(parent, entry);
+			} else if (balance < -1) {
+				if (getHeight(entry.right.right) >= getHeight(entry.right.left))
+					entry = leftRotate(entry);
+				else
+					entry = RightLeftRotate(entry);
+				setParentChild(parent, entry);
+			} else
+				entry.height = Math.max(getHeight(entry.left), getHeight(entry.right)) + 1;
+			if (parent == null)
+				break;
+			entry = parent;
 		}
-		return deletedElement;
+		return entry;
+
 	}
 
-	public boolean insert(Entry<T> newEntry, T x) {
-		Entry<T> entry = null, newRoot = null;
-		T prevChild;
-		if (add(newEntry)) {
-			if (stack != null) {
-				entry = (Entry<T>) stack.pop();
-				while (entry != null) {
-					newRoot = null;
-					prevChild = entry.element;
-					int balance = getBalance(entry);
-					// Left Left case
-					if (balance > 1 && x.compareTo(entry.left.element) < 0)
-						newRoot = rightRotate(entry);
-
-					// Right Right Case
-					else if (balance < -1 && x.compareTo(entry.right.element) > 0)
-						newRoot = leftRotate(entry);
-
-					// Left Right Case
-					else if (balance > 1 && x.compareTo(entry.left.element) > 0)
-						newRoot = LeftRightRotate(entry);
-
-					// Right Left Case
-					else if (balance < -1 && x.compareTo(entry.right.element) < 0)
-						newRoot = RightLeftRotate(entry);
-
-					Entry<T> parent = (Entry<T>) stack.pop();
-					if (parent == null) {
-						if (newRoot != null) {
-							newRoot.height = 1 + Math.max(getHeight(newRoot.left), getHeight(newRoot.right));
-							root = newRoot;
-						} else {
-							entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
-							// root = entry;
-						}
-						return true;
-					}
-					if (newRoot != null && parent.left.element.compareTo(prevChild) == 0) {
-						parent.left = newRoot;
-					} else if (newRoot != null && parent.right.element.compareTo(prevChild) == 0) {
-						parent.right = newRoot;
-					}
-					entry.height = 1 + Math.max(getHeight(entry.left), getHeight(entry.right));
-					entry = parent;
-				}
+	private void setParentChild(Entry<T> parent, Entry<T> entry) {
+		if (parent != null)
+			if (parent.element.compareTo(entry.element) > 0) {
+				parent.left = entry;
+			} else {
+				parent.right = entry;
 			}
-			return true;
-		}
-		return false;
 	}
 
 	public Entry<T> rightRotate(Entry<T> node) {
@@ -159,21 +130,19 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return rightRotate(node);
 	}
 
-	public int getHeight(BinarySearchTree.Entry<T> entry) {
+	public int getHeight(BinaryTree.Entry<T> entry) {
 		Entry<T> node = (Entry<T>) entry;
 		return node == null ? -1 : node.height;
 	}
 
-	public int getBalance(BinarySearchTree.Entry<T> entry) {
+	public int getBalance(BinaryTree.Entry<T> entry) {
 		if (entry == null)
 			return 0;
 		return getHeight(entry.left) - getHeight(entry.right);
 	}
 
 	public static void main(String args[]) {
-
 		AVLTree<Integer> t = new AVLTree<Integer>();
-
 		Scanner in = new Scanner(System.in);
 		while (in.hasNext()) {
 			int x = in.nextInt();

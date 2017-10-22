@@ -18,10 +18,9 @@ import java.util.Scanner;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS.DFSVertex;
 
 public class ConnectedComponentsOfGraph {
-	public List<DFSVertex> dfsFinList;
-	public int numberOfComponents;
-	public List<DFSVertex> dfsFinListReverse;
-	public int numberOfSCCs;
+	public static List<DFSVertex> dfsFinList, dfsFinListReverse;
+	public static int numberOfComponents, numberOfSCCs;
+	public static DFS dfsGraph;
 
 	/**
 	 * This method runs DFS on the given graph and get the list of vertices in
@@ -33,9 +32,9 @@ public class ConnectedComponentsOfGraph {
 	 * @return cno
 	 */
 
-	public int stronglyConnectedComponents(Graph g) {
+	public static int stronglyConnectedComponents(Graph g) {
 		Iterator<Graph.Vertex> it = g.iterator();
-		DFS dfsGraph = new DFS(g);
+		dfsGraph = new DFS(g);
 		dfsFinList = new LinkedList<DFSVertex>();
 		Graph.Vertex u;
 		while (it.hasNext()) {
@@ -73,7 +72,7 @@ public class ConnectedComponentsOfGraph {
 
 		// if graph is not empty we call the topological sort method
 		if (graph.n > 0) {
-			int cno = new ConnectedComponentsOfGraph().stronglyConnectedComponents(graph);
+			int cno = ConnectedComponentsOfGraph.stronglyConnectedComponents(graph);
 			if (cno > 1) {
 				System.out.println("\nNumber of strongly connected components in a given graph: " + cno);
 			} else {
