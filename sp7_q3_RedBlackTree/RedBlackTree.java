@@ -77,9 +77,6 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 				} else if (grandParent.left != null && parent.right != null && grandParent.left == parent
 						&& parent.right == t) {
 					grandParent.left = rotateLeft(parent);
-					/*
-					 * swap(parent, t); case2A(parent, grandParent, prevChild);
-					 */
 					newRoot = rotateRight(grandParent);
 					newRoot.isRed = false;
 					grandParent.isRed = true;
@@ -88,9 +85,6 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 				} else if (grandParent.right != null && parent.left != null && grandParent.right == parent
 						&& parent.left == t) {
 					grandParent.right = rotateRight(parent);
-					/*
-					 * swap(parent, t); case2B(parent, grandParent, prevChild);
-					 */
 					newRoot = rotateLeft(grandParent);
 					newRoot.isRed = false;
 					grandParent.isRed = true;
@@ -112,7 +106,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 		}
 	}
 
-	public void swap(Entry<T> parent, Entry<T> t) {
+	/*public void swap(Entry<T> parent, Entry<T> t) {
 		T temp = parent.element;
 		parent.element = t.element;
 		t.element = temp;
@@ -124,7 +118,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 
 	public void case2B(Entry<T> parent, Entry<T> grandParent, T prevChild) {
 
-	}
+	}*/
 
 	public Entry<T> rotateRight(Entry<T> t) {
 		Entry<T> tLeft = (Entry<T>) t.left;
