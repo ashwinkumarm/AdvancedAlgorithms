@@ -7,18 +7,22 @@ import java.util.Stack;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BinaryTree;
 
 public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTree<T> {
-
+	
 	public static class Entry<T> extends BinaryTree.Entry<T> {
+		public boolean isLeftChild;
+		public boolean isRightChild;
 
 		public Entry(T x, Entry<T> left, Entry<T> right) {
 			super(x, left, right);
+			isLeftChild = false;
+			isRightChild = false;
 		}
 	}
 
 	protected Stack<Entry<T>> stack;
 
 	public Iterator<T> iterator() {
-		return new BSTIterator<>((Entry<T>) root);
+		return new BSTIterator<>((Entry<T>)root);
 	}
 
 	private class BSTIterator<E> implements Iterator<E> {
@@ -69,9 +73,11 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 			return false;
 		} else if (newEntry.element.compareTo(entry.element) < 0) {
 			entry.left = newEntry;
+			newEntry.isLeftChild = true;
 			stack.push(entry);
 		} else {
 			entry.right = newEntry;
+			newEntry.isRightChild = true;
 			stack.push(entry);
 		}
 		size++;
@@ -133,8 +139,8 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 	}
 
 	/**
-	 * Is there an element that is equal to x in the tree? Element in tree that is
-	 * equal to x is returned, null otherwise.
+	 * Is there an element that is equal to x in the tree? Element in tree that
+	 * is equal to x is returned, null otherwise.
 	 */
 	public T get(T x) {
 		Entry<T> entry = find(x);
@@ -175,14 +181,24 @@ public class BinarySearchTree<T extends Comparable<? super T>> extends BinaryTre
 	public void byPass(Entry<T> entry) {
 
 		Entry<T> parent = stack.peek();
-		Entry<T> child = (Entry<T>) (entry.left == null ? entry.right : entry.left);
+		Entry<T> child = (Entry<T>)(entry.left == null ? entry.right : entry.left);
 		if (parent == null) {// t is root
+			child.isLeftChild = false;
+			child.isRightChild = false;
 			root = child;
 		} else if (parent.left == entry) {
 			parent.left = child;
-
+			if(child != null ){
+				child.isLeftChild = true;
+				child.isRightChild = false;
+			}
+			
 		} else {
 			parent.right = child;
+			if (child != null) {
+				child.isLeftChild = false;
+				child.isRightChild = true;
+			}
 		}
 	}
 
