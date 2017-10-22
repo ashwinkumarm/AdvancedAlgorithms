@@ -15,7 +15,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 			return true;
 		}
 		add(x);
-		root = splay(root, x);
+		root = splay((Entry<T>) root, x);
 		return true;
 	}
 
@@ -24,7 +24,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 			return null;
 		T removedElement = remove(x);
 		if (stack != null)
-			root = splay(root, stack.pop().element);
+			root = splay((Entry<T>) root, stack.pop().element);
 		return removedElement;
 	}
 

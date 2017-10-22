@@ -1,8 +1,8 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q3_RedBlackTree;
+
 import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
-
 
 public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
 	static class Entry<T> extends BinarySearchTree.Entry<T> {
@@ -17,40 +17,40 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 	RedBlackTree() {
 		super();
 	}
-	Entry<T> rootRBT;
-	
-	public Entry<T> insert(T x){
-		Entry<T> newEntry = new Entry<T>(x,null,null);
-		if(add(newEntry) && stack != null){
+
+	public boolean insert(T x) {
+		Entry<T> newEntry = new Entry<T>(x, null, null);
+		boolean isAdded = add(newEntry);
+		if (isAdded && stack != null) {
 			Entry<T> parent = (Entry<T>) stack.peek();
-			if(parent != null && parent.isRed){
-				repair(newEntry, parent);
+			if (parent != null && parent.isRed) {
+				repair(newEntry);
 			}
 		}
-		
-		rootRBT = (Entry<T>) root;
-		rootRBT.isRed = false;
-		return rootRBT;
+
+		((Entry<T>) root).isRed = false;
+		return isAdded;
 	}
-	
-	public void repair(Entry<T> t, Entry<T> parent) {
-		
-		if (parent == rootRBT) {
+
+	public void repair(Entry<T> t) {
+		if (stack.peek() == root) {
 			return;
 		}
 
-		Entry<T> prevGrandParent = null;
-		
+		Entry<T> parent = null, grandParent = null, uncleOfT = null;
+		T prevChild;
+
 		while (t.isRed) {
+			Entry<T> newRoot;
 			parent = (Entry<T>) stack.pop();
-			if (t == rootRBT || parent == rootRBT || !parent.isRed) {
+
+			if (t == root || parent == root || !parent.isRed) {
 				return;
 			}
 
-			Entry<T> grandParent = (Entry<T>) stack.pop();
-			prevGrandParent = new Entry<T>(grandParent.element, (Entry<T>)grandParent.left,(Entry<T>) grandParent.right);
-			Entry<T> uncleOfT = (Entry<T>) ((Entry<T>) grandParent.right == parent ? grandParent.left
-					: grandParent.right);
+			grandParent = (Entry<T>) stack.pop();
+			uncleOfT = (Entry<T>) ((Entry<T>) grandParent.right == parent ? grandParent.left : grandParent.right);
+			prevChild = grandParent.element;
 
 			if (uncleOfT != null && uncleOfT.isRed) {
 				grandParent.isRed = true;
@@ -61,57 +61,76 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 			}
 
 			else if (uncleOfT == null || !uncleOfT.isRed) {
-				if (t.isLeftChild && parent.isLeftChild) {
-					grandParent  = rotateRight(grandParent);
-					Entry<T>rightChild = (Entry<T>)grandParent.right;
-					rightChild.isRed = false;
+				if (grandParent.left != null && parent.left != null && grandParent.left == parent && parent.left == t) {
+					newRoot = rotateRight(grandParent);
+					parent.isRed = false;
 					grandParent.isRed = true;
-					updateTree(prevGrandParent, grandParent);
+					updateTree(prevChild, newRoot);
 					return;
-				} else if (t.isRightChild && parent.isRightChild) {
-					grandParent = rotateLeft(grandParent);
-					Entry<T>leftChild = (Entry<T>)grandParent.left;
-					leftChild.isRed = true;
-					grandParent.isRed = false;
-					updateTree(prevGrandParent, grandParent);
+				} else if (grandParent.right != null && parent.right != null && grandParent.right == parent
+						&& parent.right == t) {
+					newRoot = rotateLeft(grandParent);
+					parent.isRed = false;
+					grandParent.isRed = true;
+					updateTree(prevChild, newRoot);
 					return;
-				} else if (t.isRightChild && parent.isLeftChild) {
+				} else if (grandParent.left != null && parent.right != null && grandParent.left == parent
+						&& parent.right == t) {
 					grandParent.left = rotateLeft(parent);
-					Entry<T> currRoot = rotateRight(grandParent);
-					Entry<T>rightChild = (Entry<T>)currRoot.right;
-					currRoot.isRed = false;
-					rightChild.isRed = true;
-					updateTree(prevGrandParent, currRoot);
+					/*
+					 * swap(parent, t); case2A(parent, grandParent, prevChild);
+					 */
+					newRoot = rotateRight(grandParent);
+					newRoot.isRed = false;
+					grandParent.isRed = true;
+					updateTree(prevChild, newRoot);
 					return;
-				} else if (t.isLeftChild && parent.isRightChild) {
+				} else if (grandParent.right != null && parent.left != null && grandParent.right == parent
+						&& parent.left == t) {
 					grandParent.right = rotateRight(parent);
-					Entry<T> currRoot  = rotateLeft(grandParent);
-					Entry<T>leftChild = (Entry<T>)currRoot.left;
-					currRoot.isRed = false;
-					leftChild.isRed = true;
-					updateTree(prevGrandParent, currRoot);
+					/*
+					 * swap(parent, t); case2B(parent, grandParent, prevChild);
+					 */
+					newRoot = rotateLeft(grandParent);
+					newRoot.isRed = false;
+					grandParent.isRed = true;
+					updateTree(prevChild, newRoot);
 					return;
 				}
 			}
 		}
 	}
-	
-	
-	public void updateTree(Entry<T> prevGrandParent, Entry<T> currRoot){
-		Entry<T> greatGp = (Entry<T>)stack.pop();
-		if(greatGp!= null && prevGrandParent != null){
-			if(greatGp.left.element.compareTo(prevGrandParent.element) == 0){
-				greatGp.left = currRoot;
-			}else{
-				greatGp.right = currRoot;
+
+	public void updateTree(T prevChild, Entry<T> newRoot) {
+		Entry<T> greatGp = (Entry<T>) stack.peek();
+		if (greatGp != null && prevChild != null) {
+			if (greatGp.left.element.compareTo(prevChild) == 0) {
+				greatGp.left = newRoot;
+			} else {
+				greatGp.right = newRoot;
 			}
 		}
 	}
-	public Entry<T> rotateRight(Entry<T> t){
+
+	public void swap(Entry<T> parent, Entry<T> t) {
+		T temp = parent.element;
+		parent.element = t.element;
+		t.element = temp;
+	}
+
+	public void case2A(Entry<T> parent, Entry<T> grandParent, T prevChild) {
+
+	}
+
+	public void case2B(Entry<T> parent, Entry<T> grandParent, T prevChild) {
+
+	}
+
+	public Entry<T> rotateRight(Entry<T> t) {
 		Entry<T> tLeft = (Entry<T>) t.left;
 		t.left = tLeft.right;
 		tLeft.right = t;
-		if(t == root) {
+		if (t == root) {
 			root = tLeft;
 		}
 		return tLeft;
@@ -121,14 +140,13 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 		Entry<T> tRight = (Entry<T>) t.right;
 		t.right = tRight.left;
 		tRight.left = t;
-		if(t == root) {
+		if (t == root) {
 			root = tRight;
 		}
 		return tRight;
 	}
-	
-	
-	public static void main(String[] args){
+
+	public static void main(String[] args) {
 		RedBlackTree<Integer> t = new RedBlackTree<Integer>();
 
 		Scanner in = new Scanner(System.in);
@@ -140,7 +158,7 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 				t.printTree();
 			} else if (x < 0) {
 				System.out.print("Remove " + x + " : ");
-				//t.delete(-x);
+				// t.delete(-x);
 				t.printTree();
 			} else {
 				Comparable[] arr = t.toArray();
