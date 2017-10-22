@@ -123,7 +123,7 @@ public class BSTMap<K extends Comparable<? super K>, V> implements Iterable<K> {
 	 */
 	public boolean put(K key, V value) {
 		Entry<K, V> newEntry = new Entry<>(key, value);
-		return tree.insert(newEntry);
+		return tree.add(newEntry);
 	}
 
 	/**

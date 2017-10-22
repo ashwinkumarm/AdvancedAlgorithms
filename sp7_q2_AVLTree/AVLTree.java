@@ -20,7 +20,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		super();
 	}
 
-	public boolean insert(T x) {
+	public boolean add(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
 		boolean isAdded = add(newEntry);
 		if (isAdded && stack != null)
@@ -28,8 +28,9 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return isAdded;
 	}
 
-	public T delete(T x) {
-		T deletedElement = remove(x);
+	@Override
+	public T remove(T x) {
+		T deletedElement = super.remove(x);
 		if (deletedElement != null && stack != null)
 			root = balance();
 		return deletedElement;
@@ -122,11 +123,11 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 			int x = in.nextInt();
 			if (x > 0) {
 				System.out.print("Add " + x + " : ");
-				t.insert(x);
+				t.add(x);
 				t.printTree();
 			} else if (x < 0) {
 				System.out.print("Remove " + x + " : ");
-				t.delete(-x);
+				t.remove(-x);
 				t.printTree();
 			} else {
 				Comparable[] arr = t.toArray();
