@@ -63,36 +63,37 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 			else if (uncleOfT == null || !uncleOfT.isRed) {
 				if (grandParent.left != null && parent.left != null && grandParent.left == parent && parent.left == t) {
 					newRoot = rotateRight(grandParent);
-					parent.isRed = false;
-					grandParent.isRed = true;
+					updateColor(parent, grandParent);
 					updateTree(prevChild, newRoot);
 					return;
 				} else if (grandParent.right != null && parent.right != null && grandParent.right == parent
 						&& parent.right == t) {
 					newRoot = rotateLeft(grandParent);
-					parent.isRed = false;
-					grandParent.isRed = true;
+					updateColor(parent, grandParent);
 					updateTree(prevChild, newRoot);
 					return;
 				} else if (grandParent.left != null && parent.right != null && grandParent.left == parent
 						&& parent.right == t) {
 					grandParent.left = rotateLeft(parent);
 					newRoot = rotateRight(grandParent);
-					newRoot.isRed = false;
-					grandParent.isRed = true;
+					updateColor(newRoot, grandParent);
 					updateTree(prevChild, newRoot);
 					return;
 				} else if (grandParent.right != null && parent.left != null && grandParent.right == parent
 						&& parent.left == t) {
 					grandParent.right = rotateRight(parent);
 					newRoot = rotateLeft(grandParent);
-					newRoot.isRed = false;
-					grandParent.isRed = true;
+					updateColor(newRoot, grandParent);
 					updateTree(prevChild, newRoot);
 					return;
 				}
 			}
 		}
+	}
+
+	public void updateColor(Entry<T> newRoot, Entry<T> grandParent) {
+		newRoot.isRed = false;
+		grandParent.isRed = true;
 	}
 
 	public void updateTree(T prevChild, Entry<T> newRoot) {
