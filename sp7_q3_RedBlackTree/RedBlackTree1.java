@@ -62,29 +62,33 @@ public class RedBlackTree1<T extends Comparable<? super T>> extends BinarySearch
 
 			else if (uncleOfT == null || !uncleOfT.isRed) {
 				if (t.isLeftChild && parent.isLeftChild) {
-					grandParent.right  = rotateRight(grandParent);
-					parent.isRed = false;
+					grandParent  = rotateRight(grandParent);
+					Entry<T>rightChild = (Entry<T>)grandParent.right;
+					rightChild.isRed = false;
 					grandParent.isRed = true;
 					updateTree(prevGrandParent, grandParent);
 					return;
 				} else if (t.isRightChild && parent.isRightChild) {
-					grandParent.left = rotateLeft(grandParent);
-					parent.isRed = false;
-					grandParent.isRed = true;
+					grandParent = rotateLeft(grandParent);
+					Entry<T>leftChild = (Entry<T>)grandParent.left;
+					leftChild.isRed = true;
+					grandParent.isRed = false;
 					updateTree(prevGrandParent, grandParent);
 					return;
 				} else if (t.isRightChild && parent.isLeftChild) {
 					grandParent.left = rotateLeft(parent);
 					Entry<T> currRoot = rotateRight(grandParent);
-					t.isRed = false;
-					grandParent.isRed = true;
+					Entry<T>rightChild = (Entry<T>)currRoot.right;
+					currRoot.isRed = false;
+					rightChild.isRed = true;
 					updateTree(prevGrandParent, currRoot);
 					return;
 				} else if (t.isLeftChild && parent.isRightChild) {
 					grandParent.right = rotateRight(parent);
 					Entry<T> currRoot  = rotateLeft(grandParent);
-					t.isRed = false;
-					grandParent.isRed = true;
+					Entry<T>leftChild = (Entry<T>)currRoot.left;
+					currRoot.isRed = false;
+					leftChild.isRed = true;
 					updateTree(prevGrandParent, currRoot);
 					return;
 				}
