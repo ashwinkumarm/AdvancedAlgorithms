@@ -105,7 +105,124 @@ public class RedBlackTreeNew<T extends Comparable<? super T>> extends BinarySear
 		((Entry<T>) root).isRed = false;
 		return true;
 	}
+	
+	
+	public Entry<T> child(int left, Entry<T> curr){
+		if(left == 0){
+			return (Entry<T>)curr.left;
+		}else{
+			return (Entry<T>)curr.right;
+		}
 
+		
+	}
+
+	public boolean delete(T x) {
+		if (root != null) {
+			Entry<T> head = new Entry<T>(null, null, null);
+			Entry<T> current = null, parent = null, grandParent = null;
+			Entry<T> found = null;
+			int left = 1;
+
+			current = head;
+			current.right = root;
+
+			while (child(left, current) != null) {
+				int last = left;
+				grandParent = parent;
+				parent = current;
+				current = child(left,current);
+				if (current.element.compareTo(x) == 0) {
+					found = current;
+				}
+
+				if (current != null && !current.isRed && child(left, current) != null && child(left, current).isRed) {
+
+					if (child(1 - left, current) != null && child(1 - left, current).isRed) {
+						Entry<T> t;
+						if (last == 0) {
+							t = leftRotate(current);
+							parent.left = t;
+						} else {
+							t = rightRotate(current);
+							parent.right = t;
+						}
+						parent = t;
+					} else if (child(1 - left, current) != null && !child(1 - left, current).isRed) {
+						Entry<T> s = child(1 - last, parent);
+
+						if (s != null) {
+							if (child(1 - last, s) != null && !child(1 - last, s).isRed && child(last, s) != null
+									&& !child(last, s).isRed) {
+								parent.isRed = false;
+								s.isRed = true;
+								current.isRed = true;
+							}
+						} else {
+							int r = grandParent.right == parent ? 1 : 0;
+
+							if (child(last, s) != null && child(last, s).isRed) {
+								if (r == 0 && last == 0) {
+									grandParent.left = leftRightRotate(parent);
+								}else if(r == 0 && last == 1 ){
+									grandParent.left = rightLeftRotate(parent);
+								} else if(r == 1 && last == 0) {
+									grandParent.right = leftRightRotate(parent);
+								}else{
+									grandParent.right = rightLeftRotate(parent);
+								}
+							} else if (child(1 - last, s) != null && child(1 - last, s).isRed) {
+								if (r == 0 && last == 0) {
+									grandParent.left = leftRotate(parent);
+								}else if(r == 0 && last == 1 ){
+									grandParent.left = rightRotate(parent);
+								} else if(r == 1 && last == 0) {
+									grandParent.right = leftRotate(parent);
+								}else{
+									grandParent.right = rightRotate(parent);
+								}
+							}
+							current.isRed = true;
+							if (r == 0) {
+								((Entry<T>) grandParent.left).isRed = true;
+								((Entry<T>) grandParent.left.left).isRed = false;
+								((Entry<T>) grandParent.left.right).isRed = false;
+							} else {
+								((Entry<T>) grandParent.right).isRed = true;
+								((Entry<T>) grandParent.right.left).isRed = false;
+								((Entry<T>) grandParent.right.right).isRed = false;
+							}
+						}
+					}
+				}
+			}
+
+			if (found != null) {
+				found.element = current.element;
+				if (parent.right == current) {
+					if (current.left == null) {
+						parent.right = current.left;
+					} else {
+						parent.right = current.right;
+					}
+				} else if (parent.left == current) {
+					if (current.left == null) {
+						parent.left = current.left;
+					} else {
+						parent.left = current.right;
+					}
+				}
+				current = new Entry<T>(null, null, null);
+			}
+
+			root = head.right;
+
+			if (root != null) {
+				((Entry<T>) root).isRed = false;
+			}
+		}
+		return true;
+	}
 	public void updateColor(Entry<T> newRoot, Entry<T> grandParent) {
 		newRoot.isRed = false;
 		grandParent.isRed = true;
@@ -147,7 +264,7 @@ public class RedBlackTreeNew<T extends Comparable<? super T>> extends BinarySear
 				t.printTree();
 			} else if (x < 0) {
 				System.out.print("Remove " + x + " : ");
-				// t.delete(-x);
+				t.delete(-x);
 				t.printTree();
 			} else {
 				Comparable[] arr = t.toArray();
