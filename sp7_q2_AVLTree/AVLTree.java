@@ -42,8 +42,8 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 	}
 
 	/**
-	 * Adds new entry to the AVL Tree given an element and updates the height
-	 * for the elements above the newly added element up to the root
+	 * Adds new entry to the AVL Tree given an element and updates the height for
+	 * the elements above the newly added element up to the root
 	 *
 	 * @param x
 	 * @return
@@ -51,14 +51,14 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 	public boolean add(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
 		boolean isAdded = add(newEntry);
-		if (isAdded && stack.size() > 1)
+		if (isAdded && stack != null && stack.size() > 1)
 			root = balance();
 		return isAdded;
 	}
 
 	/**
-	 * Removes an entry from AVL Tree and and updates the height for the
-	 * elements above the deleted element up to the root
+	 * Removes an entry from AVL Tree and and updates the height for the elements
+	 * above the deleted element up to the root
 	 *
 	 * @param x
 	 * @return
@@ -66,7 +66,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 	@Override
 	public T remove(T x) {
 		T deletedElement = super.remove(x);
-		if (deletedElement != null && stack.size() > 1)
+		if (deletedElement != null && stack != null && stack.size() > 1)
 			root = balance();
 		return deletedElement;
 	}
@@ -108,8 +108,8 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 	}
 
 	/**
-	 * Assigns the link to the previous element in the stack for the newly
-	 * changed child
+	 * Assigns the link to the previous element in the stack for the newly changed
+	 * child
 	 *
 	 * @param parent
 	 * @param entry
@@ -156,8 +156,8 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 	}
 
 	/**
-	 * Performs the double rotation i.e. right rotation on parent and left
-	 * rotation on grandparent
+	 * Performs the double rotation i.e. right rotation on parent and left rotation
+	 * on grandparent
 	 *
 	 * @param node
 	 * @return
@@ -168,8 +168,8 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 	}
 
 	/**
-	 * Performs the double rotation i.e. left rotation on parent and right
-	 * rotation on grandparent
+	 * Performs the double rotation i.e. left rotation on parent and right rotation
+	 * on grandparent
 	 *
 	 * @param node
 	 * @return
