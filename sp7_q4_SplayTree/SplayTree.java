@@ -1,8 +1,11 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q4_SplayTree;
 
+import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Timer;
 
 /**
  * Implementation of Splay tree on top of BST
@@ -24,9 +27,9 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	}
 
 	/**
-	 * Adds new entry to the Splay Tree given an element and moves the added element
-	 * to the root
-	 * 
+	 * Adds new entry to the Splay Tree given an element and moves the added
+	 * element to the root
+	 *
 	 * @param x
 	 * @return
 	 */
@@ -39,9 +42,9 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	}
 
 	/**
-	 * Removes an entry from Splay Tree and moves the previous element in the tree
-	 * to the root
-	 * 
+	 * Removes an entry from Splay Tree and moves the previous element in the
+	 * tree to the root
+	 *
 	 * @param x
 	 * @return
 	 */
@@ -53,8 +56,8 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	}
 
 	/**
-	 * Gets an element that is equal to x in the tree. Element in tree that is equal
-	 * to x is returned, null otherwise.
+	 * Gets an element that is equal to x in the tree. Element in tree that is
+	 * equal to x is returned, null otherwise.
 	 */
 	public T get(T x) {
 		Entry<T> entry = find(x);
@@ -69,7 +72,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	/**
 	 * Check whether the given element is present in Splay Tree and moves the
 	 * element to the root if present or the last accessed element to the root
-	 * 
+	 *
 	 * @param x
 	 * @return
 	 */
@@ -85,7 +88,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 
 	/**
 	 * Gets the minimum element of Splay Tree and moves that element to the root
-	 * 
+	 *
 	 * @return
 	 */
 	public T min() {
@@ -100,7 +103,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 
 	/**
 	 * Gets the maximum element of Splay Tree and moves that element to the root
-	 * 
+	 *
 	 * @return
 	 */
 	public T max() {
@@ -115,7 +118,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 
 	/**
 	 * Splay operation moves the given entry to the top of the tree(root)
-	 * 
+	 *
 	 * @param t
 	 */
 	public void splay(Entry<T> t) {
@@ -149,9 +152,9 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	}
 
 	/**
-	 * Assigns the link to the previous element in the stack for the newly changed
-	 * child
-	 * 
+	 * Assigns the link to the previous element in the stack for the newly
+	 * changed child
+	 *
 	 * @param prevChild
 	 * @param t
 	 */
@@ -168,7 +171,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 
 	/**
 	 * Performs the right rotation
-	 * 
+	 *
 	 * @param root
 	 * @return
 	 */
@@ -182,7 +185,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 
 	/**
 	 * Performs the left rotation
-	 * 
+	 *
 	 * @param node
 	 * @return
 	 */
@@ -195,9 +198,9 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	}
 
 	/**
-	 * Performs the double rotation i.e. right rotation on parent and left rotation
-	 * on grandparent
-	 * 
+	 * Performs the double rotation i.e. right rotation on parent and left
+	 * rotation on grandparent
+	 *
 	 * @param node
 	 * @return
 	 */
@@ -207,9 +210,9 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	}
 
 	/**
-	 * Performs the double rotation i.e. left rotation on parent and right rotation
-	 * on grandparent
-	 * 
+	 * Performs the double rotation i.e. left rotation on parent and right
+	 * rotation on grandparent
+	 *
 	 * @param node
 	 * @return
 	 */
@@ -220,16 +223,17 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 
 	/**
 	 * Main method for testing
-	 * 
+	 *
 	 * @param args
 	 */
 	public static void main(String args[]) {
 
-		SplayTree<Integer> t = new SplayTree<Integer>();
-
-		Scanner in = new Scanner(System.in);
-		while (in.hasNext()) {
-			int x = in.nextInt();
+		// SplayTree<Integer> t = new SplayTree<Integer>();
+		BinarySearchTree<Integer> t = new BinarySearchTree<Integer>();
+		Timer timer = new Timer();
+		int a[] = getSkewedInput();
+		for (int i = 0; i < a.length; i++) {
+			int x = a[i];
 			if (x > 0) {
 				System.out.print("Add " + x + " : ");
 				t.add(x);
@@ -241,14 +245,83 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 			} else {
 				Comparable[] arr = t.toArray();
 				System.out.print("Final: ");
-				for (int i = 0; i < t.size; i++) {
-					System.out.print(arr[i] + " ");
+				for (int j = 0; j < t.size; j++) {
+					System.out.print(arr[j] + " ");
 				}
 				System.out.println();
-				in.close();
 				return;
 			}
 		}
-		in.close();
+		timer.end();
+		System.out.println(timer);
+
+		timer.start();
+		SplayTree<Integer> t1 = new SplayTree<Integer>();
+		for (int i = 0; i < a.length; i++) {
+			int x = a[i];
+			if (x > 0) {
+				System.out.print("Add " + x + " : ");
+				t.add(x);
+				t.printTree();
+			} else if (x < 0) {
+				System.out.print("Remove " + x + " : ");
+				t.remove(-x);
+				t.printTree();
+			} else {
+				Comparable[] arr = t.toArray();
+				System.out.print("Final: ");
+				for (int j = 0; j < t.size; j++) {
+					System.out.print(arr[j] + " ");
+				}
+				System.out.println();
+				return;
+			}
+		}
+		timer.end();
+		System.out.println(timer);
 	}
+
+	private static int[] getSkewedInput() {
+		int count1 = 0, count2 = 0, size = 1000000;
+		Random random = new Random(System.currentTimeMillis());
+		int arr[] = new int[size];
+		int insert[] = new int[size];
+		System.out.println("Enter the operation to be skewed: \n 1.add \n 2.remove");
+		Scanner s = new Scanner(System.in);
+		int a = s.nextInt();
+		int dev = Math.max(2 - a, a - 1);
+		Random r = new Random();
+		int skew = r.nextInt(size);
+		int dev1 = Math.max(size - a, a - 0);
+		for (int i = 0; i < size - 1; i++) {
+			int n = (int) nextSkewedBounded(1, 2, a, dev, random);
+			switch (n) {
+			case 1:
+				int num = (int) nextSkewedBounded(1, size, skew, dev1, random);
+				arr[i] = num;
+				insert[count1] = num;
+				count1++;
+				break;
+			case 2:
+				num = (int) nextSkewedBounded(0, count1 - 1, skew, dev1, random);
+				if (insert[num] == 0)
+					continue;
+				arr[i] = -insert[num];
+				count2++;
+				break;
+			default:
+				System.out.println("Wrong Input");
+			}
+		}
+		arr[size - 1] = 0;
+		s.close();
+		System.out.println("Number of Add operations- " + count1);
+		System.out.println("Number of Remove operations- " + count2);
+		return arr;
+	}
+
+	static public double nextSkewedBounded(int min, int max, int a, double stddev, Random random) {
+		return Math.max(min, Math.min(max, a + random.nextGaussian() * stddev));
+	}
+
 }
