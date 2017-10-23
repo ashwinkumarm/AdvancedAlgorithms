@@ -5,7 +5,7 @@ import java.util.Iterator;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q2_AVLTree.AVLTree;
 
 /**
- * Implemenation of Binary search tree map built on top of AVLTree.
+ * Implementation of Binary search tree map on top of AVLTree.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *

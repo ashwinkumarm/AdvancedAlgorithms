@@ -5,8 +5,21 @@ import java.util.TreeMap;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort.Timer;
 
+/**
+ * This class finds the number of pairs that sum to the given target
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class FindPairs {
 
+	/**
+	 * Finds the number of pairs that sum to the given target using TreeMap
+	 * 
+	 * @param A
+	 * @param X
+	 * @return
+	 */
 	public static int howMany(int[] A, int X) {
 		TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
 		Integer val;
@@ -27,12 +40,11 @@ public class FindPairs {
 		return count / 2;
 	}
 
-	public static void generateArray(int size, int[] arr, Scanner in) {
-		for (int i = 0; i < size; i++) {
-			arr[i] = in.nextInt();
-		}
-	}
-
+	/**
+	 * Main method for testing
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
 		int[] arr = { 3, 3, 4, 5, 3, 5, 1 };

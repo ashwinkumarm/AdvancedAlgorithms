@@ -4,11 +4,32 @@ import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
 
+/**
+ * Implementation of Splay tree on top of BST
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
+/**
+ * @author deepaks
+ *
+ * @param <T>
+ */
 public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
+	/**
+	 * Constructor to initialize the splay tree
+	 */
 	SplayTree() {
 		super();
 	}
 
+	/**
+	 * Adds new entry to the Splay Tree given an element and moves the added element
+	 * to the root
+	 * 
+	 * @param x
+	 * @return
+	 */
 	public boolean add(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
 		boolean isAdded = super.add(newEntry);
@@ -17,15 +38,84 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 		return isAdded;
 	}
 
+	/**
+	 * Removes an entry from Splay Tree and moves the previous element in the tree
+	 * to the root
+	 * 
+	 * @param x
+	 * @return
+	 */
 	public T remove(T x) {
 		T removedElement = super.remove(x);
-		if (removedElement != null && stack != null)
+		if (removedElement != null && stack != null && stack.size() > 1)
 			splay(stack.pop());
 		return removedElement;
 	}
 
-	// TODO: Add methods for contains, get, min, max
+	/**
+	 * Gets an element that is equal to x in the tree. Element in tree that is equal
+	 * to x is returned, null otherwise.
+	 */
+	public T get(T x) {
+		Entry<T> entry = find(x);
+		if (entry != null && entry.element.compareTo(x) == 0) {
+			splay(entry);
+			return entry.element;
+		}
+		return null;
+	}
 
+	/**
+	 * Check whether the given element is present in Splay Tree and moves the
+	 * element to the root if present
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public boolean contains(T x) {
+		Entry<T> entry = find(x);
+		if (entry != null && entry.element.compareTo(x) == 0) {
+			splay(entry);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Gets the minimum element of Splay Tree and moves that element to the root
+	 * 
+	 * @return
+	 */
+	public T min() {
+		if (root == null)
+			return null;
+		Entry<T> entry = (Entry<T>) root;
+		while (entry.left != null)
+			entry = (Entry<T>) entry.left;
+		splay(entry);
+		return entry.element;
+	}
+
+	/**
+	 * Gets the maximum element of Splay Tree and moves that element to the root
+	 * 
+	 * @return
+	 */
+	public T max() {
+		if (root == null)
+			return null;
+		Entry<T> entry = (Entry<T>) root;
+		while (entry.right != null)
+			entry = (Entry<T>) entry.right;
+		splay(entry);
+		return entry.element;
+	}
+
+	/**
+	 * Splay operation moves the given entry to the top of the tree(root)
+	 * 
+	 * @param t
+	 */
 	public void splay(Entry<T> t) {
 		Entry<T> parent = null, grandParent = null;
 		T prevChild;
@@ -53,12 +143,19 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 						&& parent.left == t) {
 					t = rightLeftRotate(grandParent);
 				}
-				updateTree(prevChild, t);
+				setParentChild(prevChild, t);
 			}
 		}
 	}
 
-	public void updateTree(T prevChild, Entry<T> t) {
+	/**
+	 * Assigns the link to the previous element in the stack for the newly changed
+	 * child
+	 * 
+	 * @param prevChild
+	 * @param t
+	 */
+	public void setParentChild(T prevChild, Entry<T> t) {
 		Entry<T> greatGp = stack.peek();
 		if (greatGp != null) {
 			if (greatGp.left != null && greatGp.left.element.compareTo(prevChild) == 0)
@@ -69,6 +166,12 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 			root = t;
 	}
 
+	/**
+	 * Performs the right rotation
+	 * 
+	 * @param root
+	 * @return
+	 */
 	public Entry<T> rightRotate(Entry<T> root) {
 		Entry<T> otherNode = (Entry<T>) root.left;
 		root.left = otherNode.right;
@@ -77,6 +180,12 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 		return otherNode;
 	}
 
+	/**
+	 * Performs the left rotation
+	 * 
+	 * @param node
+	 * @return
+	 */
 	public Entry<T> leftRotate(Entry<T> node) {
 		Entry<T> otherNode = (Entry<T>) node.right;
 		node.right = otherNode.left;
@@ -85,16 +194,35 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 		return otherNode;
 	}
 
+	/**
+	 * Performs the double rotation i.e. right rotation on parent and left rotation
+	 * on grandparent
+	 * 
+	 * @param node
+	 * @return
+	 */
 	public Entry<T> rightLeftRotate(Entry<T> node) {
 		node.right = rightRotate((Entry<T>) node.right);
 		return leftRotate(node);
 	}
 
+	/**
+	 * Performs the double rotation i.e. left rotation on parent and right rotation
+	 * on grandparent
+	 * 
+	 * @param node
+	 * @return
+	 */
 	public Entry<T> leftRightRotate(Entry<T> node) {
 		node.left = leftRotate((Entry<T>) node.left);
 		return rightRotate(node);
 	}
 
+	/**
+	 * Main method for testing
+	 * 
+	 * @param args
+	 */
 	public static void main(String args[]) {
 
 		SplayTree<Integer> t = new SplayTree<Integer>();

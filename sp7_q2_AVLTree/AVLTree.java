@@ -5,21 +5,49 @@ import java.util.Scanner;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BinaryTree;
 
+/**
+ * Implementation of AVL tree on top of BST
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
 
+	/**
+	 * This class implements the Entry of AVL Tree
+	 *
+	 * @param <T>
+	 */
 	public static class Entry<T> extends BinarySearchTree.Entry<T> {
 		int height;
 
+		/**
+		 * Constructor to initialize each entry of AVL Tree
+		 * 
+		 * @param x
+		 * @param left
+		 * @param right
+		 */
 		public Entry(T x, Entry<T> left, Entry<T> right) {
 			super(x, left, right);
 			height = 0;
 		}
 	}
 
+	/**
+	 * Constructor to initialize the AVL tree
+	 */
 	public AVLTree() {
 		super();
 	}
 
+	/**
+	 * Adds new entry to the AVL Tree given an element and updates the height for
+	 * the elements above the newly added element up to the root
+	 * 
+	 * @param x
+	 * @return
+	 */
 	public boolean add(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
 		boolean isAdded = add(newEntry);
@@ -28,6 +56,13 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return isAdded;
 	}
 
+	/**
+	 * Removes an entry from AVL Tree and and updates the height for the elements
+	 * above the deleted element up to the root
+	 * 
+	 * @param x
+	 * @return
+	 */
 	@Override
 	public T remove(T x) {
 		T deletedElement = super.remove(x);
@@ -36,6 +71,12 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return deletedElement;
 	}
 
+	/**
+	 * Performs the rotation of the tree based on the height difference(i.e
+	 * height>1)
+	 * 
+	 * @return
+	 */
 	private Entry<T> balance() {
 		Entry<T> entry = null;
 		entry = (Entry<T>) stack.pop();
@@ -66,6 +107,13 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 
 	}
 
+	/**
+	 * Assigns the link to the previous element in the stack for the newly changed
+	 * child
+	 * 
+	 * @param parent
+	 * @param entry
+	 */
 	private void setParentChild(Entry<T> parent, Entry<T> entry) {
 		if (parent != null)
 			if (parent.element.compareTo(entry.element) > 0) {
@@ -75,6 +123,12 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 			}
 	}
 
+	/**
+	 * Performs the right rotation and updates the height
+	 * 
+	 * @param node
+	 * @return
+	 */
 	public Entry<T> rightRotate(Entry<T> node) {
 		Entry<T> otherNode = (Entry<T>) node.left;
 		node.left = otherNode.right;
@@ -85,6 +139,12 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return otherNode;
 	}
 
+	/**
+	 * Performs the left rotation and updates the height
+	 * 
+	 * @param node
+	 * @return
+	 */
 	public Entry<T> leftRotate(Entry<T> node) {
 		Entry<T> otherNode = (Entry<T>) node.right;
 		node.right = otherNode.left;
@@ -95,27 +155,58 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 		return otherNode;
 	}
 
+	/**
+	 * Performs the double rotation i.e. right rotation on parent and left rotation
+	 * on grandparent
+	 * 
+	 * @param node
+	 * @return
+	 */
 	public Entry<T> RightLeftRotate(Entry<T> node) {
 		node.right = rightRotate((Entry<T>) node.right);
 		return leftRotate(node);
 	}
 
+	/**
+	 * Performs the double rotation i.e. left rotation on parent and right rotation
+	 * on grandparent
+	 * 
+	 * @param node
+	 * @return
+	 */
 	public Entry<T> LeftRightRotate(Entry<T> node) {
 		node.left = leftRotate((Entry<T>) node.left);
 		return rightRotate(node);
 	}
 
+	/**
+	 * Gets the height of the given entry
+	 * 
+	 * @param entry
+	 * @return
+	 */
 	public int getHeight(BinaryTree.Entry<T> entry) {
 		Entry<T> node = (Entry<T>) entry;
 		return node == null ? -1 : node.height;
 	}
 
+	/**
+	 * Gives the height difference between left subtree and right subtree
+	 * 
+	 * @param entry
+	 * @return
+	 */
 	public int getBalance(BinaryTree.Entry<T> entry) {
 		if (entry == null)
 			return 0;
 		return getHeight(entry.left) - getHeight(entry.right);
 	}
 
+	/**
+	 * Main method for testing
+	 * 
+	 * @param args
+	 */
 	public static void main(String args[]) {
 		AVLTree<Integer> t = new AVLTree<Integer>();
 		Scanner in = new Scanner(System.in);
