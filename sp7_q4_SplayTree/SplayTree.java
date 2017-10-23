@@ -36,6 +36,12 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	public boolean add(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
 		boolean isAdded = super.add(newEntry);
+		Entry<T> parent = stack.peek();
+		if (parent.left.element.compareTo(x) == 0)
+			newEntry = (cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree.Entry<T>) parent.left;
+		else
+			newEntry = (cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree.Entry<T>) parent.left;
+
 		if (stack != null && stack.size() > 1)
 			splay(newEntry);
 		return isAdded;
@@ -235,13 +241,13 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 		for (int i = 0; i < a.length; i++) {
 			int x = a[i];
 			if (x > 0) {
-				System.out.print("Add " + x + " : ");
+				// System.out.print("Add " + x + " : ");
 				t.add(x);
-				t.printTree();
+				// t.printTree();
 			} else if (x < 0) {
-				System.out.print("Remove " + x + " : ");
+				// System.out.print("Remove " + x + " : ");
 				t.remove(-x);
-				t.printTree();
+				// t.printTree();
 			} else {
 				Comparable[] arr = t.toArray();
 				System.out.print("Final: ");
@@ -260,13 +266,13 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 		for (int i = 0; i < a.length; i++) {
 			int x = a[i];
 			if (x > 0) {
-				System.out.print("Add " + x + " : ");
+				// System.out.print("Add " + x + " : ");
 				t.add(x);
-				t.printTree();
+				// t.printTree();
 			} else if (x < 0) {
-				System.out.print("Remove " + x + " : ");
+				// System.out.print("Remove " + x + " : ");
 				t.remove(-x);
-				t.printTree();
+				// t.printTree();
 			} else {
 				Comparable[] arr = t.toArray();
 				System.out.print("Final: ");
