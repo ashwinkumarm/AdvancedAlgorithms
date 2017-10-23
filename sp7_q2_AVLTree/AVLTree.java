@@ -116,7 +116,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 	 */
 	private void setParentChild(Entry<T> parent, Entry<T> entry) {
 		if (parent != null)
-			if (parent.element.compareTo(entry.element) > 0) {
+			if (parent.left != null && parent.element.compareTo(entry.element) > 0) {
 				parent.left = entry;
 			} else {
 				parent.right = entry;

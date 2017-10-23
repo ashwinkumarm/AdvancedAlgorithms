@@ -33,7 +33,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	public boolean add(T x) {
 		Entry<T> newEntry = new Entry<T>(x, null, null);
 		boolean isAdded = super.add(newEntry);
-		if (isAdded && stack != null)
+		if (stack != null && stack.size() > 1)
 			splay(newEntry);
 		return isAdded;
 	}
@@ -47,7 +47,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	 */
 	public T remove(T x) {
 		T removedElement = super.remove(x);
-		if (removedElement != null && stack != null && stack.size() > 1)
+		if (stack != null && stack.size() > 1)
 			splay(stack.pop());
 		return removedElement;
 	}
@@ -58,25 +58,27 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	 */
 	public T get(T x) {
 		Entry<T> entry = find(x);
-		if (entry != null && entry.element.compareTo(x) == 0) {
+		if (entry != null) {
 			splay(entry);
-			return entry.element;
+			if (entry.element.compareTo(x) == 0)
+				return entry.element;
 		}
 		return null;
 	}
 
 	/**
 	 * Check whether the given element is present in Splay Tree and moves the
-	 * element to the root if present
+	 * element to the root if present or the last accessed element to the root
 	 * 
 	 * @param x
 	 * @return
 	 */
 	public boolean contains(T x) {
 		Entry<T> entry = find(x);
-		if (entry != null && entry.element.compareTo(x) == 0) {
+		if (entry != null) {
 			splay(entry);
-			return true;
+			if (entry.element.compareTo(x) == 0)
+				return true;
 		}
 		return false;
 	}
@@ -118,7 +120,6 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	 */
 	public void splay(Entry<T> t) {
 		Entry<T> parent = null, grandParent = null;
-		T prevChild;
 		while (t != root) {
 			if (root != null && (root.left == t || root.right == t)) {
 				if (root.left != null && root.left == t)
@@ -128,7 +129,6 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 			} else if (stack.size() > 2) {
 				parent = stack.pop();
 				grandParent = stack.pop();
-				prevChild = grandParent.element;
 				if (grandParent.left != null && parent.left != null && grandParent.left == parent && parent.left == t) {
 					grandParent.left = rightRotate(parent);
 					t = rightRotate(grandParent);
@@ -143,7 +143,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 						&& parent.left == t) {
 					t = rightLeftRotate(grandParent);
 				}
-				setParentChild(prevChild, t);
+				setParentChild(t);
 			}
 		}
 	}
@@ -155,12 +155,12 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	 * @param prevChild
 	 * @param t
 	 */
-	public void setParentChild(T prevChild, Entry<T> t) {
+	public void setParentChild(Entry<T> t) {
 		Entry<T> greatGp = stack.peek();
 		if (greatGp != null) {
-			if (greatGp.left != null && greatGp.left.element.compareTo(prevChild) == 0)
+			if (greatGp.left != null && greatGp.element.compareTo(t.element) > 0)
 				greatGp.left = t;
-			if (greatGp.right != null && greatGp.right.element.compareTo(prevChild) == 0)
+			else
 				greatGp.right = t;
 		} else
 			root = t;
