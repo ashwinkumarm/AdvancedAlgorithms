@@ -1,7 +1,19 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
+/**
+ * This class implements the binary tree
+ * 
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ * @param <T>
+ */
 public class BinaryTree<T> {
 
+	/**
+	 * This class implements the entry of Binary Tree
+	 *
+	 * @param <T>
+	 */
 	public static class Entry<T> {
 		public T element;
 		public Entry<T> left, right;
@@ -21,18 +33,22 @@ public class BinaryTree<T> {
 		}
 	}
 
-	// Dummy header is used. tail stores reference of tail element of list
 	public Entry<T> root;
 	public int size;
 
 	/**
-	 * Constructor to initialize the list
+	 * Constructor to initialize the Binary Tree
 	 */
 	public BinaryTree() {
 		root = null;
 		size = 0;
 	}
 
+	/**
+	 * Prints the element of given entry
+	 * 
+	 * @param entry
+	 */
 	public void visit(Entry<T> entry) {
 		System.out.print(" " + entry.element);
 	}
@@ -49,6 +65,11 @@ public class BinaryTree<T> {
 		inOrder(root);
 	}
 
+	/**
+	 * Prints the elements of the binary tree in post-order
+	 * 
+	 * @param r
+	 */
 	public void postOrder(Entry<T> r) {
 		if (r != null) {
 			postOrder(r.left);
@@ -57,6 +78,11 @@ public class BinaryTree<T> {
 		}
 	}
 
+	/**
+	 * Prints the elements of the binary tree in pre-order
+	 * 
+	 * @param r
+	 */
 	public void preOrder(Entry<T> r) {
 		if (r != null) {
 			visit(r);
@@ -65,6 +91,11 @@ public class BinaryTree<T> {
 		}
 	}
 
+	/**
+	 * Prints the elements of the binary tree in in-order
+	 * 
+	 * @param r
+	 */
 	public void inOrder(Entry<T> r) {
 		if (r != null) {
 			inOrder(r.left);

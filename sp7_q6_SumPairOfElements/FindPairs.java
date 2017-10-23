@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_q1_MergeSort.Timer;
 
 /**
- * This class finds the number of pairs that sum to the given target
+ * This class finds the number of pairs in the array that sum to the given target
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *
