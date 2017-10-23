@@ -63,7 +63,7 @@ public class RedBlackTreeNew<T extends Comparable<? super T>> extends BinarySear
 							greatGp.left = leftRotate(grandParent);
 						}
 						updateColor(parent, grandParent);
-					} else if (last == 0 && parent.left != null && current.element.compareTo(parent.left.element) > 0) {
+					} else if (last == 1 && parent.left != null && current.element.compareTo(parent.left.element) == 0) {
 						if (right == 1) {
 							greatGp.right =  rightLeftRotate(grandParent);
 						} else {
