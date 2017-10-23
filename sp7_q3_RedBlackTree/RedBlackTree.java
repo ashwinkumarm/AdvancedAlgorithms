@@ -107,19 +107,6 @@ public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchT
 		}
 	}
 
-	/*
-	 * public void swap(Entry<T> parent, Entry<T> t) { T temp = parent.element;
-	 * parent.element = t.element; t.element = temp; }
-	 * 
-	 * public void case2A(Entry<T> parent, Entry<T> grandParent, T prevChild) {
-	 * 
-	 * }
-	 * 
-	 * public void case2B(Entry<T> parent, Entry<T> grandParent, T prevChild) {
-	 * 
-	 * }
-	 */
-
 	public Entry<T> rotateRight(Entry<T> t) {
 		Entry<T> tLeft = (Entry<T>) t.left;
 		t.left = tLeft.right;
