@@ -137,7 +137,7 @@ public class RedBlackTreeNew<T extends Comparable<? super T>> extends BinarySear
 					found = current;
 				}
 
-				if (current != null && !current.isRed && child(left, current) != null && child(left, current).isRed) {
+				if (current != null && !current.isRed && (child(left, current) == null || !child(left, current).isRed)) {
 
 					if (child(1 - left, current) != null && child(1 - left, current).isRed) {
 						Entry<T> t;
@@ -159,7 +159,7 @@ public class RedBlackTreeNew<T extends Comparable<? super T>> extends BinarySear
 								s.isRed = true;
 								current.isRed = true;
 							}
-						} else {
+						else {
 							int r = grandParent.right == parent ? 1 : 0;
 
 							if (child(last, s) != null && child(last, s).isRed) {
@@ -193,6 +193,7 @@ public class RedBlackTreeNew<T extends Comparable<? super T>> extends BinarySear
 								((Entry<T>) grandParent.right.left).isRed = false;
 								((Entry<T>) grandParent.right.right).isRed = false;
 							}
+						}
 						}
 					}
 				}
