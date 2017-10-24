@@ -16,7 +16,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 /**
  * This class performs the Chu and Liu | Edmonds Algorithm (improved by Tarjan's
- * algorithm) for finding the optimat branching in the given directed graph.
+ * algorithm) for finding the optimal branching in the given directed graph.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *
@@ -61,7 +61,7 @@ public class FindDirectedMst {
 				stronglyConnectedComponents[index] = new HashSet<>();
 			stronglyConnectedComponents[index].add(dv.getElement());
 		}
-		if (ConnectedComponentsOfGraph.numberOfComponents == 1) {
+		if (ConnectedComponentsOfGraph.numberOfSCCs == 1) {
 			// TODO: This is the MST. Have to order the edges.
 		} else {
 			for (HashSet<Graph.Vertex> scc : stronglyConnectedComponents)
@@ -71,7 +71,7 @@ public class FindDirectedMst {
 				for (Graph.Vertex dmstVertex : scc)
 					((DMSTVertex) dmstVertex).disable();
 				name = g.n++;
-				g.getVertexArray()[name] = new DMSTVertex(new Vertex(name));
+				g.getDMSTVertexArray()[name] = new DMSTVertex(new Vertex(name));
 			}
 			findMinimumEdgeBetweenSCCs(g);
 		}
@@ -98,7 +98,7 @@ public class FindDirectedMst {
 					entry.getValue().weight);
 	}
 
-	public String detectCycle(StringBuilder sb, DMSTVertex v) {
+	/*--public String detectCycle(StringBuilder sb, DMSTVertex v) {
 		while (v != null) {
 			Iterator<Edge> it = v.revIterator();
 			while (it.hasNext()) {
@@ -116,11 +116,11 @@ public class FindDirectedMst {
 			}
 		}
 		return null;
-	}
+	}*/
 
 	/**
-	 * This method transforms the weights of all edges such that every vertex
-	 * except the root has atleast one incoming 0-weight edge.
+	 * This method transforms the weights of all edges such that every vertex except
+	 * the root has atleast one incoming 0-weight edge.
 	 *
 	 * @param g
 	 * @param start

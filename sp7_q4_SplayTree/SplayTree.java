@@ -38,11 +38,11 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 		boolean isAdded = super.add(newEntry);
 		Entry<T> parent = stack.peek();
 		if (parent.left.element.compareTo(x) == 0)
-			newEntry = (cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree.Entry<T>) parent.left;
+			newEntry = (Entry<T>) parent.left;
 		else
-			newEntry = (cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree.Entry<T>) parent.left;
+			newEntry = (Entry<T>) parent.left;
 
-		if (stack != null && stack.size() > 1)
+		if (isAdded && stack != null && stack.size() > 1)
 			splay(newEntry);
 		return isAdded;
 	}
