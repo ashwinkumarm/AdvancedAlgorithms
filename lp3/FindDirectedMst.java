@@ -2,9 +2,10 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTVertex;
@@ -16,7 +17,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 /**
  * This class performs the Chu and Liu | Edmonds Algorithm (improved by Tarjan's
- * algorithm) for finding the optimal branching in the given directed graph.
+ * algorithm) for finding the optimat branching in the given directed graph.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *
@@ -25,6 +26,9 @@ public class FindDirectedMst {
 
 	HashSet<Integer> cycle = new HashSet<Integer>();
 
+	/**
+	 * Class structure used for storing the image of the edges between SCCs.
+	 */
 	class ConnectedPair {
 		int from;
 		int to;
@@ -50,10 +54,11 @@ public class FindDirectedMst {
 	 * @param start
 	 * @return
 	 */
-	public Graph minMst(DMSTGraph g, Vertex start) {
+	public List<Edge> minMst(DMSTGraph g, DMSTVertex start) {
 		transformWeights(g, start);
 		ConnectedComponentsOfGraph.stronglyConnectedComponents(g);
 		HashSet<Graph.Vertex>[] stronglyConnectedComponents = new HashSet[ConnectedComponentsOfGraph.numberOfSCCs];
+		List<Edge> mst;
 		int index;
 		for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinListReverse) {
 			index = dv.getCno() - 1;
@@ -61,24 +66,75 @@ public class FindDirectedMst {
 				stronglyConnectedComponents[index] = new HashSet<>();
 			stronglyConnectedComponents[index].add(dv.getElement());
 		}
-		if (ConnectedComponentsOfGraph.numberOfSCCs == 1) {
-			// TODO: This is the MST. Have to order the edges.
+		if (ConnectedComponentsOfGraph.numberOfComponents == 1) {
+			mst = new LinkedList<Graph.Edge>();
+			for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinList)
+				if (dv.getParent() != null)
+					mst.add(getEdgeFromGraph((DMSTVertex) dv.getParent(), (DMSTVertex) dv.getElement(), g));
 		} else {
-			for (HashSet<Graph.Vertex> scc : stronglyConnectedComponents)
-				System.out.println("SCC: " + scc);
-			int name;
-			for (HashSet<Graph.Vertex> scc : stronglyConnectedComponents) {
-				for (Graph.Vertex dmstVertex : scc)
-					((DMSTVertex) dmstVertex).disable();
-				name = g.n++;
-				g.getDMSTVertexArray()[name] = new DMSTVertex(new Vertex(name));
-			}
-			findMinimumEdgeBetweenSCCs(g);
+			Graph h = new Graph(ConnectedComponentsOfGraph.numberOfSCCs);
+			HashMap<ConnectedPair, Edge> minEdge = findMinimumEdgeBetweenSCCs(h);
+			DMSTGraph hDMST = new DMSTGraph(h);
+			DMSTVertex c1 = hDMST.getDMSTVertex(ConnectedComponentsOfGraph.dfsGraph.getVertex(start).getCno());
+			mst = minMst(hDMST, c1);
+			expandSCCAndFindItsMST(g, h, stronglyConnectedComponents, minEdge, mst);
 		}
-		return g;
+		return mst;
 	}
 
-	private void findMinimumEdgeBetweenSCCs(DMSTGraph g) {
+	/**
+	 * @param parent
+	 * @param vertex
+	 * @param g
+	 * @return
+	 */
+	private Edge getEdgeFromGraph(DMSTVertex parent, DMSTVertex vertex, DMSTGraph g) {
+		for (Edge e : parent)
+			if (e.to.getName() == vertex.getName())
+				return e;
+		return null;
+	}
+
+	/**
+	 * @param g
+	 * @param h
+	 * @param stronglyConnectedComponents
+	 * @param minEdge
+	 * @param mst
+	 */
+	private void expandSCCAndFindItsMST(DMSTGraph g, Graph h, HashSet<Vertex>[] stronglyConnectedComponents,
+			HashMap<ConnectedPair, Edge> minEdge, List<Edge> mst) {
+		List<Edge> kMinusOneSCCMST = new LinkedList<>();
+		for (Edge dEdge : mst) {
+			Vertex rootVertex = minEdge.get(new ConnectedPair(dEdge.from.getName(), dEdge.to.getName())).to;
+			doBfs(rootVertex, dEdge.to, kMinusOneSCCMST);
+		}
+		mst.addAll(kMinusOneSCCMST);
+	}
+
+	private void doBfs(Vertex src, Vertex ck, List<Edge> kMinusOneSCCMST) {
+		Queue<Graph.Vertex> q = new LinkedList<>();
+		q.add(src);
+		while (!q.isEmpty()) {
+			Graph.Vertex u = q.remove();
+			for (Graph.Edge e : u) {
+				Graph.Vertex v = e.otherEnd(u);
+				if (ConnectedComponentsOfGraph.dfsGraph.getVertex(v).getCno() != ck.getName())
+					continue;
+				if (v.seen == false) {
+					v.seen = true;
+					q.add(v);
+					kMinusOneSCCMST.add(e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param g
+	 * @return
+	 */
+	private HashMap<ConnectedPair, Edge> findMinimumEdgeBetweenSCCs(Graph g) {
 		List<DFSVertex> dfsFinListReverse = ConnectedComponentsOfGraph.dfsFinListReverse;
 		HashMap<ConnectedPair, Edge> minEdge = new HashMap<>();
 		ConnectedPair con;
@@ -94,33 +150,13 @@ public class FindDirectedMst {
 		}
 
 		for (Entry<ConnectedPair, Edge> entry : minEdge.entrySet())
-			g.addEdge(g.getVertex(entry.getKey().from + 1), g.getVertex(entry.getKey().to + 1),
-					entry.getValue().weight);
+			g.addEdge(g.getVertex(entry.getKey().from), g.getVertex(entry.getKey().to), entry.getValue().weight);
+		return minEdge;
 	}
 
-	/*--public String detectCycle(StringBuilder sb, DMSTVertex v) {
-		while (v != null) {
-			Iterator<Edge> it = v.revIterator();
-			while (it.hasNext()) {
-				Edge e = it.next();
-				if (!cycle.contains(e.from.getName())) {
-					cycle.add(e.from.getName());
-					sb.append(e.from.getName());
-					v = (DMSTVertex) e.from;
-				} else {
-					String s = sb.toString();
-					int i = s.indexOf(Integer.toString(e.from.getName()));
-					sb = new StringBuilder(s.substring(i, s.length()));
-					return s.substring(i, s.length());
-				}
-			}
-		}
-		return null;
-	}*/
-
 	/**
-	 * This method transforms the weights of all edges such that every vertex except
-	 * the root has atleast one incoming 0-weight edge.
+	 * This method transforms the weights of all edges such that every vertex
+	 * except the root has atleast one incoming 0-weight edge.
 	 *
 	 * @param g
 	 * @param start

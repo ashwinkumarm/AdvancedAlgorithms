@@ -58,7 +58,7 @@ public class LP3 {
 	public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
 		DMSTGraph dmstGraph = new DMSTGraph(g);
 		FindDirectedMst findMst = new FindDirectedMst();
-		findMst.minMst(dmstGraph, start);
+		dmst = findMst.minMst(dmstGraph, dmstGraph.getVertex(start));
 		return 0;
 	}
 }

@@ -18,11 +18,11 @@ public class Graph implements Iterable<Graph.Vertex> {
 	public static class Vertex implements Iterable<Edge> {
 		int name; // name of the vertex
 		public List<Edge> adj, revAdj; // adjacency list; use LinkedList or
-										// ArrayList
+		public boolean seen; // ArrayList
 
 		/**
 		 * Constructor for vertex
-		 * 
+		 *
 		 * @param n
 		 *            : int - name of the vertex
 		 */
@@ -30,12 +30,13 @@ public class Graph implements Iterable<Graph.Vertex> {
 			name = n;
 			adj = new LinkedList<Edge>();
 			revAdj = new LinkedList<Edge>(); /* only for directed graphs */
+			seen = false;
 		}
 
 		/**
 		 * Constructor for vertex, to be used in applications that need to
 		 * extend vertex
-		 * 
+		 *
 		 * @param u
 		 *            : Vertex - the vertex to be cloned
 		 */
@@ -105,9 +106,10 @@ public class Graph implements Iterable<Graph.Vertex> {
 		public int weight; // weight of edge
 		int name; // name of edge
 		public boolean seen;
+
 		/**
 		 * Constructor for Edge
-		 * 
+		 *
 		 * @param u
 		 *            : Vertex - Vertex from which edge starts
 		 * @param v
@@ -120,7 +122,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 			to = v;
 			weight = w;
 			name = -1; // This version of constructor is for backward
-			seen = false;			// compatibility
+			seen = false; // compatibility
 		}
 
 		/**
@@ -177,7 +179,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 		/**
 		 * Method to find the other end end of an edge, given a vertex reference
 		 * This method is used for undirected graphs
-		 * 
+		 *
 		 * @param u
 		 *            : Vertex
 		 * @return : Vertex - other end of edge
@@ -225,7 +227,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 
 	/**
 	 * Constructor for Graph
-	 * 
+	 *
 	 * @param n
 	 *            : int - number of vertices
 	 */
@@ -260,7 +262,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 
 	/**
 	 * Find vertex no. n
-	 * 
+	 *
 	 * @param n
 	 *            : int
 	 */
@@ -276,7 +278,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 	/**
 	 * Method to add an edge to the graph This version is obsolete and kept for
 	 * backward compatibility
-	 * 
+	 *
 	 * @param a
 	 *            : int - one end of edge
 	 * @param b
@@ -386,4 +388,5 @@ public class Graph implements Iterable<Graph.Vertex> {
 			g.addEdge(g.getVertex(u), g.getVertex(v), w, i + 1);
 		}
 		return g;
-	}}
+	}
+}
