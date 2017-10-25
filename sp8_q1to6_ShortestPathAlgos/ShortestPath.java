@@ -1,54 +1,64 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos;
 
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Queue;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopologicalOrder;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q4and6_PrimAlgo2.IndexedHeap;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q4and6_PrimAlgo2.PrimVertex;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q4and6_PrimAlgo2.PrimMST.VertexComparator;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 
-public class ShortestPath extends GraphAlgorithm<ShortestPath.ShortestPathVertex>{
+public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 
 	public static final int INFINITY = Integer.MAX_VALUE;
 	Graph.Vertex src;
 	Boolean isPull = false;
-	// Class to store information about a vertex in this algorithm
-	static class ShortestPathVertex {
-		boolean seen;
-		Graph.Vertex parent;
-		int distance; // distance of vertex from source
+	
 
-		ShortestPathVertex(Graph.Vertex u) {
-			seen = false;
-			parent = null;
-			distance = INFINITY;
+	/**
+	 * Comparator based on priorities of the Vertices to create heap of Vertices.
+	 *
+	 * @param <T>
+	 */
+	static class VertexComparator implements Comparator<ShortestPathVertex> {
+
+		@Override
+		public int compare(ShortestPathVertex v1, ShortestPathVertex v2) {
+			if (v1.distance > v2.distance)
+				return 1;
+			else if (v1.distance < v2.distance)
+				return -1;
+			else
+				return 0;
 		}
 	}
+	
 
 	public ShortestPath(Graph g, Graph.Vertex src) {
 		super(g);
 		this.src = src;
 		node = new ShortestPathVertex[g.size()];
-		// Create array for storing vertex properties
+		int index = 0;
 		for (Graph.Vertex u : g) {
-			node[u.getName()] = new ShortestPathVertex(u);
+			node[u.getName()] = new ShortestPathVertex(u, index++, INFINITY);
 		}
 		// Set source to be at distance 0
 		getVertex(src).distance = 0;
 	}
-
-	// reinitialize allows running BFS many times, with different sources
+	
+	
+	//refactor
 	void reinitialize(Graph.Vertex newSource) {
 		src = newSource;
+		int index = 0;
 		for (Graph.Vertex u : g) {
 			ShortestPathVertex su = getVertex(u);
-			su.seen = false;
-			su.parent = null;
-			su.distance = INFINITY;
+			su.reinitializeVertex(INFINITY, index++);
 		}
 		getVertex(src).distance = 0;
 	}
@@ -64,6 +74,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.ShortestPathVertex
 		return false;
 	}
 	
+
 	boolean seen(Graph.Vertex u) {
 		return getVertex(u).seen;
 	}
@@ -100,7 +111,21 @@ public class ShortestPath extends GraphAlgorithm<ShortestPath.ShortestPathVertex
 	}
 	
 	public void dijkstra() { 
-		
+		VertexComparator comp = new VertexComparator();
+		ShortestPathVertex[] vertexArray = new ShortestPathVertex[node.length];
+		System.arraycopy(node, 0, vertexArray, 0, node.length);
+		IndexedHeap<ShortestPathVertex> vertexQueue = new IndexedHeap<>(vertexArray, comp, node.length);
+		ShortestPathVertex v, v2;
+		while (!vertexQueue.isEmpty()) {
+			v = vertexQueue.remove();
+			v.seen = true;
+			for (Graph.Edge e : v.vertex) {
+				boolean changed = relax(e);
+				if(changed) {
+					vertexQueue.decreaseKey(v2);
+				}
+			}
+		}
 	}
 	
 	public boolean bellmanFord() { 
