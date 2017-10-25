@@ -18,7 +18,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	public static final int INFINITY = Integer.MAX_VALUE;
 	Graph.Vertex src;
 	Boolean isPull = false;
-	
+
 
 	/**
 	 * Comparator based on priorities of the Vertices to create heap of Vertices.
@@ -37,7 +37,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 				return 0;
 		}
 	}
-	
+
 
 	public ShortestPath(Graph g, Graph.Vertex src) {
 		super(g);
@@ -50,8 +50,8 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 		// Set source to be at distance 0
 		getVertex(src).distance = 0;
 	}
-	
-	
+
+
 	//refactor
 	void reinitialize(Graph.Vertex newSource) {
 		src = newSource;
@@ -62,18 +62,18 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 		}
 		getVertex(src).distance = 0;
 	}
-	
+
 	boolean relax (Graph.Edge e ){
-		Graph.Vertex u = e.from; 
+		Graph.Vertex u = e.from;
 		Graph.Vertex v = e.to;
 		if(distance(v) > distance(u) + 1){
-			getVertex(v).distance = distance(u) + 1; 
+			getVertex(v).distance = distance(u) + 1;
 			getVertex(v).parent = u;
 			return true;
 		}
 		return false;
 	}
-	
+
 
 	boolean seen(Graph.Vertex u) {
 		return getVertex(u).seen;
@@ -87,8 +87,8 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 		return getVertex(u).distance;
 	}
 
-	
-	public void bfs() { 
+
+	public void bfs() {
 		Queue<Graph.Vertex> q = new LinkedList<>();
 		q.add(src);
 		while (!q.isEmpty()) {
@@ -98,8 +98,8 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 			}
 		}
 	}
-	
-	public void dagShortestPaths() { 
+
+	public void dagShortestPaths() {
 		List<Graph.Vertex> topoOrder = TopologicalOrder.toplogicalOrder2(g);
 		reinitialize(src);
 		for (Graph.Vertex u : topoOrder) {
@@ -109,8 +109,8 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 			}
 		}
 	}
-	
-	public void dijkstra() { 
+
+	public void dijkstra() {
 		VertexComparator comp = new VertexComparator();
 		ShortestPathVertex[] vertexArray = new ShortestPathVertex[node.length];
 		System.arraycopy(node, 0, vertexArray, 0, node.length);
@@ -127,20 +127,20 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 			}
 		}
 	}
-	
-	public boolean bellmanFord() { 
-		
+
+	public boolean bellmanFord() {
+
 	}
-	
-	public boolean fastestShortestPaths() { 
-		
+
+	public boolean fastestShortestPaths() {
+
 	}
-	
-	public List<Edge> findOddCycle() { 
-		
+
+	public List<Edge> findOddCycle() {
+
 	}
-	
-	
+
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

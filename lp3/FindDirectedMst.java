@@ -25,8 +25,6 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  */
 public class FindDirectedMst {
 
-	HashSet<Integer> cycle = new HashSet<Integer>();
-
 	/**
 	 * Class structure used for storing the image of the edges between SCCs.
 	 */
@@ -58,13 +56,13 @@ public class FindDirectedMst {
 	public List<Edge> minMst(DMSTGraph g, DMSTVertex start) {
 		transformWeights(g, start);
 		System.out.println("Outside Strongly Connected Components");
-		for(Vertex v:g) {
-			for(Edge e:v) {
+		for (Vertex v : g) {
+			for (Edge e : v) {
 				System.out.print(e);
 			}
 		}
 		System.out.println();
-			
+
 		ConnectedComponentsOfGraph.stronglyConnectedComponents(g);
 		HashSet<Graph.Vertex>[] stronglyConnectedComponents = new HashSet[ConnectedComponentsOfGraph.numberOfSCCs];
 		List<Edge> mst;
@@ -79,7 +77,8 @@ public class FindDirectedMst {
 		if (ConnectedComponentsOfGraph.numberOfComponents == 1) {
 			mst = new LinkedList<Graph.Edge>();
 			for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinList) {
-				// dv = ConnectedComponentsOfGraph.firstDfsNode[dv.getElement().getName()];
+				// dv =
+				// ConnectedComponentsOfGraph.firstDfsNode[dv.getElement().getName()];
 				if ((parent = dv.getParent()) != null)
 					mst.add(getEdgeFromGraph(g.getDMSTVertex(parent.getName() + 1),
 							g.getDMSTVertex(dv.getElement().getName() + 1), g));
@@ -177,8 +176,8 @@ public class FindDirectedMst {
 	}
 
 	/**
-	 * This method transforms the weights of all edges such that every vertex except
-	 * the root has atleast one incoming 0-weight edge.
+	 * This method transforms the weights of all edges such that every vertex
+	 * except the root has atleast one incoming 0-weight edge.
 	 *
 	 * @param g
 	 * @param start
@@ -196,7 +195,6 @@ public class FindDirectedMst {
 				if (dmstEdge.weight != 0)
 					dmstEdge.disabled();
 			}
-			// }
 		}
 	}
 }

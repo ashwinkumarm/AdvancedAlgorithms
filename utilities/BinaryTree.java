@@ -1,8 +1,10 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BST.Entry;
+
 /**
  * This class implements the binary tree
- * 
+ *
  * @author Ashwin, Arun, Deepak, Haritha
  *
  * @param <T>
@@ -46,7 +48,7 @@ public class BinaryTree<T> {
 
 	/**
 	 * Prints the element of given entry
-	 * 
+	 *
 	 * @param entry
 	 */
 	public void visit(Entry<T> entry) {
@@ -67,7 +69,7 @@ public class BinaryTree<T> {
 
 	/**
 	 * Prints the elements of the binary tree in post-order
-	 * 
+	 *
 	 * @param r
 	 */
 	public void postOrder(Entry<T> r) {
@@ -80,7 +82,7 @@ public class BinaryTree<T> {
 
 	/**
 	 * Prints the elements of the binary tree in pre-order
-	 * 
+	 *
 	 * @param r
 	 */
 	public void preOrder(Entry<T> r) {
@@ -93,7 +95,7 @@ public class BinaryTree<T> {
 
 	/**
 	 * Prints the elements of the binary tree in in-order
-	 * 
+	 *
 	 * @param r
 	 */
 	public void inOrder(Entry<T> r) {
@@ -102,5 +104,45 @@ public class BinaryTree<T> {
 			visit(r);
 			inOrder(r.right);
 		}
+	}
+
+	public BinaryTree<T> reconstruct(T[] inOrder, T[] postOrder) {
+		Index index = new Index();
+		index.index = inOrder.length - 1;
+		Entry<T> root = reconstruct(inOrder, postOrder, 0, inOrder.length - 1, index);
+		BinaryTree<T> t = new BinaryTree<>();
+		t.root = root;
+		return t;
+	}
+
+	class Index {
+		int index;
+	}
+
+	Entry<T> reconstruct(T[] inOrder, T[] postOrder, int start, int end, Index rootIndex) {
+		if (start > end)
+			return null;
+
+		Entry<T> node = new Entry<T>(postOrder[rootIndex.index], null, null);
+		rootIndex.index--;
+
+		if (start == end)
+			return node;
+
+		int iIndex = search(inOrder, start, end, node.element);
+
+		node.right = reconstruct(inOrder, postOrder, iIndex + 1, end, rootIndex);
+		node.left = reconstruct(inOrder, postOrder, start, iIndex - 1, rootIndex);
+
+		return node;
+	}
+
+	int search(T arr[], int strt, int end, T value) {
+		int i;
+		for (i = strt; i <= end; i++) {
+			if (arr[i].equals(value))
+				break;
+		}
+		return i;
 	}
 }

@@ -2,10 +2,10 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7
 
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BST;
 
-public class RedBlackTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
-	static class Entry<T> extends BinarySearchTree.Entry<T> {
+public class RedBlackTree<T extends Comparable<? super T>> extends BST<T> {
+	static class Entry<T> extends BST.Entry<T> {
 		boolean isRed;
 
 		Entry(T x, Entry<T> left, Entry<T> right) {

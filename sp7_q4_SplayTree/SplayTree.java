@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BST;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Timer;
 
 /**
@@ -18,7 +18,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  *
  * @param <T>
  */
-public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
+public class SplayTree<T extends Comparable<? super T>> extends BST<T> {
 	/**
 	 * Constructor to initialize the splay tree
 	 */
@@ -235,7 +235,7 @@ public class SplayTree<T extends Comparable<? super T>> extends BinarySearchTree
 	public static void main(String args[]) {
 
 		// SplayTree<Integer> t = new SplayTree<Integer>();
-		BinarySearchTree<Integer> t = new BinarySearchTree<Integer>();
+		BST<Integer> t = new BST<Integer>();
 		Timer timer = new Timer();
 		int a[] = getSkewedInput();
 		for (int i = 0; i < a.length; i++) {

@@ -2,7 +2,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7
 
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BST;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BinaryTree;
 
 /**
@@ -11,14 +11,14 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
-public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
+public class AVLTree<T extends Comparable<? super T>> extends BST<T> {
 
 	/**
 	 * This class implements the Entry of AVL Tree
 	 *
 	 * @param <T>
 	 */
-	public static class Entry<T> extends BinarySearchTree.Entry<T> {
+	public static class Entry<T> extends BST.Entry<T> {
 		int height;
 
 		/**

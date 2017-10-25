@@ -1,6 +1,6 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q8_LengthOfLongestStreak;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BinarySearchTree;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp7_q1_BST.BST;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BinaryTree.Entry;
 
 /**
@@ -21,7 +21,7 @@ public class LongestStreak {
 	 * @param A
 	 */
 	static int longestStreak(int[] A) {
-		BinarySearchTree<Integer> bst = new BinarySearchTree<>();
+		BST<Integer> bst = new BST<>();
 		for (int i = 0; i < A.length; i++)
 			bst.add(A[i]);
 		lastNum = bst.min();
