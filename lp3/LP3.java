@@ -59,6 +59,7 @@ public class LP3 {
 		DMSTGraph dmstGraph = new DMSTGraph(g);
 		FindDirectedMst findMst = new FindDirectedMst();
 		dmst = findMst.minMst(dmstGraph, dmstGraph.getVertex(start));
+		System.out.println(dmst);
 		return 0;
 	}
 }

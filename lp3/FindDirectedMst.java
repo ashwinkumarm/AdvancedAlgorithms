@@ -1,5 +1,6 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -17,7 +18,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 /**
  * This class performs the Chu and Liu | Edmonds Algorithm (improved by Tarjan's
- * algorithm) for finding the optimat branching in the given directed graph.
+ * algorithm) for finding the optimal branching in the given directed graph.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *
@@ -66,11 +67,17 @@ public class FindDirectedMst {
 				stronglyConnectedComponents[index] = new HashSet<>();
 			stronglyConnectedComponents[index].add(dv.getElement());
 		}
+		Vertex parent = null;
 		if (ConnectedComponentsOfGraph.numberOfComponents == 1) {
 			mst = new LinkedList<Graph.Edge>();
-			for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinList)
-				if (dv.getParent() != null)
-					mst.add(getEdgeFromGraph((DMSTVertex) dv.getParent(), (DMSTVertex) dv.getElement(), g));
+			for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinList) {
+				dv = ConnectedComponentsOfGraph.firstDfsNode[dv.getElement().getName()];
+				if ((parent = dv.getParent()) != null)
+					mst.add(getEdgeFromGraph(g.getDMSTVertex(parent.getName() + 1),
+							g.getDMSTVertex(dv.getElement().getName() + 1), g));
+				else
+					mst.add(null);
+			}
 		} else {
 			Graph h = new Graph(ConnectedComponentsOfGraph.numberOfSCCs);
 			HashMap<ConnectedPair, Edge> minEdge = findMinimumEdgeBetweenSCCs(h);
@@ -79,6 +86,14 @@ public class FindDirectedMst {
 			mst = minMst(hDMST, c1);
 			expandSCCAndFindItsMST(g, h, stronglyConnectedComponents, minEdge, mst);
 		}
+		// TODO: Handle null while null is present
+		mst.sort(new Comparator<Edge>() {
+			public int compare(Edge o1, Edge o2) {
+				int edge1 = o1 != null ? o1.to.getName() : start.getName();
+				int edge2 = o2 != null ? o2.to.getName() : start.getName();
+				return edge1 - edge2;
+			}
+		});
 		return mst;
 	}
 
@@ -89,7 +104,7 @@ public class FindDirectedMst {
 	 * @return
 	 */
 	private Edge getEdgeFromGraph(DMSTVertex parent, DMSTVertex vertex, DMSTGraph g) {
-		for (Edge e : parent)
+		for (Edge e : parent.DMSTadj)
 			if (e.to.getName() == vertex.getName())
 				return e;
 		return null;
@@ -155,8 +170,8 @@ public class FindDirectedMst {
 	}
 
 	/**
-	 * This method transforms the weights of all edges such that every vertex
-	 * except the root has atleast one incoming 0-weight edge.
+	 * This method transforms the weights of all edges such that every vertex except
+	 * the root has atleast one incoming 0-weight edge.
 	 *
 	 * @param g
 	 * @param start

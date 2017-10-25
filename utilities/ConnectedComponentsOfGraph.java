@@ -21,12 +21,13 @@ public class ConnectedComponentsOfGraph {
 	public static List<DFSVertex> dfsFinList, dfsFinListReverse;
 	public static int numberOfComponents, numberOfSCCs;
 	public static DFS dfsGraph;
+	public static DFSVertex[] firstDfsNode;
 
 	/**
-	 * This method runs DFS on the given graph and get the list of vertices in
-	 * the decreasing order of their finish time and reverses the graph and
-	 * again run DFS on the reversed graph in the order of the decreasing finish
-	 * time of vertices from the original graph
+	 * This method runs DFS on the given graph and get the list of vertices in the
+	 * decreasing order of their finish time and reverses the graph and again run
+	 * DFS on the reversed graph in the order of the decreasing finish time of
+	 * vertices from the original graph
 	 *
 	 * @param g
 	 * @return cno
@@ -45,6 +46,15 @@ public class ConnectedComponentsOfGraph {
 			}
 		}
 		numberOfComponents = DFS.cno;
+		firstDfsNode = new DFSVertex[g.size()];
+		for (Graph.Vertex vertex : g) {
+			DFSVertex newNode = new DFSVertex(vertex);
+			DFSVertex oldNode = dfsGraph.node[vertex.getName()];
+			newNode.parent = oldNode.parent;
+			newNode.seen = oldNode.seen;
+			newNode.cno = oldNode.cno;
+			firstDfsNode[vertex.getName()] = newNode;
+		}
 		DFS.cno = 0;
 		dfsGraph.reinitialize(g);
 		dfsFinListReverse = new LinkedList<DFSVertex>();
