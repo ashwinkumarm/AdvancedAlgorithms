@@ -57,6 +57,14 @@ public class FindDirectedMst {
 	 */
 	public List<Edge> minMst(DMSTGraph g, DMSTVertex start) {
 		transformWeights(g, start);
+		System.out.println("Outside Strongly Connected Components");
+		for(Vertex v:g) {
+			for(Edge e:v) {
+				System.out.print(e);
+			}
+		}
+		System.out.println();
+			
 		ConnectedComponentsOfGraph.stronglyConnectedComponents(g);
 		HashSet<Graph.Vertex>[] stronglyConnectedComponents = new HashSet[ConnectedComponentsOfGraph.numberOfSCCs];
 		List<Edge> mst;
@@ -71,7 +79,7 @@ public class FindDirectedMst {
 		if (ConnectedComponentsOfGraph.numberOfComponents == 1) {
 			mst = new LinkedList<Graph.Edge>();
 			for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinList) {
-				dv = ConnectedComponentsOfGraph.firstDfsNode[dv.getElement().getName()];
+				// dv = ConnectedComponentsOfGraph.firstDfsNode[dv.getElement().getName()];
 				if ((parent = dv.getParent()) != null)
 					mst.add(getEdgeFromGraph(g.getDMSTVertex(parent.getName() + 1),
 							g.getDMSTVertex(dv.getElement().getName() + 1), g));
@@ -86,7 +94,6 @@ public class FindDirectedMst {
 			mst = minMst(hDMST, c1);
 			expandSCCAndFindItsMST(g, h, stronglyConnectedComponents, minEdge, mst);
 		}
-		// TODO: Handle null while null is present
 		mst.sort(new Comparator<Edge>() {
 			public int compare(Edge o1, Edge o2) {
 				int edge1 = o1 != null ? o1.to.getName() : start.getName();
@@ -182,14 +189,14 @@ public class FindDirectedMst {
 		DMSTEdge dmstEdge;
 		for (Vertex vertex : g) {
 			dmstVertex = (DMSTVertex) vertex;
-			if (dmstVertex.getName() != start.getName()) {
-				for (Edge edge : dmstVertex) {
-					dmstEdge = (DMSTEdge) edge;
-					dmstEdge.weight = dmstEdge.weight - ((DMSTVertex) dmstEdge.otherEnd(dmstVertex)).minEdge;
-					if (dmstEdge.weight != 0)
-						dmstEdge.disabled();
-				}
+			// if (dmstVertex.getName() != start.getName()) {
+			for (Edge edge : dmstVertex) {
+				dmstEdge = (DMSTEdge) edge;
+				dmstEdge.weight = dmstEdge.weight - ((DMSTVertex) dmstEdge.otherEnd(dmstVertex)).minEdge;
+				if (dmstEdge.weight != 0)
+					dmstEdge.disabled();
 			}
+			// }
 		}
 	}
 }

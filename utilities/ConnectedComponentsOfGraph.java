@@ -16,12 +16,13 @@ import java.util.List;
 import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS.DFSVertex;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
 public class ConnectedComponentsOfGraph {
 	public static List<DFSVertex> dfsFinList, dfsFinListReverse;
 	public static int numberOfComponents, numberOfSCCs;
 	public static DFS dfsGraph;
-	public static DFSVertex[] firstDfsNode;
 
 	/**
 	 * This method runs DFS on the given graph and get the list of vertices in the
@@ -35,6 +36,13 @@ public class ConnectedComponentsOfGraph {
 
 	public static int stronglyConnectedComponents(Graph g) {
 		Iterator<Graph.Vertex> it = g.iterator();
+		/*System.out.println("Inside Strongly Connected Components");
+		for (Vertex v : g) {
+			for (Edge e : v) {
+				System.out.print(e);
+			}
+		}*/
+		System.out.println();
 		dfsGraph = new DFS(g);
 		dfsFinList = new LinkedList<DFSVertex>();
 		Graph.Vertex u;
@@ -46,15 +54,6 @@ public class ConnectedComponentsOfGraph {
 			}
 		}
 		numberOfComponents = DFS.cno;
-		firstDfsNode = new DFSVertex[g.size()];
-		for (Graph.Vertex vertex : g) {
-			DFSVertex newNode = new DFSVertex(vertex);
-			DFSVertex oldNode = dfsGraph.node[vertex.getName()];
-			newNode.parent = oldNode.parent;
-			newNode.seen = oldNode.seen;
-			newNode.cno = oldNode.cno;
-			firstDfsNode[vertex.getName()] = newNode;
-		}
 		DFS.cno = 0;
 		dfsGraph.reinitialize(g);
 		dfsFinListReverse = new LinkedList<DFSVertex>();
