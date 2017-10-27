@@ -1,5 +1,7 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3;
 
+import java.util.LinkedList;
+
 /** Breadth-first search
  *  @author rbk
  *  Version 1.0: 2017/09/08
@@ -7,13 +9,9 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3
 
 import java.util.Queue;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
-
-import java.util.Iterator;
-import java.util.LinkedList;
 
 public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 	public static final int INFINITY = Integer.MAX_VALUE;

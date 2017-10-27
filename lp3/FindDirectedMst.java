@@ -184,17 +184,14 @@ public class FindDirectedMst {
 	 * @return
 	 */
 	public void transformWeights(DMSTGraph g, Vertex start) {
-		DMSTVertex dmstVertex;
-		DMSTEdge dmstEdge;
-		for (Vertex vertex : g) {
-			dmstVertex = (DMSTVertex) vertex;
-			// if (dmstVertex.getName() != start.getName()) {
-			for (Edge edge : dmstVertex) {
-				dmstEdge = (DMSTEdge) edge;
+	for (DMSTVertex dmstVertex : g.getDMSTVertexArray()) {
+		if(dmstVertex != null){
+			for (DMSTEdge dmstEdge : dmstVertex.DMSTadj) {
 				dmstEdge.weight = dmstEdge.weight - ((DMSTVertex) dmstEdge.otherEnd(dmstVertex)).minEdge;
 				if (dmstEdge.weight != 0)
 					dmstEdge.disabled();
 			}
+		}
 		}
 	}
 }

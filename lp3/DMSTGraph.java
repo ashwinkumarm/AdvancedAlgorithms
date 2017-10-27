@@ -31,11 +31,14 @@ public class DMSTGraph extends Graph {
 			disabled = true;
 		}
 
+		
+		@Override
 		public Iterator<Edge> iterator() {
 			return new DMSTVertexIterator(this);
 		}
 
-		public Iterator<Edge> revIterator() {
+		@Override
+		public Iterator<Edge> reverseIterator() {
 			return new DMSTVertexRevIterator(this);
 		}
 

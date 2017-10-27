@@ -1,5 +1,7 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
+import java.util.Iterator;
+
 /**
  * Graph class customized to do DFS
  *
@@ -8,6 +10,8 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.uti
  */
 
 import java.util.List;
+
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 
 public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 
@@ -86,8 +90,9 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		du.seen = true;
 		du.cno = cno;
 //		System.out.println("inside inside");
-		List<Graph.Edge> EdgeList = flag ? u.revAdj : u.adj;
-		for (Graph.Edge e : EdgeList) {
+		Iterator<Edge> edgeList = flag ?  u.reverseIterator() : u.iterator();
+		while(edgeList.hasNext()){
+			Graph.Edge e = edgeList.next();
 //			System.out.print(e);
 			Graph.Vertex v = e.otherEnd(u);
 			DFSVertex dv = getVertex(v);
