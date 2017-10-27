@@ -105,6 +105,7 @@ public class FindDirectedMst {
 				stronglyConnectedComponents[index].add(dv.getElement());
 			}
 			Graph h = new Graph(ConnectedComponentsOfGraph.numberOfSCCs);
+			h.setDirected(true);
 			HashMap<ConnectedPair, Edge> minEdge = findMinimumEdgeBetweenSCCs(h);
 			DMSTGraph hDMST = new DMSTGraph(h);
 			DMSTVertex c1 = hDMST.getDMSTVertex(ConnectedComponentsOfGraph.dfsGraph.getVertex(start).getCno());
@@ -196,8 +197,8 @@ public class FindDirectedMst {
 	}
 
 	/**
-	 * This method transforms the weights of all edges such that every vertex
-	 * except the root has atleast one incoming 0-weight edge.
+	 * This method transforms the weights of all edges such that every vertex except
+	 * the root has atleast one incoming 0-weight edge.
 	 *
 	 * @param g
 	 * @param start
