@@ -11,6 +11,7 @@ import java.util.Queue;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ConnectedComponentsOfGraph;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS.DFSVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
@@ -54,38 +55,35 @@ public class FindDirectedMst {
 	 * @return
 	 */
 	public List<Edge> minMst(DMSTGraph g, DMSTVertex start) {
+		// Transform weights function
 		transformWeights(g, start);
-		System.out.println("Outside Strongly Connected Components");
-		for (Vertex v : g) {
-			for (Edge e : v) {
-				System.out.print(e);
-			}
-		}
-		System.out.println();
-
-		ConnectedComponentsOfGraph.stronglyConnectedComponents(g);
-		HashSet<Graph.Vertex>[] stronglyConnectedComponents = new HashSet[ConnectedComponentsOfGraph.numberOfSCCs];
+		//Check for MST using DFS
+		List<DFSVertex> components = new LinkedList<DFSVertex>();
 		List<Edge> mst;
-		int index;
-		for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinListReverse) {
-			index = dv.getCno() - 1;
-			if (stronglyConnectedComponents[index] == null)
-				stronglyConnectedComponents[index] = new HashSet<>();
-			stronglyConnectedComponents[index].add(dv.getElement());
-		}
-		Vertex parent = null;
-		if (ConnectedComponentsOfGraph.numberOfComponents == 1) {
+		DFS dfsObject = new DFS(g);
+		dfsObject.dfsVisit(start, components);
+		if (components.size() == g.size()) {
 			mst = new LinkedList<Graph.Edge>();
-			for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinList) {
-				// dv =
-				// ConnectedComponentsOfGraph.firstDfsNode[dv.getElement().getName()];
+			Vertex parent = null;
+			for (DFSVertex dv : components) {
 				if ((parent = dv.getParent()) != null)
 					mst.add(getEdgeFromGraph(g.getDMSTVertex(parent.getName() + 1),
 							g.getDMSTVertex(dv.getElement().getName() + 1), g));
 				else
 					mst.add(null);
 			}
-		} else {
+		}
+		// If MST is not found
+		else {
+			ConnectedComponentsOfGraph.stronglyConnectedComponents(g);
+			HashSet<Graph.Vertex>[] stronglyConnectedComponents = new HashSet[ConnectedComponentsOfGraph.numberOfSCCs];
+			int index;
+			for (DFSVertex dv : ConnectedComponentsOfGraph.dfsFinListReverse) {
+				index = dv.getCno() - 1;
+				if (stronglyConnectedComponents[index] == null)
+					stronglyConnectedComponents[index] = new HashSet<>();
+				stronglyConnectedComponents[index].add(dv.getElement());
+			}
 			Graph h = new Graph(ConnectedComponentsOfGraph.numberOfSCCs);
 			HashMap<ConnectedPair, Edge> minEdge = findMinimumEdgeBetweenSCCs(h);
 			DMSTGraph hDMST = new DMSTGraph(h);
@@ -176,22 +174,22 @@ public class FindDirectedMst {
 	}
 
 	/**
-	 * This method transforms the weights of all edges such that every vertex
-	 * except the root has atleast one incoming 0-weight edge.
+	 * This method transforms the weights of all edges such that every vertex except
+	 * the root has atleast one incoming 0-weight edge.
 	 *
 	 * @param g
 	 * @param start
 	 * @return
 	 */
 	public void transformWeights(DMSTGraph g, Vertex start) {
-	for (DMSTVertex dmstVertex : g.getDMSTVertexArray()) {
-		if(dmstVertex != null){
-			for (DMSTEdge dmstEdge : dmstVertex.DMSTadj) {
-				dmstEdge.weight = dmstEdge.weight - ((DMSTVertex) dmstEdge.otherEnd(dmstVertex)).minEdge;
-				if (dmstEdge.weight != 0)
-					dmstEdge.disabled();
+		for (DMSTVertex dmstVertex : g.getDMSTVertexArray()) {
+			if (dmstVertex != null) {
+				for (DMSTEdge dmstEdge : dmstVertex.DMSTadj) {
+					dmstEdge.weight = dmstEdge.weight - ((DMSTVertex) dmstEdge.otherEnd(dmstVertex)).minEdge;
+					if (dmstEdge.weight != 0)
+						dmstEdge.disabled();
+				}
 			}
-		}
 		}
 	}
 }

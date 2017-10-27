@@ -89,11 +89,9 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		DFSVertex du = getVertex(u);
 		du.seen = true;
 		du.cno = cno;
-//		System.out.println("inside inside");
 		Iterator<Edge> edgeList = flag ?  u.reverseIterator() : u.iterator();
 		while(edgeList.hasNext()){
 			Graph.Edge e = edgeList.next();
-//			System.out.print(e);
 			Graph.Vertex v = e.otherEnd(u);
 			DFSVertex dv = getVertex(v);
 			if (!dv.seen) {
