@@ -7,11 +7,10 @@ import java.util.Queue;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopologicalOrder;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q4and6_PrimAlgo2.IndexedHeap;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q4and6_PrimAlgo2.PrimVertex;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q4and6_PrimAlgo2.PrimMST.VertexComparator;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
 public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 
@@ -111,29 +110,50 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	}
 
 	public void dijkstra() {
+		reinitialize(src);
 		VertexComparator comp = new VertexComparator();
 		ShortestPathVertex[] vertexArray = new ShortestPathVertex[node.length];
 		System.arraycopy(node, 0, vertexArray, 0, node.length);
 		IndexedHeap<ShortestPathVertex> vertexQueue = new IndexedHeap<>(vertexArray, comp, node.length);
-		ShortestPathVertex v, v2;
+		ShortestPathVertex v;
 		while (!vertexQueue.isEmpty()) {
 			v = vertexQueue.remove();
 			v.seen = true;
 			for (Graph.Edge e : v.vertex) {
 				boolean changed = relax(e);
 				if(changed) {
-					vertexQueue.decreaseKey(v2);
+					vertexQueue.decreaseKey(v);
 				}
 			}
 		}
 	}
 
 	public boolean bellmanFord() {
-
+		reinitialize(src);
+		Queue<ShortestPathVertex> q = new LinkedList<>();
+		q.add(getVertex(src));
+		int V = g.size();
+		while(q.isEmpty()){
+			ShortestPathVertex u = q.remove();
+			u.seen = false;
+			u.count = u.count + 1;
+			if(u.count >= V) {
+				return false;
+			}
+			for(Edge e : u.vertex){
+				relax(e);
+				Vertex v = e.otherEnd(u.vertex);
+				if (!v.seen){
+					q.add(getVertex(v));
+					getVertex(v).seen = true;
+				}
+			}
+		}
+		return true;
 	}
 
 	public boolean fastestShortestPaths() {
-
+		
 	}
 
 	public List<Edge> findOddCycle() {

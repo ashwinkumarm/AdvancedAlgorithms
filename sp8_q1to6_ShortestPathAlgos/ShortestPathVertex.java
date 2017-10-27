@@ -6,9 +6,9 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class ShortestPathVertex implements Index {
 	
-	
+	//refactor
 	Graph.Vertex vertex;
-	int distance, index;
+	int distance, index, count;
 	boolean seen;
 	Graph.Vertex parent;
 
@@ -19,6 +19,7 @@ public class ShortestPathVertex implements Index {
 		this.seen = false;
 		this.parent = null;
 		this.index = index;
+		this.count = 0;
 		
 	}
 	
@@ -27,6 +28,7 @@ public class ShortestPathVertex implements Index {
 			this.parent = null;
 			this.distance = distance;
 			this.index = index;
+			this.count = 0;
 	}
 
 	public void putIndex(int i) {
@@ -36,6 +38,6 @@ public class ShortestPathVertex implements Index {
 	public int getIndex() {
 		return index;
 	}
-
+	
 	
 }
