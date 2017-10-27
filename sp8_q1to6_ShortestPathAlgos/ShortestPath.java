@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Queue;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopologicalOrder;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG.DFSCheckDAG;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q4and6_PrimAlgo2.IndexedHeap;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
@@ -17,7 +18,6 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	public static final int INFINITY = Integer.MAX_VALUE;
 	Graph.Vertex src;
 	Boolean isPull = false;
-
 
 	/**
 	 * Comparator based on priorities of the Vertices to create heap of Vertices.
@@ -153,11 +153,39 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	}
 
 	public boolean fastestShortestPaths() {
-		
+		Boolean hasEqualWeightEdges = true;
+		Boolean hasNegativeEdges = false;
+		int weight = src.adj.get(0).weight;
+		if(weight < 0){
+			hasNegativeEdges = true;
+		}
+		for (Vertex u : g) {
+			for(Edge e : u){
+				if(weight != e.weight){
+					hasEqualWeightEdges = false;
+					if(e.weight < 0){
+						hasNegativeEdges = true;
+					}
+				} 
+			}
+		}
+		if(hasEqualWeightEdges && !hasNegativeEdges){
+			bfs();
+		}
+		else if(!hasNegativeEdges){
+			dijkstra();
+		}
+		else if(DFSCheckDAG.isDAG(g)){
+			dagShortestPaths();
+		}
+		else {
+			return bellmanFord();
+		}
+		return true;
 	}
-
+	
 	public List<Edge> findOddCycle() {
-
+		
 	}
 
 
