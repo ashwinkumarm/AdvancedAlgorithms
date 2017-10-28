@@ -93,7 +93,11 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 		while (!q.isEmpty()) {
 			Graph.Vertex u = q.remove();
 			for (Graph.Edge e : u) {
-				relax(e);
+				Graph.Vertex v = e.otherEnd(u);
+				if(!v.seen){
+					relax(e);
+					q.add(v);
+				}
 			}
 		}
 	}
@@ -185,9 +189,47 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	}
 	
 	public List<Edge> findOddCycle() {
-		
+		reinitialize(src);
+		bfs();
+		List<Edge> edgesOfCycle = new LinkedList<>();
+		for (Vertex u : g) {
+			for (Edge e : u) {
+				Graph.Vertex v = e.otherEnd(u);
+				if(getVertex(u).distance == getVertex(v).distance){
+					edgesOfCycle.add(e);
+					Graph.Vertex p_u; 
+					Graph.Vertex p_v;
+					do{
+						p_u = getVertex(u).parent;
+						p_v = getVertex(v).parent;
+						Edge e1 = null,e2 = null;
+						for (Edge edge : p_u) {
+							if(edge.otherEnd(p_u)==u){
+								e1 = edge;
+								break;
+							}
+						}
+						for (Edge edge : p_v) {
+							if(edge.otherEnd(p_v)==v){
+								e2 = edge;
+								break;
+							}
+						}
+						edgesOfCycle.add(0, e1);
+						edgesOfCycle.add(e2);
+						
+						u = p_u;
+						v = p_v;	
+					} while(p_u != p_v);
+					
+					return edgesOfCycle;
+				}
+			}
+		}
+		return null;
 	}
-
+	
+	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
