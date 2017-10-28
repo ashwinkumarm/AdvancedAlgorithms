@@ -55,6 +55,12 @@ public class FindDirectedMst {
 			result = 31 * result + to;
 			return result;
 		}
+
+		@Override
+		public String toString() {
+			return "(" + from + ", " + to + ")";
+		}
+
 	}
 
 	/**
@@ -64,6 +70,13 @@ public class FindDirectedMst {
 	 */
 	public List<Edge> minMst(DMSTGraph g, DMSTVertex start) {
 		transformWeights(g, start);
+		for (Vertex v : g) {
+			DMSTVertex d = (DMSTVertex) v;
+			for (Edge e : d) {
+				DMSTEdge de = (DMSTEdge) e;
+				System.out.println(e + " - " + de.weight + " - " + de.disabled);
+			}
+		}
 		// Check for MST
 		List<DFSVertex> components = new LinkedList<DFSVertex>();
 		DFS dfsObject = new DFS(g);
@@ -92,6 +105,7 @@ public class FindDirectedMst {
 				stronglyConnectedComponents[index].add(dv.getElement());
 			}
 			Graph h = new Graph(ConnectedComponentsOfGraph.numberOfSCCs);
+			h.setDirected(true);
 			HashMap<ConnectedPair, Edge> minEdge = findMinimumEdgeBetweenSCCs(h);
 			DMSTGraph hDMST = new DMSTGraph(h);
 			DMSTVertex c1 = hDMST.getDMSTVertex(ConnectedComponentsOfGraph.dfsGraph.getVertex(start).getCno());
@@ -166,12 +180,14 @@ public class FindDirectedMst {
 		ConnectedPair con;
 		Edge prevMin;
 		for (DFSVertex dv : dfsFinListReverse) {
-			for (Edge e : dv.getElement()) {
+			for (Edge e : dv.getElement().adj) {
 				con = new ConnectedPair(dv.getCno(), ConnectedComponentsOfGraph.dfsGraph.getVertex(e.to).getCno());
-				if ((prevMin = minEdge.get(con)) == null)
-					minEdge.put(con, e);
-				else if (prevMin.weight > e.weight)
-					minEdge.put(con, e);
+				if (con.from != con.to) {
+					if ((prevMin = minEdge.get(con)) == null)
+						minEdge.put(con, e);
+					else if (prevMin.weight > e.weight)
+						minEdge.put(con, e);
+				}
 			}
 		}
 
