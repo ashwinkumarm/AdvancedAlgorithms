@@ -3,14 +3,18 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTVertex;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Timer;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS.DFSVertex;
 
 public class LP3 {
 	static int VERBOSE = 0;
@@ -34,6 +38,8 @@ public class LP3 {
 
 		Timer timer = new Timer();
 		int wmst = directedMST(g, startVertex, dmst);
+		isValidMst(g, startVertex, dmst); 
+		
 		timer.end();
 
 		System.out.println(wmst);
@@ -65,8 +71,9 @@ public class LP3 {
 		int wmst = 0;
 		DMSTEdge dmstEdge;
 		Edge treeEdge;
+		DMSTVertex[] dmstVertexArray = dmstGraph.getDMSTVertexArray();
 		for (int i = 0; i < originalSize; i++) {
-			dmstEdge = dmstGraph.getDMSTVertexArray()[i].incomingEdge;
+			dmstEdge = dmstVertexArray[i].incomingEdge;
 			if (dmstEdge != null) {
 				treeEdge = FindDirectedMst.getEdgeFromGraph(g.getVertex(dmstEdge.from.getName() + 1),
 						g.getVertex(dmstEdge.to.getName() + 1));
@@ -77,5 +84,41 @@ public class LP3 {
 		}
 		System.out.println(dmst);
 		return wmst;
+	}
+	
+	public static boolean isValidMst(Graph g, Vertex start, List<Edge> dmst){
+		DMSTGraph dmstGraph = new DMSTGraph(g);
+		for(DMSTVertex v : dmstGraph.getDMSTVertexArray()){
+			for(DMSTEdge e: v.DMSTadj){
+				if(!dmst.contains(e)){
+					e.disabled();
+				}
+			}
+		}
+		//Step 1
+		List<DFSVertex> components = new LinkedList<DFSVertex>();
+		DFS dfs = new DFS(g);
+		dfs.dfsVisit(start, components);
+		if (!(components.size() == g.size())){
+			return false;
+		}
+		//Step 2
+		int mstWeight = 0;
+		for(Edge e: dmst){
+			mstWeight += e.weight;
+		}
+		int minIncomingSum = 0;
+		for(DMSTVertex v : dmstGraph.getDMSTVertexArray()){
+			minIncomingSum += v.minEdge;
+		}
+		if(mstWeight != minIncomingSum){
+			return false;
+		}
+		
+		//Step 3
+		//Step 4
+		return true;
+
+		
 	}
 }
