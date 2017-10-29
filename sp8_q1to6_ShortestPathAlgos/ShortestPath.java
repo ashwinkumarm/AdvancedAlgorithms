@@ -1,9 +1,13 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Scanner;
+import java.util.TreeMap;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopologicalOrder;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG.DFSCheckDAG;
@@ -18,7 +22,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	public static final int INFINITY = Integer.MAX_VALUE;
 	Graph.Vertex src;
 	Boolean isPull = false;
-
+	Boolean isDirectedGraph = false;
 	/**
 	 * Comparator based on priorities of the Vertices to create heap of Vertices.
 	 *
@@ -229,10 +233,90 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 		return null;
 	}
 	
-	
+	public TreeMap<Vertex,List<Edge>> printShortestPath(){
+		TreeMap<Vertex,List<Edge>> path = new TreeMap<>(); 
+		for (Vertex u : g) {
+			if(getVertex(u).parent != null){
+				Graph.Vertex p;
+				List<Edge> lst = new LinkedList<>();
+				do{
+					p = getVertex(u).parent;
+					for (Edge e : p) {
+						if(e.otherEnd(p) == u){
+							lst.add(e);
+							path.put(u, lst);
+							break;
+						}
+					}
+					u = p;
+				}while(p != src);
+			}
+		}
+		return path;
+	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public static void main(String[] args) throws FileNotFoundException {
+		
+		Scanner in;
+		boolean isDirectedGraph = true;
+		Graph g;
+		Graph.Vertex src;
+		ShortestPath sp;
+		
+		if (args.length > 0) {
+			File inputFile = new File(args[0]);
+			in = new Scanner(inputFile);
+		} else {
+			in = new Scanner(System.in);
+		}
+		
+		
+		if(isDirectedGraph){
+			g = Graph.readDirectedGraph(in);
+			src = g.getVertex(1);
+		}
+		else {
+			g = Graph.readGraph(in);
+			src = g.getVertex(1);
+		}
+		
+		System.out.println("Enter 1 to find shortest path or "
+							+ "\n 2 to find odd length cycle in a undirected graph using BFS");
+		int a = in.nextInt();
+		switch (a) {
+		case 1:
+			sp = new ShortestPath(g, src);
+			if(!sp.fastestShortestPaths()){
+				System.out.println("The Graph has negative cycles");
+			}
+			else{
+				System.out.println("");
+			}
+			
+			break;
+		case 2:
+			if(g.isDirected()){
+				System.out.println("Odd Length cycle cannot be found in a directed graph using BFS");
+			}
+			else {
+				sp = new ShortestPath(g, src);	
+				List<Edge> edge = sp.findOddCycle();
+				if(edge == null){
+					System.out.println("The Graph is not bipartite");
+				}
+				else {
+					System.out.println("The edges of odd length cycle are:");
+					System.out.println(edge);
+				}
+			}
+			break;
+		default:
+			break;
+		}
+		
+		
+		
+		in.close();
 
 	}
 
