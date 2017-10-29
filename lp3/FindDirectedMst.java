@@ -67,20 +67,20 @@ public class FindDirectedMst {
 	 * @param originalSize2
 	 * @return
 	 */
-	public void minMst(DMSTGraph g, DMSTVertex start, int startSize) {
-		transformWeights(g, start);
-		for (Vertex v : g) {
+	public void minMst(DMSTGraph g, DMSTVertex start, int graphSize) {
+		List<DMSTEdge> disabledEdges = transformWeights(g, start);
+		/*for (Vertex v : g) {
 			DMSTVertex d = (DMSTVertex) v;
 			for (Edge e : d) {
 				DMSTEdge de = (DMSTEdge) e;
 				System.out.println(e + " - " + de.weight + " - " + de.disabled);
 			}
-		}
+		}*/
 		// Check for MST
 		List<DFSVertex> components = new LinkedList<DFSVertex>();
 		DFS dfsObject = new DFS(g);
 		dfsObject.dfsVisit(start, components);
-		if (components.size() == (g.size() - startSize)) {
+		if (components.size() == graphSize) {
 			Vertex parent = null;
 			for (DFSVertex dv : components) {
 				if ((parent = dv.getParent()) != null) {
@@ -101,40 +101,124 @@ public class FindDirectedMst {
 					stronglyConnectedComponents[index] = new LinkedList<>();
 				stronglyConnectedComponents[index].add((DMSTVertex) dv.getElement());
 			}
-			disableAllVertices(g);
-			int originalSize = g.size();
-			addSCCVertices(g, stronglyConnectedComponents);
-			int newSize = g.size();
-			HashMap<ConnectedPair, DMSTEdge> minEdge = findMinimumEdgeBetweenSCCs(g, originalSize,
-					connectedComponentsOfGraph);
-			DMSTVertex c1 = g
-					.getDMSTVertex(connectedComponentsOfGraph.dfsGraph.getVertex(start).getCno() + originalSize);
-			for (Vertex v : g) {
+			// TODO:Check
+			for (DMSTEdge edge : disabledEdges)
+				edge.enable();
+			HashMap<Integer, Integer> sccLocation = addSCCVerticesAndDisableOldVertices(g, stronglyConnectedComponents);
+			HashMap<ConnectedPair, DMSTEdge> minEdge = findMinimumEdgeBetweenSCCs(g, connectedComponentsOfGraph,
+					sccLocation);
+			// TODO:Check
+			for (DMSTEdge edge : disabledEdges)
+				edge.disable();
+			disableSCCVertices(stronglyConnectedComponents);
+			DMSTVertex c1 = g.getDMSTVertexWithName(
+					sccLocation.get(connectedComponentsOfGraph.dfsGraph.getVertex(start).getCno()));
+			/*for (Vertex v : g) {
 				DMSTVertex d = (DMSTVertex) v;
 				for (Edge e : d) {
 					DMSTEdge de = (DMSTEdge) e;
 					System.out.println(e + " - " + de.weight + " - " + de.disabled);
 				}
-			}
-			System.out.println();
-			minMst(g, c1, originalSize);
-			enableVertices(g, startSize, originalSize);
-			expandSCCAndFindItsMST(g, minEdge, originalSize, newSize, connectedComponentsOfGraph);
+			}*/
+			//System.out.println();
+			minMst(g, c1, sccLocation.size());
+			g.disableAllVertices();
+			expandSCCAndFindItsMST(g, minEdge, connectedComponentsOfGraph, sccLocation, stronglyConnectedComponents);
 		}
 	}
 
-	private void enableVertices(DMSTGraph g, int startSize, int originalSize) {
-		for (int i = startSize; i < originalSize; i++)
-			g.getDMSTVertexArray()[i].enable();
+	private void disableSCCVertices(LinkedList<DMSTVertex>[] stronglyConnectedComponents) {
+		for (LinkedList<DMSTVertex> scc : stronglyConnectedComponents)
+			if (scc.size() > 1)
+				for (DMSTVertex vertex : scc)
+					vertex.disable();
 	}
 
-	private void addSCCVertices(DMSTGraph g, LinkedList<DMSTVertex>[] stronglyConnectedComponents) {
-		for (LinkedList<DMSTVertex> scc : stronglyConnectedComponents) {
+	/**
+	 * This method transforms the weights of all edges such that every vertex
+	 * except the root has atleast one incoming 0-weight edge.
+	 *
+	 * @param g
+	 * @param start
+	 * @return
+	 */
+	public List<DMSTEdge> transformWeights(DMSTGraph g, Vertex start) {
+		DMSTEdge dmstEdge;
+		List<DMSTEdge> disabledEdges = new LinkedList<>();
+		for (Vertex dmstVertex : g) {
+			for (Edge edge : (DMSTVertex) dmstVertex) {
+				dmstEdge = (DMSTEdge) edge;
+				dmstEdge.weight = dmstEdge.weight - ((DMSTVertex) dmstEdge.to).minEdge;
+				if (dmstEdge.weight != 0) {
+					dmstEdge.disable();
+					disabledEdges.add(dmstEdge);
+				}
+			}
+		}
+		return disabledEdges;
+	}
+
+	/**
+	 * @param g
+	 * @param originalSize
+	 * @param connectedComponentsOfGraph
+	 * @param sccLocation
+	 * @return
+	 */
+	private HashMap<ConnectedPair, DMSTEdge> findMinimumEdgeBetweenSCCs(DMSTGraph g,
+			ConnectedComponentsOfGraph connectedComponentsOfGraph, HashMap<Integer, Integer> sccLocation) {
+		List<DFSVertex> dfsFinListReverse = connectedComponentsOfGraph.dfsFinListReverse;
+		HashMap<ConnectedPair, DMSTEdge> minEdge = new HashMap<>();
+		ConnectedPair con;
+		Edge prevMin;
+		for (DFSVertex dv : dfsFinListReverse) {
+			for (Edge e : dv.getElement()) {
+				// TODO: Check if this can be moved so that disabling can be
+				// done in the previous method
+				con = new ConnectedPair(sccLocation.get(dv.getCno()),
+						sccLocation.get(connectedComponentsOfGraph.dfsGraph.getVertex(e.to).getCno()));
+				if (con.from != con.to) {
+					if ((prevMin = minEdge.get(con)) == null)
+						minEdge.put(con, (DMSTEdge) e);
+					else if (prevMin.weight > e.weight)
+						minEdge.put(con, (DMSTEdge) e);
+				}
+
+				// updating minEdge
+				DMSTVertex toVertex = (DMSTVertex) e.to;
+				if (toVertex.minEdge > e.weight)
+					toVertex.minEdge = e.weight;
+			}
+		}
+
+		DMSTVertex from, to;
+		DMSTEdge edge;
+		for (Entry<ConnectedPair, DMSTEdge> entry : minEdge.entrySet()) {
+			from = g.getDMSTVertexWithName(entry.getKey().from);
+			to = g.getDMSTVertexWithName(entry.getKey().to);
+			if ((edge = (DMSTEdge) getEdgeFromGraph(from, to)) == null)
+				g.addEdge(from, to, entry.getValue().weight, g.edgeSize());
+			else
+				edge.enable();
+		}
+		return minEdge;
+	}
+
+	private HashMap<Integer, Integer> addSCCVerticesAndDisableOldVertices(DMSTGraph g,
+			LinkedList<DMSTVertex>[] stronglyConnectedComponents) {
+		HashMap<Integer, Integer> sccMappings = new HashMap<>();
+		LinkedList<DMSTVertex> scc;
+		for (int i = 0; i < stronglyConnectedComponents.length; i++) {
+			scc = stronglyConnectedComponents[i];
 			if (scc.size() > 1) {
 				g.getDMSTVertexArray()[g.n] = new DMSTVertex(new Vertex(g.n));
+				sccMappings.put(i + 1, g.n);
 				g.n++;
-			}
+				// TODO:Check if SCC vertices can be disabled here
+			} else
+				sccMappings.put(i + 1, scc.getFirst().getName());
 		}
+		return sccMappings;
 	}
 
 	/**
@@ -158,24 +242,33 @@ public class FindDirectedMst {
 	 * @param newSize
 	 * @param originalSize
 	 * @param connectedComponentsOfGraph
+	 * @param sccLocation
+	 * @param stronglyConnectedComponents
 	 * @param mst
 	 */
-	private void expandSCCAndFindItsMST(DMSTGraph g, HashMap<ConnectedPair, DMSTEdge> minEdge, int originalSize,
-			int newSize, ConnectedComponentsOfGraph connectedComponentsOfGraph) {
+	private void expandSCCAndFindItsMST(DMSTGraph g, HashMap<ConnectedPair, DMSTEdge> minEdge,
+			ConnectedComponentsOfGraph connectedComponentsOfGraph, HashMap<Integer, Integer> sccLocation,
+			LinkedList<DMSTVertex>[] stronglyConnectedComponents) {
 		DMSTEdge dEdge;
-		for (int i = originalSize; i < newSize; i++) {
-			if ((dEdge = g.getDMSTVertexArray()[i].incomingEdge) != null) {
-				DMSTEdge mstIncomingEdge = minEdge
-						.get(new ConnectedPair(dEdge.from.getName() + 1, dEdge.to.getName() + 1));
+		for (int vertexNo : sccLocation.values()) {
+			if ((dEdge = g.getDMSTVertexWithName(vertexNo).incomingEdge) != null) {
+				DMSTEdge mstIncomingEdge = minEdge.get(new ConnectedPair(dEdge.from.getName(), dEdge.to.getName()));
 				DMSTVertex rootVertex = (DMSTVertex) mstIncomingEdge.to;
 				rootVertex.incomingEdge = mstIncomingEdge;
-				doBfs(rootVertex, connectedComponentsOfGraph);
+				int ck = connectedComponentsOfGraph.dfsGraph.getVertex(rootVertex).getCno();
+				enableSCCVertices(stronglyConnectedComponents[ck - 1]);
+				doBfs(rootVertex, ck, connectedComponentsOfGraph);
+				g.disableAllVertices();
 			}
 		}
 	}
 
-	private void doBfs(Vertex src, ConnectedComponentsOfGraph connectedComponentsOfGraph) {
-		int ck = connectedComponentsOfGraph.dfsGraph.getVertex(src).getCno();
+	private void enableSCCVertices(LinkedList<DMSTVertex> stronglyConnectedComponent) {
+		for (DMSTVertex v : stronglyConnectedComponent)
+			v.enable();
+	}
+
+	private void doBfs(Vertex src, int ck, ConnectedComponentsOfGraph connectedComponentsOfGraph) {
 		Queue<Graph.Vertex> q = new LinkedList<>();
 		src.seen = true;
 		q.add(src);
@@ -190,62 +283,6 @@ public class FindDirectedMst {
 					v.incomingEdge = (DMSTEdge) e;
 					q.add(v);
 				}
-			}
-		}
-	}
-
-	/**
-	 * @param g
-	 * @param originalSize
-	 * @param connectedComponentsOfGraph
-	 * @return
-	 */
-	private HashMap<ConnectedPair, DMSTEdge> findMinimumEdgeBetweenSCCs(DMSTGraph g, int originalSize,
-			ConnectedComponentsOfGraph connectedComponentsOfGraph) {
-		List<DFSVertex> dfsFinListReverse = connectedComponentsOfGraph.dfsFinListReverse;
-		HashMap<ConnectedPair, DMSTEdge> minEdge = new HashMap<>();
-		ConnectedPair con;
-		Edge prevMin;
-		for (DFSVertex dv : dfsFinListReverse) {
-			for (DMSTEdge e : ((DMSTVertex) dv.getElement()).DMSTadj) {
-				con = new ConnectedPair(dv.getCno() + originalSize,
-						connectedComponentsOfGraph.dfsGraph.getVertex(e.to).getCno() + originalSize);
-				if (con.from != con.to) {
-					if ((prevMin = minEdge.get(con)) == null)
-						minEdge.put(con, (DMSTEdge) e);
-					else if (prevMin.weight > e.weight)
-						minEdge.put(con, (DMSTEdge) e);
-				}
-			}
-		}
-
-		for (Entry<ConnectedPair, DMSTEdge> entry : minEdge.entrySet())
-			g.addEdge(g.getDMSTVertex(entry.getKey().from), g.getDMSTVertex(entry.getKey().to), entry.getValue().weight,
-					g.edgeSize());
-		return minEdge;
-	}
-
-	private void disableAllVertices(DMSTGraph g) {
-		for (Vertex v : g)
-			((DMSTVertex) v).disable();
-	}
-
-	/**
-	 * This method transforms the weights of all edges such that every vertex
-	 * except the root has atleast one incoming 0-weight edge.
-	 *
-	 * @param g
-	 * @param start
-	 * @return
-	 */
-	public void transformWeights(DMSTGraph g, Vertex start) {
-		DMSTEdge dmstEdge;
-		for (Vertex dmstVertex : g) {
-			for (Edge edge : (DMSTVertex) dmstVertex) {
-				dmstEdge = (DMSTEdge) edge;
-				dmstEdge.weight = dmstEdge.weight - ((DMSTVertex) dmstEdge.otherEnd(dmstVertex)).minEdge;
-				if (dmstEdge.weight != 0)
-					dmstEdge.disabled();
 			}
 		}
 	}

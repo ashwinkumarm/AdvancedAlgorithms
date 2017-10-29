@@ -38,8 +38,8 @@ public class LP3 {
 
 		Timer timer = new Timer();
 		int wmst = directedMST(g, startVertex, dmst);
-		isValidMst(g, startVertex, dmst); 
-		
+		//isValidMst(g, startVertex, dmst);
+
 		timer.end();
 
 		System.out.println(wmst);
@@ -67,7 +67,7 @@ public class LP3 {
 		DMSTGraph dmstGraph = new DMSTGraph(g);
 		FindDirectedMst findMst = new FindDirectedMst();
 		int originalSize = dmstGraph.size();
-		findMst.minMst(dmstGraph, dmstGraph.getVertex(start), 0);
+		findMst.minMst(dmstGraph, dmstGraph.getVertex(start), originalSize);
 		int wmst = 0;
 		DMSTEdge dmstEdge;
 		Edge treeEdge;
@@ -85,13 +85,13 @@ public class LP3 {
 		System.out.println(dmst);
 		return wmst;
 	}
-	
+
 	public static boolean isValidMst(Graph g, Vertex start, List<Edge> dmst){
 		DMSTGraph dmstGraph = new DMSTGraph(g);
 		for(DMSTVertex v : dmstGraph.getDMSTVertexArray()){
 			for(DMSTEdge e: v.DMSTadj){
 				if(!dmst.contains(e)){
-					e.disabled();
+					e.disable();
 				}
 			}
 		}
@@ -114,11 +114,11 @@ public class LP3 {
 		if(mstWeight != minIncomingSum){
 			return false;
 		}
-		
+
 		//Step 3
 		//Step 4
 		return true;
 
-		
+
 	}
 }

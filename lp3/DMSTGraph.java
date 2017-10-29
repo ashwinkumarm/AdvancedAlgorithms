@@ -136,8 +136,12 @@ public class DMSTGraph extends Graph {
 
 		boolean disabled;
 
-		void disabled() {
+		void disable() {
 			disabled = true;
+		}
+
+		void enable() {
+			disabled = false;
 		}
 
 		DMSTEdge(Vertex from, Vertex to, int weight, int name) {
@@ -236,8 +240,23 @@ public class DMSTGraph extends Graph {
 		return dmstVertexArray[n - 1];
 	}
 
+	public DMSTVertex getDMSTVertexWithName(int n) {
+		return dmstVertexArray[n];
+	}
+
 	public DMSTVertex[] getDMSTVertexArray() {
 		return dmstVertexArray;
+	}
+
+	public void disableAllEdges() {
+		for (Vertex v : this)
+			for (Edge e : v)
+				((DMSTEdge) e).disable();
+	}
+
+	public void disableAllVertices() {
+		for (Vertex v : this)
+			((DMSTVertex) v).disable();
 	}
 
 }
