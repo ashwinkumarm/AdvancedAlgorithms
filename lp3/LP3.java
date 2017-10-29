@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
@@ -48,18 +49,33 @@ public class LP3 {
 	}
 
 	/**
-	 * TO DO: List dmst is an empty list. When your algorithm finishes, it should
-	 * have the edges of the directed MST of g rooted at the start vertex. Edges
-	 * must be ordered based on the vertex into which it goes, e.g.,
-	 * {(7,1),(7,2),null,(2,4),(3,5),(5,6),(3,7)}. In this example, 3 is the start
-	 * vertex and has no incoming edges. So, the list has a null corresponding to
-	 * Vertex 3. The function should return the total weight of the MST it found.
+	 * TO DO: List dmst is an empty list. When your algorithm finishes, it
+	 * should have the edges of the directed MST of g rooted at the start
+	 * vertex. Edges must be ordered based on the vertex into which it goes,
+	 * e.g., {(7,1),(7,2),null,(2,4),(3,5),(5,6),(3,7)}. In this example, 3 is
+	 * the start vertex and has no incoming edges. So, the list has a null
+	 * corresponding to Vertex 3. The function should return the total weight of
+	 * the MST it found.
 	 */
 	public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
 		DMSTGraph dmstGraph = new DMSTGraph(g);
 		FindDirectedMst findMst = new FindDirectedMst();
-		dmst = findMst.minMst(dmstGraph, dmstGraph.getVertex(start));
+		int originalSize = dmstGraph.size();
+		findMst.minMst(dmstGraph, dmstGraph.getVertex(start), 0);
+		int wmst = 0;
+		DMSTEdge dmstEdge;
+		Edge treeEdge;
+		for (int i = 0; i < originalSize; i++) {
+			dmstEdge = dmstGraph.getDMSTVertexArray()[i].incomingEdge;
+			if (dmstEdge != null) {
+				treeEdge = FindDirectedMst.getEdgeFromGraph(g.getVertex(dmstEdge.from.getName() + 1),
+						g.getVertex(dmstEdge.to.getName() + 1));
+				wmst += treeEdge.weight;
+				dmst.add(treeEdge);
+			} else
+				dmst.add(null);
+		}
 		System.out.println(dmst);
-		return 0;
+		return wmst;
 	}
 }

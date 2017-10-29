@@ -52,6 +52,7 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 
 	void bfs() {
 		Queue<Graph.Vertex> q = new LinkedList<>();
+		visit(null, src);
 		q.add(src);
 		while (!q.isEmpty()) {
 			Graph.Vertex u = q.remove();

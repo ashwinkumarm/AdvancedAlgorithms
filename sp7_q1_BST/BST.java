@@ -4,10 +4,7 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Stack;
 
-import com.sun.prism.impl.Disposer.Record;
-
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BinaryTree;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BinaryTree.Entry;
 
 /**
  * Class implements Binary Search Tree

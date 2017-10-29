@@ -8,8 +8,8 @@ import java.util.Scanner;
 public class Graph implements Iterable<Graph.Vertex> {
 	Vertex[] v, vertex; // vertices of graph
 	public int n; // number of verices in the graph
-	int m; // number of edges in the graph
-	boolean directed; // true if graph is directed, false otherwise
+	protected int m; // number of edges in the graph
+	protected boolean directed; // true if graph is directed, false otherwise
 
 	/**
 	 * Nested class to represent a vertex of a graph
