@@ -18,7 +18,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 
-	public static final int INFINITY = Integer.MAX_VALUE - 1;
+	public static final int INFINITY = Integer.MAX_VALUE;
 	Graph.Vertex src;
 	Boolean isPull = false;
 	Boolean isDirectedGraph = false;
@@ -78,8 +78,8 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 				v = tmp;
 			}
 		}
-		if(distance(v) > distance(u) + 1){
-			getVertex(v).distance = distance(u) + 1;
+		if( distance(u) != INFINITY && distance(v) > distance(u) + e.weight){
+			getVertex(v).distance = distance(u) + e.weight;
 			getVertex(v).parent = u;
 			return true;
 		}
@@ -127,19 +127,19 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	}
 
 	public void dijkstra() {
-
 		VertexComparator comp = new VertexComparator();
 		ShortestPathVertex[] vertexArray = new ShortestPathVertex[node.length];
 		System.arraycopy(node, 0, vertexArray, 0, node.length);
 		IndexedHeap<ShortestPathVertex> vertexQueue = new IndexedHeap<>(vertexArray, comp, node.length);
-		ShortestPathVertex v;
+		ShortestPathVertex u;
 		while (!vertexQueue.isEmpty()) {
-			v = vertexQueue.remove();
-			v.seen = true;
-			for (Graph.Edge e : v.vertex) {
+			u = vertexQueue.remove();
+			u.seen = true;
+			for (Graph.Edge e : u.vertex) {
 				boolean changed = relax(e);
 				if(changed) {
-					vertexQueue.decreaseKey(v);
+					ShortestPathVertex sv = getVertex(e.otherEnd(u.vertex));
+					vertexQueue.decreaseKey(sv);
 				}
 			}
 		}
@@ -149,7 +149,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 		Queue<ShortestPathVertex> q = new LinkedList<>();
 		q.add(getVertex(src));
 		int V = g.size();
-		while(q.isEmpty()){
+		while(!q.isEmpty()){
 			ShortestPathVertex u = q.remove();
 			u.seen = false;
 			u.count = u.count + 1;
@@ -157,11 +157,12 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 				return false;
 			}
 			for(Edge e : u.vertex){
-				relax(e);
-				Vertex v = e.otherEnd(u.vertex);
-				if (!v.seen){
-					q.add(getVertex(v));
-					getVertex(v).seen = true;
+				if(relax(e)){
+					Vertex v = e.otherEnd(u.vertex);
+					if (!v.seen){
+						q.add(getVertex(v));
+						getVertex(v).seen = true;
+					}
 				}
 			}
 		}
@@ -175,14 +176,19 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 		if(weight < 0){
 			hasNegativeEdges = true;
 		}
+		outer:
 		for (Vertex u : g) {
 			for(Edge e : u){
-				if(weight != e.weight){
-					hasEqualWeightEdges = false;
-					if(e.weight < 0){
-						hasNegativeEdges = true;
+				if(!e.seen){
+					if(weight != e.weight){
+						hasEqualWeightEdges = false;
+						if(e.weight < 0){
+							hasNegativeEdges = true;
+							break outer;
+						}
 					}
-				} 
+					e.seen = true;
+				}
 			}
 		}
 		if(hasEqualWeightEdges && !hasNegativeEdges){
@@ -191,7 +197,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 		else if(!hasNegativeEdges){
 			dijkstra();
 		}
-		else if(DFSCheckDAG.isDAG(g)){
+		else if(g.isDirected() && DFSCheckDAG.isDAG(g)){
 			dagShortestPaths();
 		}
 		else {
@@ -271,7 +277,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	public static void main(String[] args) throws FileNotFoundException {
 		
 		Scanner in;
-		boolean isDirectedGraph = false;
+		boolean isDirectedGraph = true;
 		Graph g;
 		Graph.Vertex src;
 		ShortestPath sp;
