@@ -120,7 +120,7 @@ public class FindDirectedMst {
 					System.out.println(e + " - " + de.weight + " - " + de.disabled);
 				}
 			}*/
-			//System.out.println();
+			System.out.println(stronglyConnectedComponents.length);
 			minMst(g, c1, sccLocation.size());
 			g.disableAllVertices();
 			expandSCCAndFindItsMST(g, minEdge, connectedComponentsOfGraph, sccLocation, stronglyConnectedComponents);
@@ -258,7 +258,7 @@ public class FindDirectedMst {
 				int ck = connectedComponentsOfGraph.dfsGraph.getVertex(rootVertex).getCno();
 				enableSCCVertices(stronglyConnectedComponents[ck - 1]);
 				doBfs(rootVertex, ck, connectedComponentsOfGraph);
-				g.disableAllVertices();
+				disableSCCVertices(stronglyConnectedComponents[ck - 1]);
 			}
 		}
 	}
@@ -266,6 +266,11 @@ public class FindDirectedMst {
 	private void enableSCCVertices(LinkedList<DMSTVertex> stronglyConnectedComponent) {
 		for (DMSTVertex v : stronglyConnectedComponent)
 			v.enable();
+	}
+
+	private void disableSCCVertices(LinkedList<DMSTVertex> stronglyConnectedComponent) {
+		for (DMSTVertex v : stronglyConnectedComponent)
+			v.disable();
 	}
 
 	private void doBfs(Vertex src, int ck, ConnectedComponentsOfGraph connectedComponentsOfGraph) {
