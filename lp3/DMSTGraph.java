@@ -11,6 +11,7 @@ public class DMSTGraph extends Graph {
 
 	public static class DMSTVertex extends Vertex {
 		int minEdge;
+		DMSTEdge incomingEdge;
 		boolean disabled;
 		List<DMSTEdge> DMSTadj;
 		List<DMSTEdge> DMSTrevadj;
@@ -31,7 +32,10 @@ public class DMSTGraph extends Graph {
 			disabled = true;
 		}
 
-		
+		void enable() {
+			disabled = false;
+		}
+
 		@Override
 		public Iterator<Edge> iterator() {
 			return new DMSTVertexIterator(this);
@@ -60,11 +64,13 @@ public class DMSTGraph extends Graph {
 					return false;
 				}
 				cur = it.next();
-				while (cur.isDisabled() && it.hasNext()) {
+				while ((cur.isDisabled() || ((DMSTVertex) cur.from).isDisabled() || ((DMSTVertex) cur.to).isDisabled())
+						&& it.hasNext()) {
 					cur = it.next();
 				}
 				ready = true;
-				return !cur.isDisabled();
+				return !(cur.isDisabled() || ((DMSTVertex) cur.from).isDisabled()
+						|| ((DMSTVertex) cur.to).isDisabled());
 			}
 
 			public Edge next() {
@@ -100,11 +106,13 @@ public class DMSTGraph extends Graph {
 					return false;
 				}
 				cur = it.next();
-				while (cur.isDisabled() && it.hasNext()) {
+				while ((cur.isDisabled() || ((DMSTVertex) cur.from).isDisabled() || ((DMSTVertex) cur.to).isDisabled())
+						&& it.hasNext()) {
 					cur = it.next();
 				}
 				ready = true;
-				return !cur.isDisabled();
+				return !(cur.isDisabled() || ((DMSTVertex) cur.from).isDisabled()
+						|| ((DMSTVertex) cur.to).isDisabled());
 			}
 
 			public Edge next() {
@@ -175,6 +183,21 @@ public class DMSTGraph extends Graph {
 	@Override
 	public Iterator<Vertex> iterator() {
 		return new DMSTGraphIterator(this);
+	}
+
+	public DMSTEdge addEdge(DMSTVertex from, DMSTVertex to, int weight, int name) {
+		DMSTEdge e = new DMSTEdge(from, to, weight, name);
+		if (directed) {
+			from.DMSTadj.add(e);
+			to.DMSTrevadj.add(e);
+		} else {
+			from.DMSTadj.add(e);
+			to.DMSTadj.add(e);
+		}
+		if (to.minEdge > e.weight)
+			to.minEdge = e.weight;
+		m++; // Increment edge count
+		return e;
 	}
 
 	class DMSTGraphIterator implements Iterator<Vertex> {
