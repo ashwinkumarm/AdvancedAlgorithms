@@ -35,11 +35,6 @@ public class ConnectedComponentsOfGraph {
 
 	public int stronglyConnectedComponents(Graph g) {
 		Iterator<Graph.Vertex> it = g.iterator();
-		/*
-		 * System.out.println("Inside Strongly Connected Components"); for
-		 * (Vertex v : g) { for (Edge e : v) { System.out.print(e); } }
-		 */
-		System.out.println();
 		dfsGraph = new DFS(g);
 		dfsFinList = new LinkedList<DFSVertex>();
 		Graph.Vertex u;
