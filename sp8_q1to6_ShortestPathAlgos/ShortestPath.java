@@ -3,12 +3,11 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
-import java.util.TreeMap;
-
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopologicalOrder;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG.DFSCheckDAG;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q4and6_PrimAlgo2.IndexedHeap;
@@ -19,7 +18,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 
-	public static final int INFINITY = Integer.MAX_VALUE;
+	public static final int INFINITY = Integer.MAX_VALUE - 1;
 	Graph.Vertex src;
 	Boolean isPull = false;
 	Boolean isDirectedGraph = false;
@@ -52,6 +51,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 		}
 		// Set source to be at distance 0
 		getVertex(src).distance = 0;
+		getVertex(src).seen = true;
 	}
 
 
@@ -64,11 +64,20 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 			su.reinitializeVertex(INFINITY, index++);
 		}
 		getVertex(src).distance = 0;
+		getVertex(src).seen = true;
 	}
 
 	boolean relax (Graph.Edge e ){
+		
 		Graph.Vertex u = e.from;
 		Graph.Vertex v = e.to;
+		if(!g.isDirected()){
+			if(seen(v)){
+				Graph.Vertex tmp = u;
+				u  = v;
+				v = tmp;
+			}
+		}
 		if(distance(v) > distance(u) + 1){
 			getVertex(v).distance = distance(u) + 1;
 			getVertex(v).parent = u;
@@ -98,9 +107,10 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 			Graph.Vertex u = q.remove();
 			for (Graph.Edge e : u) {
 				Graph.Vertex v = e.otherEnd(u);
-				if(!v.seen){
+				if(!seen(v)){
 					relax(e);
 					q.add(v);
+					getVertex(v).seen = true;
 				}
 			}
 		}
@@ -108,7 +118,6 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 
 	public void dagShortestPaths() {
 		List<Graph.Vertex> topoOrder = TopologicalOrder.toplogicalOrder2(g);
-		reinitialize(src);
 		for (Graph.Vertex u : topoOrder) {
 			List<Edge> edgeList = isPull? u.revAdj:u.adj;
 			for (Edge e : edgeList) {
@@ -118,7 +127,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	}
 
 	public void dijkstra() {
-		reinitialize(src);
+
 		VertexComparator comp = new VertexComparator();
 		ShortestPathVertex[] vertexArray = new ShortestPathVertex[node.length];
 		System.arraycopy(node, 0, vertexArray, 0, node.length);
@@ -137,7 +146,6 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	}
 
 	public boolean bellmanFord() {
-		reinitialize(src);
 		Queue<ShortestPathVertex> q = new LinkedList<>();
 		q.add(getVertex(src));
 		int V = g.size();
@@ -193,58 +201,63 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	}
 	
 	public List<Edge> findOddCycle() {
-		reinitialize(src);
 		bfs();
 		List<Edge> edgesOfCycle = new LinkedList<>();
 		for (Vertex u : g) {
 			for (Edge e : u) {
-				Graph.Vertex v = e.otherEnd(u);
-				if(getVertex(u).distance == getVertex(v).distance){
-					edgesOfCycle.add(e);
-					Graph.Vertex p_u; 
-					Graph.Vertex p_v;
-					do{
-						p_u = getVertex(u).parent;
-						p_v = getVertex(v).parent;
-						Edge e1 = null,e2 = null;
-						for (Edge edge : p_u) {
-							if(edge.otherEnd(p_u)==u){
-								e1 = edge;
-								break;
+				if(!e.seen){
+					Graph.Vertex v = e.otherEnd(u);
+					ShortestPathVertex su = getVertex(u);
+					ShortestPathVertex sv = getVertex(v);
+					if( su.distance == sv.distance ){
+						edgesOfCycle.add(e);
+						Graph.Vertex p_u; 
+						Graph.Vertex p_v;
+						do{
+							p_u = getVertex(u).parent;
+							p_v = getVertex(v).parent;
+							Edge e1 = null,e2 = null;
+							for (Edge edge : p_u) {
+								if(edge.otherEnd(p_u)==u){
+									e1 = edge;
+									break;
+								}
 							}
-						}
-						for (Edge edge : p_v) {
-							if(edge.otherEnd(p_v)==v){
-								e2 = edge;
-								break;
+							for (Edge edge : p_v) {
+								if(edge.otherEnd(p_v)==v){
+									e2 = edge;
+									break;
+								}
 							}
-						}
-						edgesOfCycle.add(0, e1);
-						edgesOfCycle.add(e2);
+							edgesOfCycle.add(0, e1);
+							edgesOfCycle.add(e2);
+							
+							u = p_u;
+							v = p_v;	
+						} while(p_u != p_v);
 						
-						u = p_u;
-						v = p_v;	
-					} while(p_u != p_v);
-					
-					return edgesOfCycle;
+						return edgesOfCycle;
+					}
+					e.seen = true;
 				}
 			}
 		}
 		return null;
 	}
 	
-	public TreeMap<Vertex,List<Edge>> printShortestPath(){
-		TreeMap<Vertex,List<Edge>> path = new TreeMap<>(); 
-		for (Vertex u : g) {
-			if(getVertex(u).parent != null){
+	public HashMap<Vertex,List<Edge>> printShortestPath(){
+		HashMap<Vertex,List<Edge>> path = new HashMap<>(); 
+		for (Vertex v : g) {
+			if(getVertex(v).parent != null){
 				Graph.Vertex p;
 				List<Edge> lst = new LinkedList<>();
+				Graph.Vertex u = v;
 				do{
 					p = getVertex(u).parent;
 					for (Edge e : p) {
 						if(e.otherEnd(p) == u){
-							lst.add(e);
-							path.put(u, lst);
+							lst.add(0,e);
+							path.put(v, lst);
 							break;
 						}
 					}
@@ -258,7 +271,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 	public static void main(String[] args) throws FileNotFoundException {
 		
 		Scanner in;
-		boolean isDirectedGraph = true;
+		boolean isDirectedGraph = false;
 		Graph g;
 		Graph.Vertex src;
 		ShortestPath sp;
@@ -290,7 +303,8 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 				System.out.println("The Graph has negative cycles");
 			}
 			else{
-				System.out.println("");
+				HashMap<Vertex,List<Edge>> map = sp.printShortestPath();
+				System.out.println(map);
 			}
 			
 			break;
@@ -302,7 +316,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 				sp = new ShortestPath(g, src);	
 				List<Edge> edge = sp.findOddCycle();
 				if(edge == null){
-					System.out.println("The Graph is not bipartite");
+					System.out.println("The Graph is  bipartite");
 				}
 				else {
 					System.out.println("The edges of odd length cycle are:");
@@ -312,9 +326,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex>{
 			break;
 		default:
 			break;
-		}
-		
-		
+		}		
 		
 		in.close();
 

@@ -31,6 +31,7 @@ public class ShortestPathVertex implements Index {
 			this.count = 0;
 	}
 
+	
 	public void putIndex(int i) {
 		index = i;
 	}
