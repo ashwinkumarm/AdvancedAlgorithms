@@ -78,58 +78,32 @@ public class FindDirectedMst {
 			ConnectedComponentsOfGraph connectedComponentsOfGraph = new ConnectedComponentsOfGraph();
 			connectedComponentsOfGraph.stronglyConnectedComponents(g);
 			LinkedList<DMSTVertex>[] stronglyConnectedComponents = new LinkedList[connectedComponentsOfGraph.numberOfSCCs];
-			HashMap<ConnectedPair, DMSTEdge> minEdge = new HashMap<>();
-
-			getSCCAndFindMinimumEdges(connectedComponentsOfGraph, stronglyConnectedComponents, minEdge);
-			HashMap<Integer, Integer> vertexMappings = new HashMap<>();
-			HashMap<Integer, Integer> sccLocation = addSCCVerticesAndDisableOldVertices(g, stronglyConnectedComponents,
-					minEdge, vertexMappings);
+			int index;
+			for (DFSVertex dv : connectedComponentsOfGraph.dfsFinListReverse) {
+				index = dv.getCno() - 1;
+				if (stronglyConnectedComponents[index] == null)
+					stronglyConnectedComponents[index] = new LinkedList<>();
+				stronglyConnectedComponents[index].add((DMSTVertex) dv.getElement());
+			}
+			HashMap<Integer, Integer> sccLocation = addSCCVerticesAndDisableOldVertices(g, stronglyConnectedComponents);
+			HashMap<ConnectedPair, DMSTEdge> minEdge = findMinimumEdgeBetweenSCCs(g, connectedComponentsOfGraph,
+					sccLocation);
+			disableSCCVertices(stronglyConnectedComponents);
 			DMSTVertex c1 = g.getDMSTVertexWithName(
 					sccLocation.get(connectedComponentsOfGraph.dfsGraph.getVertex(start).getCno()));
 			minMst(g, c1, sccLocation.size());
 			g.disableAllVertices();
-			expandSCCAndFindItsMST(g, minEdge, connectedComponentsOfGraph, sccLocation, stronglyConnectedComponents,
-					vertexMappings);
+			expandSCCAndFindItsMST(g, minEdge, connectedComponentsOfGraph, sccLocation, stronglyConnectedComponents);
 		}
 	}
 
 	/**
-	 * Groups the SCC vertices and also finds the minimum edges between the
-	 * components.
-	 *
-	 * @param connectedComponentsOfGraph
 	 * @param stronglyConnectedComponents
-	 * @param minEdge
 	 */
-	private void getSCCAndFindMinimumEdges(ConnectedComponentsOfGraph connectedComponentsOfGraph,
-			LinkedList<DMSTVertex>[] stronglyConnectedComponents, HashMap<ConnectedPair, DMSTEdge> minEdge) {
-		ConnectedPair con;
-		Edge prevMin;
-		int index;
-		Iterator<Edge> iterator;
-		for (DFSVertex dv : connectedComponentsOfGraph.dfsFinListReverse) {
-			index = dv.getCno() - 1;
-			if (stronglyConnectedComponents[index] == null)
-				stronglyConnectedComponents[index] = new LinkedList<>();
-			stronglyConnectedComponents[index].add((DMSTVertex) dv.getElement());
-
-			iterator = ((DMSTVertex) dv.getElement()).allIterator();
-			while (iterator.hasNext()) {
-				Edge e = iterator.next();
-				con = new ConnectedPair(dv.getCno(), connectedComponentsOfGraph.dfsGraph.getVertex(e.to).getCno());
-				if (con.from != con.to) {
-					if ((prevMin = minEdge.get(con)) == null)
-						minEdge.put(con, (DMSTEdge) e);
-					else if (prevMin.weight > e.weight)
-						minEdge.put(con, (DMSTEdge) e);
-				}
-
-				// updating minEdge
-				DMSTVertex toVertex = (DMSTVertex) e.to;
-				if (toVertex.minEdge > e.weight)
-					toVertex.minEdge = e.weight;
-			}
-		}
+	private void disableSCCVertices(LinkedList<DMSTVertex>[] stronglyConnectedComponents) {
+		for (LinkedList<DMSTVertex> scc : stronglyConnectedComponents)
+			if (scc.size() > 1)
+				disableSCCVertices(scc);
 	}
 
 	/**
@@ -153,16 +127,61 @@ public class FindDirectedMst {
 	}
 
 	/**
+	 * @param g
+	 * @param originalSize
+	 * @param connectedComponentsOfGraph
+	 * @param sccLocation
+	 * @return
+	 */
+	private HashMap<ConnectedPair, DMSTEdge> findMinimumEdgeBetweenSCCs(DMSTGraph g,
+			ConnectedComponentsOfGraph connectedComponentsOfGraph, HashMap<Integer, Integer> sccLocation) {
+		List<DFSVertex> dfsFinListReverse = connectedComponentsOfGraph.dfsFinListReverse;
+		HashMap<ConnectedPair, DMSTEdge> minEdge = new HashMap<>();
+		ConnectedPair con;
+		Edge prevMin;
+		Iterator<Edge> iterator;
+		for (DFSVertex dv : dfsFinListReverse) {
+			iterator = ((DMSTVertex) dv.getElement()).allIterator();
+			while (iterator.hasNext()) {
+				Edge e = iterator.next();
+				con = new ConnectedPair(sccLocation.get(dv.getCno()),
+						sccLocation.get(connectedComponentsOfGraph.dfsGraph.getVertex(e.to).getCno()));
+				if (con.from != con.to) {
+					if ((prevMin = minEdge.get(con)) == null)
+						minEdge.put(con, (DMSTEdge) e);
+					else if (prevMin.weight > e.weight)
+						minEdge.put(con, (DMSTEdge) e);
+				}
+
+				// updating minEdge
+				DMSTVertex toVertex = (DMSTVertex) e.to;
+				if (toVertex.minEdge > e.weight)
+					toVertex.minEdge = e.weight;
+			}
+		}
+
+		DMSTVertex from, to;
+		DMSTEdge edge;
+		for (Entry<ConnectedPair, DMSTEdge> entry : minEdge.entrySet()) {
+			from = g.getDMSTVertexWithName(entry.getKey().from);
+			to = g.getDMSTVertexWithName(entry.getKey().to);
+			if ((edge = (DMSTEdge) getEdgeFromGraph(from, to)) == null)
+				g.addEdge(from, to, entry.getValue().weight, g.edgeSize());
+			else
+				edge.enable();
+		}
+		return minEdge;
+	}
+
+	/**
 	 * Add new vertices for SCCs containing multiple vertices.
 	 *
 	 * @param g
 	 * @param stronglyConnectedComponents
-	 * @param minEdge
 	 * @return
 	 */
 	private HashMap<Integer, Integer> addSCCVerticesAndDisableOldVertices(DMSTGraph g,
-			LinkedList<DMSTVertex>[] stronglyConnectedComponents, HashMap<ConnectedPair, DMSTEdge> minEdge,
-			HashMap<Integer, Integer> vertexMappings) {
+			LinkedList<DMSTVertex>[] stronglyConnectedComponents) {
 		HashMap<Integer, Integer> sccMappings = new HashMap<>();
 		LinkedList<DMSTVertex> scc;
 		for (int i = 0; i < stronglyConnectedComponents.length; i++) {
@@ -170,24 +189,9 @@ public class FindDirectedMst {
 			if (scc.size() > 1) {
 				g.getDMSTVertexArray()[g.n] = new DMSTVertex(new Vertex(g.n));
 				sccMappings.put(i + 1, g.n);
-				vertexMappings.put(g.n, i + 1);
 				g.n++;
-				disableSCCVertices(scc);
-			} else {
+			} else
 				sccMappings.put(i + 1, scc.getFirst().getName());
-				vertexMappings.put(scc.getFirst().getName(), i + 1);
-			}
-		}
-
-		DMSTVertex from, to;
-		DMSTEdge edge;
-		for (Entry<ConnectedPair, DMSTEdge> entry : minEdge.entrySet()) {
-			from = g.getDMSTVertexWithName(sccMappings.get(entry.getKey().from));
-			to = g.getDMSTVertexWithName(sccMappings.get(entry.getKey().to));
-			if ((edge = (DMSTEdge) getEdgeFromGraph(from, to)) == null)
-				g.addEdge(from, to, entry.getValue().weight, g.edgeSize());
-			else
-				edge.enable();
 		}
 		return sccMappings;
 	}
@@ -215,16 +219,14 @@ public class FindDirectedMst {
 	 * @param connectedComponentsOfGraph
 	 * @param sccLocation
 	 * @param stronglyConnectedComponents
-	 * @param vertexMappings
 	 */
 	private void expandSCCAndFindItsMST(DMSTGraph g, HashMap<ConnectedPair, DMSTEdge> minEdge,
 			ConnectedComponentsOfGraph connectedComponentsOfGraph, HashMap<Integer, Integer> sccLocation,
-			LinkedList<DMSTVertex>[] stronglyConnectedComponents, HashMap<Integer, Integer> vertexMappings) {
+			LinkedList<DMSTVertex>[] stronglyConnectedComponents) {
 		DMSTEdge dEdge;
 		for (int vertexNo : sccLocation.values()) {
 			if ((dEdge = g.getDMSTVertexWithName(vertexNo).incomingEdge) != null) {
-				DMSTEdge mstIncomingEdge = minEdge.get(new ConnectedPair(vertexMappings.get(dEdge.from.getName()),
-						vertexMappings.get(dEdge.to.getName())));
+				DMSTEdge mstIncomingEdge = minEdge.get(new ConnectedPair(dEdge.from.getName(), dEdge.to.getName()));
 				DMSTVertex rootVertex = (DMSTVertex) mstIncomingEdge.to;
 				rootVertex.incomingEdge = mstIncomingEdge;
 				int ck = connectedComponentsOfGraph.dfsGraph.getVertex(rootVertex).getCno();
