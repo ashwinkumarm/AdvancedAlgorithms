@@ -82,7 +82,7 @@ public class DMSTGraph extends Graph {
 		}
 
 		/**
-		 * Nested class to 
+		 * Nested class for Vertex iterator
 		 *
 		 */
 		class DMSTVertexIterator implements Iterator<Edge> {
@@ -90,6 +90,11 @@ public class DMSTGraph extends Graph {
 			Iterator<DMSTEdge> it;
 			boolean ready;
 
+			/**
+			 * Constructor for initializing the iterator
+			 * 
+			 * @param u
+			 */
 			DMSTVertexIterator(DMSTVertex u) {
 				this.it = u.DMSTadj.iterator();
 				ready = false;
@@ -127,11 +132,20 @@ public class DMSTGraph extends Graph {
 			}
 		}
 
+		/**
+		 * Nested class for all vertex iterator
+		 *
+		 */
 		class DMSTVertexAllIterator implements Iterator<Edge> {
 			DMSTEdge cur;
 			Iterator<DMSTEdge> it;
 			boolean ready;
 
+			/**
+			 * Constructor for initializing the all vertex iterator
+			 * 
+			 * @param u
+			 */
 			DMSTVertexAllIterator(DMSTVertex u) {
 				this.it = u.DMSTadj.iterator();
 				ready = false;
@@ -167,11 +181,20 @@ public class DMSTGraph extends Graph {
 			}
 		}
 
+		/**
+		 * Nested class for reverse iterator
+		 *
+		 */
 		class DMSTVertexRevIterator implements Iterator<Edge> {
 			DMSTEdge cur;
 			Iterator<DMSTEdge> it;
 			boolean ready;
 
+			/**
+			 * Constructor for initializing the vertex reverse iterator
+			 * 
+			 * @param u
+			 */
 			DMSTVertexRevIterator(DMSTVertex u) {
 				this.it = u.DMSTrevadj.iterator();
 				ready = false;
@@ -211,22 +234,53 @@ public class DMSTGraph extends Graph {
 
 	}
 
+	/**
+	 * Nested class for DMST Edge class
+	 *
+	 */
+	/**
+	 * @author deepaks
+	 *
+	 */
+	/**
+	 * @author deepaks
+	 *
+	 */
 	public static class DMSTEdge extends Edge {
 
 		boolean disabled;
 
+		/**
+		 * Disable the DMST Edge
+		 */
 		void disable() {
 			disabled = true;
 		}
 
+		/**
+		 * Enable the DMST Edge
+		 */
 		void enable() {
 			disabled = false;
 		}
 
+		/**
+		 * Constructor for initializing the DMST Edge
+		 * 
+		 * @param from
+		 * @param to
+		 * @param weight
+		 * @param name
+		 */
 		DMSTEdge(Vertex from, Vertex to, int weight, int name) {
 			super(from, to, weight, name);
 		}
 
+		/**
+		 * Checks the disability status of the edge
+		 * 
+		 * @return
+		 */
 		boolean isDisabled() {
 			DMSTVertex xfrom = (DMSTVertex) from;
 			DMSTVertex xto = (DMSTVertex) to;
@@ -235,6 +289,11 @@ public class DMSTGraph extends Graph {
 
 	}
 
+	/**
+	 * Constructor for DMST Graph which creates the graph separately
+	 * 
+	 * @param g
+	 */
 	public DMSTGraph(Graph g) {
 		super(g);
 		dmstVertexArray = new DMSTVertex[2 * g.size()];
@@ -259,6 +318,12 @@ public class DMSTGraph extends Graph {
 		}
 	}
 
+	/**
+	 * Returns the DMST Vertex from vertex array
+	 * 
+	 * @param u
+	 * @return
+	 */
 	DMSTVertex getVertex(Vertex u) {
 		return Vertex.getVertex(dmstVertexArray, u);
 	}
@@ -268,6 +333,15 @@ public class DMSTGraph extends Graph {
 		return new DMSTGraphIterator(this);
 	}
 
+	/**
+	 * Adds the edge to the DMST graph
+	 * 
+	 * @param from
+	 * @param to
+	 * @param weight
+	 * @param name
+	 * @return
+	 */
 	public DMSTEdge addEdge(DMSTVertex from, DMSTVertex to, int weight, int name) {
 		DMSTEdge e = new DMSTEdge(from, to, weight, name);
 		if (directed) {
@@ -283,6 +357,10 @@ public class DMSTGraph extends Graph {
 		return e;
 	}
 
+	/**
+	 * Nested class for iterating he entire graph
+	 *
+	 */
 	class DMSTGraphIterator implements Iterator<Vertex> {
 		Iterator<DMSTVertex> it;
 		DMSTVertex xcur;
@@ -315,41 +393,70 @@ public class DMSTGraph extends Graph {
 
 	}
 
+	/**
+	 * Returns the DMST Vertex from DMST Vertex array for the given n
+	 * 
+	 * @param n
+	 * @return
+	 */
 	public DMSTVertex getDMSTVertex(int n) {
 		return dmstVertexArray[n - 1];
 	}
 
+	/**
+	 * Returns the DMST Vertex with name from DMST Vertex array for the given n
+	 * 
+	 * @param n
+	 * @return
+	 */
 	public DMSTVertex getDMSTVertexWithName(int n) {
 		return dmstVertexArray[n];
 	}
 
+	/**
+	 * Returns the DMST Vertex array
+	 * 
+	 * @return
+	 */
 	public DMSTVertex[] getDMSTVertexArray() {
 		return dmstVertexArray;
 	}
 
+	/**
+	 * Disables all the edges of the graph
+	 */
 	public void disableAllEdges() {
 		for (Vertex v : this)
 			for (Edge e : v)
 				((DMSTEdge) e).disable();
 	}
 
+	/**
+	 * Disables all the vertices of the graph
+	 */
 	public void disableAllVertices() {
 		for (Vertex v : this)
 			((DMSTVertex) v).disable();
 	}
 
+	/**
+	 * Disables all the edges of the graph
+	 */
 	public void enableAllEdges() {
 		for (Vertex v : this.dmstVertexArray)
-			if(v != null){
-			for (Edge e : v)
-				((DMSTEdge) e).enable();
+			if (v != null) {
+				for (Edge e : v)
+					((DMSTEdge) e).enable();
 			}
 	}
 
+	/**
+	 * Enables all the vertices of the graph
+	 */
 	public void enableAllVertices() {
 		for (Vertex v : this.dmstVertexArray)
-			if(v != null){
-			((DMSTVertex) v).enable();
+			if (v != null) {
+				((DMSTVertex) v).enable();
 			}
 	}
 
