@@ -338,4 +338,19 @@ public class DMSTGraph extends Graph {
 			((DMSTVertex) v).disable();
 	}
 
+	public void enableAllEdges() {
+		for (Vertex v : this.dmstVertexArray)
+			if(v != null){
+			for (Edge e : v)
+				((DMSTEdge) e).enable();
+			}
+	}
+
+	public void enableAllVertices() {
+		for (Vertex v : this.dmstVertexArray)
+			if(v != null){
+			((DMSTVertex) v).enable();
+			}
+	}
+
 }

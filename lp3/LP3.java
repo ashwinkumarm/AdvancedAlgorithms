@@ -38,7 +38,6 @@ public class LP3 {
 
 		Timer timer = new Timer();
 		int wmst = directedMST(g, startVertex, dmst);
-		//isValidMst(g, startVertex, dmst);
 
 		timer.end();
 
@@ -82,34 +81,47 @@ public class LP3 {
 			} else
 				dmst.add(null);
 		}
-		System.out.println(dmst);
+		//System.out.println(isValidMst(dmstGraph, start, dmst));
 		return wmst;
 	}
 
-	public static boolean isValidMst(Graph g, Vertex start, List<Edge> dmst){
-		DMSTGraph dmstGraph = new DMSTGraph(g);
-		for(DMSTVertex v : dmstGraph.getDMSTVertexArray()){
+	public static boolean isValidMst(DMSTGraph g, Vertex start, List<Edge> dmst){
+		g.enableAllEdges();
+		g.enableAllVertices();
+		for(DMSTVertex v : g.getDMSTVertexArray()){
+			if(v != null ){
 			for(DMSTEdge e: v.DMSTadj){
 				if(!dmst.contains(e)){
 					e.disable();
 				}
 			}
-		}
+		}}
 		//Step 1
 		List<DFSVertex> components = new LinkedList<DFSVertex>();
 		DFS dfs = new DFS(g);
 		dfs.dfsVisit(start, components);
-		if (!(components.size() == g.size())){
+		if (!(components.size() == g.getVertexArray().length)){
 			return false;
 		}
 		//Step 2
 		int mstWeight = 0;
 		for(Edge e: dmst){
+			if(e != null){
 			mstWeight += e.weight;
+			}
 		}
+		
+		Edge treeEdge;
+		DMSTEdge dmstEdge;
 		int minIncomingSum = 0;
-		for(DMSTVertex v : dmstGraph.getDMSTVertexArray()){
-			minIncomingSum += v.minEdge;
+		for (int i = 0; i < g.getVertexArray().length; i++) {
+			dmstEdge = g.dmstVertexArray[i].incomingEdge;
+			if (dmstEdge != null) {
+				treeEdge = FindDirectedMst.getEdgeFromGraph(g.getVertex(dmstEdge.from.getName() + 1),
+						g.getVertex(dmstEdge.to.getName() + 1));
+				minIncomingSum += treeEdge.weight;
+			
+		}	
 		}
 		if(mstWeight != minIncomingSum){
 			return false;
