@@ -46,6 +46,10 @@ public class DMSTGraph extends Graph {
 			return new DMSTVertexRevIterator(this);
 		}
 
+		public Iterator<Edge> allIterator() {
+			return new DMSTVertexAllIterator(this);
+		}
+
 		class DMSTVertexIterator implements Iterator<Edge> {
 			DMSTEdge cur;
 			Iterator<DMSTEdge> it;
@@ -71,6 +75,46 @@ public class DMSTGraph extends Graph {
 				ready = true;
 				return !(cur.isDisabled() || ((DMSTVertex) cur.from).isDisabled()
 						|| ((DMSTVertex) cur.to).isDisabled());
+			}
+
+			public Edge next() {
+				if (!ready) {
+					if (!hasNext()) {
+						throw new java.util.NoSuchElementException();
+					}
+				}
+				ready = false;
+				return cur;
+			}
+
+			public void remove() {
+				throw new java.lang.UnsupportedOperationException();
+			}
+		}
+
+		class DMSTVertexAllIterator implements Iterator<Edge> {
+			DMSTEdge cur;
+			Iterator<DMSTEdge> it;
+			boolean ready;
+
+			DMSTVertexAllIterator(DMSTVertex u) {
+				this.it = u.DMSTadj.iterator();
+				ready = false;
+			}
+
+			public boolean hasNext() {
+				if (ready) {
+					return true;
+				}
+				if (!it.hasNext()) {
+					return false;
+				}
+				cur = it.next();
+				while ((((DMSTVertex) cur.from).isDisabled() || ((DMSTVertex) cur.to).isDisabled()) && it.hasNext()) {
+					cur = it.next();
+				}
+				ready = true;
+				return !(((DMSTVertex) cur.from).isDisabled() || ((DMSTVertex) cur.to).isDisabled());
 			}
 
 			public Edge next() {
