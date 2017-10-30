@@ -6,9 +6,19 @@ import java.util.List;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
+/**
+ * This class extends the graph class by adding features like disabling the
+ * vertices and edges, vertices array with twice the size
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class DMSTGraph extends Graph {
 	DMSTVertex[] dmstVertexArray;
 
+	/**
+	 * Nested class to represent a DMST vertex of a DMST graph
+	 */
 	public static class DMSTVertex extends Vertex {
 		int minEdge;
 		DMSTEdge incomingEdge;
@@ -16,6 +26,11 @@ public class DMSTGraph extends Graph {
 		List<DMSTEdge> DMSTadj;
 		List<DMSTEdge> DMSTrevadj;
 
+		/**
+		 * Constructor for DMST vertex
+		 * 
+		 * @param u
+		 */
 		public DMSTVertex(Vertex u) {
 			super(u);
 			minEdge = Integer.MAX_VALUE;
@@ -24,14 +39,25 @@ public class DMSTGraph extends Graph {
 			DMSTrevadj = new LinkedList<>();
 		}
 
+		/**
+		 * Returns the disability status of a vertex
+		 * 
+		 * @return
+		 */
 		boolean isDisabled() {
 			return disabled;
 		}
 
+		/**
+		 * Disables a vertex
+		 */
 		void disable() {
 			disabled = true;
 		}
 
+		/**
+		 * Enables a vertex
+		 */
 		void enable() {
 			disabled = false;
 		}
@@ -46,10 +72,19 @@ public class DMSTGraph extends Graph {
 			return new DMSTVertexRevIterator(this);
 		}
 
+		/**
+		 * Iterates over all the vertices of the graph
+		 * 
+		 * @return
+		 */
 		public Iterator<Edge> allIterator() {
 			return new DMSTVertexAllIterator(this);
 		}
 
+		/**
+		 * Nested class to 
+		 *
+		 */
 		class DMSTVertexIterator implements Iterator<Edge> {
 			DMSTEdge cur;
 			Iterator<DMSTEdge> it;
