@@ -73,21 +73,8 @@ public class FindDirectedMst {
 	public void minMst(DMSTGraph g, DMSTVertex start, int graphSize) {
 		transformWeights(g, start);
 
-		// Check for MST
-		List<DFSVertex> components = new LinkedList<DFSVertex>();
-		DFS dfsObject = new DFS(g);
-		dfsObject.dfsVisit(start, components);
-		if (components.size() == graphSize) {
-			Vertex parent = null;
-			for (DFSVertex dv : components) {
-				if ((parent = dv.getParent()) != null) {
-					DMSTVertex to = g.getDMSTVertex(dv.getElement().getName() + 1);
-					to.incomingEdge = (DMSTEdge) getEdgeFromGraph(g.getDMSTVertex(parent.getName() + 1), to);
-				}
-			}
-		}
 		// If MST is not found
-		else {
+		if (!doDfs(g, start, graphSize)) {
 			ConnectedComponentsOfGraph connectedComponentsOfGraph = new ConnectedComponentsOfGraph();
 			connectedComponentsOfGraph.stronglyConnectedComponents(g);
 			LinkedList<DMSTVertex>[] stronglyConnectedComponents = new LinkedList[connectedComponentsOfGraph.numberOfSCCs];
@@ -245,7 +232,7 @@ public class FindDirectedMst {
 				int ck = connectedComponentsOfGraph.dfsGraph.getVertex(rootVertex).getCno();
 				if (stronglyConnectedComponents[ck - 1].size() > 1) {
 					enableSCCVertices(stronglyConnectedComponents[ck - 1]);
-					doDfs(g, rootVertex, ck, connectedComponentsOfGraph);
+					doDfs(g, rootVertex, stronglyConnectedComponents[ck - 1].size());
 					disableSCCVertices(stronglyConnectedComponents[ck - 1]);
 				}
 			}
@@ -273,21 +260,27 @@ public class FindDirectedMst {
 	}
 
 	/**
+	 * This method calls the standard DFS on the given graph.
+	 *
 	 * @param g
 	 * @param src
 	 * @param ck
 	 * @param connectedComponentsOfGraph
 	 */
-	private void doDfs(DMSTGraph g, Vertex src, int ck, ConnectedComponentsOfGraph connectedComponentsOfGraph) {
+	private boolean doDfs(DMSTGraph g, Vertex src, int graphSize) {
 		List<DFSVertex> components = new LinkedList<DFSVertex>();
 		DFS dfsObject = new DFS(g);
 		dfsObject.dfsVisit(src, components);
-		Vertex parent = null;
-		for (DFSVertex dv : components) {
-			if ((parent = dv.getParent()) != null) {
-				DMSTVertex to = g.getDMSTVertex(dv.getElement().getName() + 1);
-				to.incomingEdge = (DMSTEdge) getEdgeFromGraph(g.getDMSTVertex(parent.getName() + 1), to);
+		if (components.size() == graphSize) {
+			Vertex parent = null;
+			for (DFSVertex dv : components) {
+				if ((parent = dv.getParent()) != null) {
+					DMSTVertex to = g.getDMSTVertex(dv.getElement().getName() + 1);
+					to.incomingEdge = (DMSTEdge) getEdgeFromGraph(g.getDMSTVertex(parent.getName() + 1), to);
+				}
 			}
+			return true;
 		}
+		return false;
 	}
 }
