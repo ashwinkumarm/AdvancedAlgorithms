@@ -191,7 +191,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 			for (Edge e : u.vertex) {
 				if (relax(e)) {
 					Vertex v = e.otherEnd(u.vertex);
-					if (!v.seen) {
+					if (!seen(v)) {
 						q.add(getVertex(v));
 						getVertex(v).seen = true;
 					}
@@ -230,12 +230,16 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 			}
 		}
 		if (hasEqualWeightEdges && !hasNegativeEdges) {
+			System.out.println("BFS");
 			bfs();
 		} else if (!hasNegativeEdges) {
+			System.out.println("DIJKSTRA");
 			dijkstra();
 		} else if (g.isDirected() && DFSCheckDAG.isDAG(g)) {
+			System.out.println("DAG");
 			dagShortestPaths();
 		} else {
+			System.out.println("BELLMANFORD");
 			return bellmanFord();
 		}
 		return true;
