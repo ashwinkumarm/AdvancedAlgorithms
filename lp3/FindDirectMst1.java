@@ -21,7 +21,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
-public class FindDirectedMst {
+public class FindDirectMst1 {
 
 	/**
 	 * Class structure used for storing the image of the edges between SCCs.
