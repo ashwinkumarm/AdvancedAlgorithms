@@ -5,14 +5,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Queue;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTEdge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp3.DMSTGraph.DMSTVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ConnectedComponentsOfGraph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS.DFSVertex;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
@@ -63,18 +61,18 @@ public class FindDirectedMst {
 	}
 
 	/**
+	 * Recursive method that computes the minimum spanning tree for the input
+	 * directed graph using Chu and Liu | Edmonds Algorithm (improved by
+	 * Tarjan's algorithm).
+	 *
 	 * @param g
 	 * @param start
-	 * @param originalSize2
+	 * @param graphSize
 	 * @return
 	 */
 	public void minMst(DMSTGraph g, DMSTVertex start, int graphSize) {
-		List<DMSTEdge> disabledEdges = transformWeights(g, start);
-		/*
-		 * for (Vertex v : g) { DMSTVertex d = (DMSTVertex) v; for (Edge e : d)
-		 * { DMSTEdge de = (DMSTEdge) e; System.out.println(e + " - " +
-		 * de.weight + " - " + de.disabled); } }
-		 */
+		transformWeights(g, start);
+
 		// Check for MST
 		List<DFSVertex> components = new LinkedList<DFSVertex>();
 		DFS dfsObject = new DFS(g);
@@ -106,23 +104,19 @@ public class FindDirectedMst {
 			disableSCCVertices(stronglyConnectedComponents);
 			DMSTVertex c1 = g.getDMSTVertexWithName(
 					sccLocation.get(connectedComponentsOfGraph.dfsGraph.getVertex(start).getCno()));
-			/*
-			 * for (Vertex v : g) { DMSTVertex d = (DMSTVertex) v; for (Edge e :
-			 * d) { DMSTEdge de = (DMSTEdge) e; System.out.println(e + " - " +
-			 * de.weight + " - " + de.disabled); } }
-			 */
-			// System.out.println(stronglyConnectedComponents.length);
 			minMst(g, c1, sccLocation.size());
 			g.disableAllVertices();
 			expandSCCAndFindItsMST(g, minEdge, connectedComponentsOfGraph, sccLocation, stronglyConnectedComponents);
 		}
 	}
 
+	/**
+	 * @param stronglyConnectedComponents
+	 */
 	private void disableSCCVertices(LinkedList<DMSTVertex>[] stronglyConnectedComponents) {
 		for (LinkedList<DMSTVertex> scc : stronglyConnectedComponents)
 			if (scc.size() > 1)
-				for (DMSTVertex vertex : scc)
-					vertex.disable();
+				disableSCCVertices(scc);
 	}
 
 	/**
@@ -133,20 +127,16 @@ public class FindDirectedMst {
 	 * @param start
 	 * @return
 	 */
-	public List<DMSTEdge> transformWeights(DMSTGraph g, Vertex start) {
+	public void transformWeights(DMSTGraph g, Vertex start) {
 		DMSTEdge dmstEdge;
-		List<DMSTEdge> disabledEdges = new LinkedList<>();
 		for (Vertex dmstVertex : g) {
 			for (Edge edge : (DMSTVertex) dmstVertex) {
 				dmstEdge = (DMSTEdge) edge;
 				dmstEdge.weight = dmstEdge.weight - ((DMSTVertex) dmstEdge.to).minEdge;
-				if (dmstEdge.weight != 0) {
+				if (dmstEdge.weight != 0)
 					dmstEdge.disable();
-					disabledEdges.add(dmstEdge);
-				}
 			}
 		}
-		return disabledEdges;
 	}
 
 	/**
@@ -167,8 +157,6 @@ public class FindDirectedMst {
 			iterator = ((DMSTVertex) dv.getElement()).allIterator();
 			while (iterator.hasNext()) {
 				Edge e = iterator.next();
-				// TODO: Check if this can be moved so that disabling can be
-				// done in the previous method
 				con = new ConnectedPair(sccLocation.get(dv.getCno()),
 						sccLocation.get(connectedComponentsOfGraph.dfsGraph.getVertex(e.to).getCno()));
 				if (con.from != con.to) {
@@ -198,6 +186,13 @@ public class FindDirectedMst {
 		return minEdge;
 	}
 
+	/**
+	 * Add new vertices for SCCs containing multiple vertices.
+	 *
+	 * @param g
+	 * @param stronglyConnectedComponents
+	 * @return
+	 */
 	private HashMap<Integer, Integer> addSCCVerticesAndDisableOldVertices(DMSTGraph g,
 			LinkedList<DMSTVertex>[] stronglyConnectedComponents) {
 		HashMap<Integer, Integer> sccMappings = new HashMap<>();
@@ -208,7 +203,6 @@ public class FindDirectedMst {
 				g.getDMSTVertexArray()[g.n] = new DMSTVertex(new Vertex(g.n));
 				sccMappings.put(i + 1, g.n);
 				g.n++;
-				// TODO:Check if SCC vertices can be disabled here
 			} else
 				sccMappings.put(i + 1, scc.getFirst().getName());
 		}
@@ -216,6 +210,8 @@ public class FindDirectedMst {
 	}
 
 	/**
+	 * This method gets the original edge from the graph.
+	 *
 	 * @param parent
 	 * @param vertex
 	 * @param g
@@ -229,16 +225,13 @@ public class FindDirectedMst {
 	}
 
 	/**
+	 * Expands each SCC and runs a BFS in each component.
+	 *
 	 * @param g
-	 * @param h
-	 * @param stronglyConnectedComponents
 	 * @param minEdge
-	 * @param newSize
-	 * @param originalSize
 	 * @param connectedComponentsOfGraph
 	 * @param sccLocation
 	 * @param stronglyConnectedComponents
-	 * @param mst
 	 */
 	private void expandSCCAndFindItsMST(DMSTGraph g, HashMap<ConnectedPair, DMSTEdge> minEdge,
 			ConnectedComponentsOfGraph connectedComponentsOfGraph, HashMap<Integer, Integer> sccLocation,
@@ -250,38 +243,50 @@ public class FindDirectedMst {
 				DMSTVertex rootVertex = (DMSTVertex) mstIncomingEdge.to;
 				rootVertex.incomingEdge = mstIncomingEdge;
 				int ck = connectedComponentsOfGraph.dfsGraph.getVertex(rootVertex).getCno();
-				enableSCCVertices(stronglyConnectedComponents[ck - 1]);
-				doBfs(rootVertex, ck, connectedComponentsOfGraph);
-				disableSCCVertices(stronglyConnectedComponents[ck - 1]);
+				if (stronglyConnectedComponents[ck - 1].size() > 1) {
+					enableSCCVertices(stronglyConnectedComponents[ck - 1]);
+					doDfs(g, rootVertex, ck, connectedComponentsOfGraph);
+					disableSCCVertices(stronglyConnectedComponents[ck - 1]);
+				}
 			}
 		}
 	}
 
+	/**
+	 * This method enables the vertices of the given SCC.
+	 *
+	 * @param stronglyConnectedComponent
+	 */
 	private void enableSCCVertices(LinkedList<DMSTVertex> stronglyConnectedComponent) {
 		for (DMSTVertex v : stronglyConnectedComponent)
 			v.enable();
 	}
 
+	/**
+	 * This method disables the vertices of the given SCC.
+	 *
+	 * @param stronglyConnectedComponent
+	 */
 	private void disableSCCVertices(LinkedList<DMSTVertex> stronglyConnectedComponent) {
 		for (DMSTVertex v : stronglyConnectedComponent)
 			v.disable();
 	}
 
-	private void doBfs(Vertex src, int ck, ConnectedComponentsOfGraph connectedComponentsOfGraph) {
-		Queue<Graph.Vertex> q = new LinkedList<>();
-		src.seen = true;
-		q.add(src);
-		while (!q.isEmpty()) {
-			Graph.Vertex u = q.remove();
-			for (Graph.Edge e : u) {
-				DMSTVertex v = (DMSTVertex) e.otherEnd(u);
-				if (connectedComponentsOfGraph.dfsGraph.getVertex(v).getCno() != ck)
-					continue;
-				if (v.seen == false) {
-					v.seen = true;
-					v.incomingEdge = (DMSTEdge) e;
-					q.add(v);
-				}
+	/**
+	 * @param g
+	 * @param src
+	 * @param ck
+	 * @param connectedComponentsOfGraph
+	 */
+	private void doDfs(DMSTGraph g, Vertex src, int ck, ConnectedComponentsOfGraph connectedComponentsOfGraph) {
+		List<DFSVertex> components = new LinkedList<DFSVertex>();
+		DFS dfsObject = new DFS(g);
+		dfsObject.dfsVisit(src, components);
+		Vertex parent = null;
+		for (DFSVertex dv : components) {
+			if ((parent = dv.getParent()) != null) {
+				DMSTVertex to = g.getDMSTVertex(dv.getElement().getName() + 1);
+				to.incomingEdge = (DMSTEdge) getEdgeFromGraph(g.getDMSTVertex(parent.getName() + 1), to);
 			}
 		}
 	}

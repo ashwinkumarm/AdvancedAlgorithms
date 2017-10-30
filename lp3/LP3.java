@@ -66,6 +66,8 @@ public class LP3 {
 		DMSTGraph dmstGraph = new DMSTGraph(g);
 		FindDirectedMst findMst = new FindDirectedMst();
 		int originalSize = dmstGraph.size();
+		if (!checkIfRootCanReachAllTheVertices(g, start))
+			return 0;
 		findMst.minMst(dmstGraph, dmstGraph.getVertex(start), originalSize);
 		int wmst = 0;
 		DMSTEdge dmstEdge;
@@ -81,36 +83,63 @@ public class LP3 {
 			} else
 				dmst.add(null);
 		}
-		//System.out.println(isValidMst(dmstGraph, start, dmst));
+		// System.out.println(isValidMst(dmstGraph, start, dmst));
 		return wmst;
 	}
 
-	public static boolean isValidMst(DMSTGraph g, Vertex start, List<Edge> dmst){
+	/**
+	 * This method checks if the root vertex could reach all the vertices.
+	 * @param g
+	 * @param start
+	 * @return
+	 */
+	private static boolean checkIfRootCanReachAllTheVertices(Graph g, Vertex start) {
+		List<DFSVertex> components = new LinkedList<DFSVertex>();
+		DFS dfsObject = new DFS(g);
+		dfsObject.dfsVisit(start, components);
+		if (components.size() != g.size()) {
+			System.out.println("Vertex " + start.toString()
+					+ " could not reach all the vertices. There is no spanning tree rooted at vertex "
+					+ start.toString());
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Validity method to check the validity of the output.
+	 * @param g
+	 * @param start
+	 * @param dmst
+	 * @return
+	 */
+	public static boolean isValidMst(DMSTGraph g, Vertex start, List<Edge> dmst) {
 		g.enableAllEdges();
 		g.enableAllVertices();
-		for(DMSTVertex v : g.getDMSTVertexArray()){
-			if(v != null ){
-			for(DMSTEdge e: v.DMSTadj){
-				if(!dmst.contains(e)){
-					e.disable();
+		for (DMSTVertex v : g.getDMSTVertexArray()) {
+			if (v != null) {
+				for (DMSTEdge e : v.DMSTadj) {
+					if (!dmst.contains(e)) {
+						e.disable();
+					}
 				}
 			}
-		}}
-		//Step 1
+		}
+		// Step 1
 		List<DFSVertex> components = new LinkedList<DFSVertex>();
 		DFS dfs = new DFS(g);
 		dfs.dfsVisit(start, components);
-		if (!(components.size() == g.getVertexArray().length)){
+		if (!(components.size() == g.getVertexArray().length)) {
 			return false;
 		}
-		//Step 2
+		// Step 2
 		int mstWeight = 0;
-		for(Edge e: dmst){
-			if(e != null){
-			mstWeight += e.weight;
+		for (Edge e : dmst) {
+			if (e != null) {
+				mstWeight += e.weight;
 			}
 		}
-		
+
 		Edge treeEdge;
 		DMSTEdge dmstEdge;
 		int minIncomingSum = 0;
@@ -120,17 +149,16 @@ public class LP3 {
 				treeEdge = FindDirectedMst.getEdgeFromGraph(g.getVertex(dmstEdge.from.getName() + 1),
 						g.getVertex(dmstEdge.to.getName() + 1));
 				minIncomingSum += treeEdge.weight;
-			
-		}	
+
+			}
 		}
-		if(mstWeight != minIncomingSum){
+		if (mstWeight != minIncomingSum) {
 			return false;
 		}
 
-		//Step 3
-		//Step 4
+		// Step 3
+		// Step 4
 		return true;
-
 
 	}
 }
