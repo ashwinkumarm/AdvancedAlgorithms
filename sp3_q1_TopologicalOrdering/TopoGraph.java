@@ -12,11 +12,12 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class TopoGraph extends GraphAlgorithm<TopoGraph.TopoVertex> {
 
-	class TopoVertex {
+	public class TopoVertex {
 		Graph.Vertex element;
 		Graph.Vertex parent;
-		int inDegree, top;
-		boolean seen;
+		public int inDegree;
+		int top;
+		public boolean seen;
 		
 		TopoVertex(Graph.Vertex u) {
 			element = u;
@@ -33,7 +34,11 @@ public class TopoGraph extends GraphAlgorithm<TopoGraph.TopoVertex> {
 		}
 	}
 
-	int reduceInDegree(Graph.Vertex u) {
+	public int reduceInDegree(Graph.Vertex u) {
 		return --getVertex(u).inDegree;
+	}
+	
+	public int increaseInDegree(Graph.Vertex u) {
+		return ++getVertex(u).inDegree;
 	}
 }

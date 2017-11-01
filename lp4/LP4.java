@@ -1,23 +1,33 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp4;
 
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopoGraph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
-
-import java.util.HashMap;
 
 public class LP4 {
 
 	Graph g;
 	Vertex s;
+	TopoGraph tg;
 
 	// common constructor for all parts of LP4: g is graph, s is source vertex
 	public LP4(Graph g, Vertex s) {
 		this.g = g;
 		this.s = s;
+		initializeTopoGraph(g);
+	}
+	
+	public void initializeTopoGraph(Graph g){
+		tg = new TopoGraph(g);
+		for (Graph.Vertex u : g) {
+			tg.getVertex(u).inDegree = u.revAdj.size(); 
+		}
 	}
 
 	// Part a. Return number of topological orders of g
@@ -29,8 +39,39 @@ public class LP4 {
 	// Part b. Print all topological orders of g, one per line, and
 	// return number of topological orders of g
 	public long enumerateTopologicalOrders() {
-		// To do
-		return 0;
+		LinkedList<Vertex> topologicalOrder = new LinkedList<>();
+		LinkedList<LinkedList<Vertex>> allTopOrder = new LinkedList<>();
+		findAllTopologicalOrders(topologicalOrder, allTopOrder);
+		return allTopOrder.size();
+	}
+	
+	public void findAllTopologicalOrders(LinkedList<Vertex> topologicalOrder, LinkedList<LinkedList<Vertex>> allTopOrder) {
+		boolean flag = false;
+		for (Vertex v : g) {
+			if (tg.getVertex(v).inDegree == 0 && !tg.getVertex(v).seen) {
+				for (Edge e : v) {
+					tg.reduceInDegree(e.to);
+				}
+
+				topologicalOrder.addLast(v);
+				tg.getVertex(v).seen = true;
+				findAllTopologicalOrders(topologicalOrder, allTopOrder);
+				tg.getVertex(v).seen = false;
+				topologicalOrder.removeLast();
+				for (Edge e : v) {
+					tg.increaseInDegree(e.to);
+				}
+				flag = true;
+			}
+		}
+
+		if (!flag) {
+			for (Vertex v : topologicalOrder) {
+				System.out.print(v);
+			}
+			allTopOrder.add(topologicalOrder);
+			System.out.println();
+		}
 	}
 
 	// Part c. Return the number of shortest paths from s to t
