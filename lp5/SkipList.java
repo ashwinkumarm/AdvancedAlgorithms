@@ -19,11 +19,8 @@ public class SkipList<T extends Comparable<? super T>> {
 			next = new SkipListEntry[level + 1];
 		}
 
-		/*
-		 * public T getElement() { return element; }
-		 * 
-		 * public int level() { return next.size() - 1; }
-		 */
+		// public int level() { return next.size() - 1; }
+
 	}
 
 	private int size;
@@ -142,7 +139,7 @@ public class SkipList<T extends Comparable<? super T>> {
 
 		public E next() {
 			SkipListEntry<E> entry = queue.remove(0);
-			if (entry.next[0] != null)
+			if (entry.next[0] != null && entry.next[0].element != null)
 				queue.add(entry.next[0]);
 			return entry.element;
 		}
@@ -234,5 +231,9 @@ public class SkipList<T extends Comparable<? super T>> {
 		System.out.println(skl.contains(30));
 		System.out.println(skl.contains(8));
 		System.out.println(skl.ceiling(29));
+		Iterator sklIterator = skl.iterator();
+		while (sklIterator.hasNext()) {
+			System.out.println(sklIterator.next());
+		}
 	}
 }
