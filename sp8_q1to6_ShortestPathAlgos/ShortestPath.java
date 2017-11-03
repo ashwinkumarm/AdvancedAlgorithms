@@ -1,4 +1,5 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos;
+
 /**
  * This class finds the shortest path from a given source vertex in a graph
  *
@@ -25,7 +26,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 
 	public static final int INFINITY = Integer.MAX_VALUE;
-	Graph.Vertex src;
+	Graph.Vertex s;
 	Boolean isPull = false;
 
 	/**
@@ -49,13 +50,15 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 
 	/**
 	 * Constructor to initialize the variable and set the source vertex
-	 * 
-	 * @param g : graph
-	 * @param src : source vertex
+	 *
+	 * @param g
+	 *            : graph
+	 * @param src
+	 *            : source vertex
 	 */
 	public ShortestPath(Graph g, Graph.Vertex src) {
 		super(g);
-		this.src = src;
+		this.s = src;
 		node = new ShortestPathVertex[g.size()];
 		int index = 0;
 		for (Graph.Vertex u : g) {
@@ -68,26 +71,28 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 
 	/**
 	 * Method to reinitialize the graph
-	 * 
-	 * @param newSource : Graph Vertex : source vertex in the graph
+	 *
+	 * @param newSource
+	 *            : Graph Vertex : source vertex in the graph
 	 */
 	void reinitialize(Graph.Vertex newSource) {
-		src = newSource;
+		s = newSource;
 		int index = 0;
 		for (Graph.Vertex u : g) {
 			ShortestPathVertex su = getVertex(u);
 			su.reinitializeVertex(INFINITY, index++);
 		}
-		getVertex(src).distance = 0;
-		getVertex(src).seen = true;
+		getVertex(s).distance = 0;
+		getVertex(s).seen = true;
 	}
 
 	/**
-	 * Method to update the distance of the vertex if the old distance is greater than the 
-	 * current distance
-	 * 
-	 * @param e : Graph.Edge :  Edge to be relaxed
-	 * @return boolean : true if the edge is relaxed else false 
+	 * Method to update the distance of the vertex if the old distance is
+	 * greater than the current distance
+	 *
+	 * @param e
+	 *            : Graph.Edge : Edge to be relaxed
+	 * @return boolean : true if the edge is relaxed else false
 	 */
 	boolean relax(Graph.Edge e) {
 
@@ -125,7 +130,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 	 */
 	public void bfs() {
 		Queue<Graph.Vertex> q = new LinkedList<>();
-		q.add(src);
+		q.add(s);
 		while (!q.isEmpty()) {
 			Graph.Vertex u = q.remove();
 			for (Graph.Edge e : u) {
@@ -138,7 +143,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Method that implements DAG for finding the shortest path
 	 */
@@ -153,7 +158,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 	}
 
 	/**
-	 * Implements Dijksstra's method for finding the shortest path
+	 * Implements Dijkstra's method for finding the shortest path
 	 */
 	public void dijkstra() {
 		VertexComparator comp = new VertexComparator();
@@ -179,7 +184,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 	 */
 	public boolean bellmanFord() {
 		Queue<ShortestPathVertex> q = new LinkedList<>();
-		q.add(getVertex(src));
+		q.add(getVertex(s));
 		int V = g.size();
 		while (!q.isEmpty()) {
 			ShortestPathVertex u = q.remove();
@@ -200,18 +205,19 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 		}
 		return true;
 	}
-	
+
 	/**
-	 * This method finds the fastest shortest path algorithm based on the given graph.
-	 * If the problem is not solvable because the graph has a negative cycle, return false
-	 * 
-	 * @return boolean : true if the shortest path can be found else false if the graph has a negative
-	 * 					 weight cycle
+	 * This method finds the fastest shortest path algorithm based on the given
+	 * graph. If the problem is not solvable because the graph has a negative
+	 * cycle, return false
+	 *
+	 * @return boolean : true if the shortest path can be found else false if
+	 *         the graph has a negative weight cycle
 	 */
 	public boolean fastestShortestPaths() {
 		Boolean hasEqualWeightEdges = true;
 		Boolean hasNegativeEdges = false;
-		int weight = src.adj.get(0).weight;
+		int weight = s.adj.get(0).weight;
 		if (weight < 0) {
 			hasNegativeEdges = true;
 		}
@@ -232,22 +238,22 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 		if (hasEqualWeightEdges && !hasNegativeEdges) {
 			System.out.println("BFS");
 			bfs();
-		} else if (!hasNegativeEdges) {
-			System.out.println("DIJKSTRA");
-			dijkstra();
 		} else if (g.isDirected() && DFSCheckDAG.isDAG(g)) {
 			System.out.println("DAG");
 			dagShortestPaths();
+		} else if (!hasNegativeEdges) {
+			System.out.println("DIJKSTRA");
+			dijkstra();
 		} else {
 			System.out.println("BELLMANFORD");
 			return bellmanFord();
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Method to find the odd length cycle in an undirected graph using BFS
-	 * 
+	 *
 	 * @return : List : list of edges in the cycle
 	 */
 	public List<Edge> findOddCycle() {
@@ -315,17 +321,18 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 						}
 					}
 					u = p;
-				} while (p != src);
+				} while (p != s);
 			}
 		}
 		System.out.println(path);
 	}
-	
-	//Driver Code
+
+	// Driver Code
 	public static void main(String[] args) throws FileNotFoundException {
 
 		Scanner in;
-		boolean isDirectedGraph = true; // flag to read directed or undirected graph
+		boolean isDirectedGraph = false; // flag to read directed or undirected
+										// graph
 		Graph g;
 		Graph.Vertex src;
 		ShortestPath sp;
