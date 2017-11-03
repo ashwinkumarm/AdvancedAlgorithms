@@ -2,6 +2,8 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp5
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 // Skeleton for skip list implementation.
@@ -83,38 +85,33 @@ public class SkipList<T extends Comparable<? super T>> {
 
 	// Find smallest element that is greater or equal to x
 	public T ceiling(T x) {
-		return null;
+		SkipListEntry<T>[] prev = find(x);
+		if (prev[0].next[0].element.compareTo(x) == 0)
+			return x;
+		else
+			return prev[0].next[0].element;
 	}
 
 	// Does list contain x?
 	public boolean contains(T x) {
 		SkipListEntry<T>[] prev = find(x);
-		if (prev[0].next[0] != null && prev[0].next[0].element != null && prev[0].next[0].element.compareTo(x) == 0)
+		if (prev[0].next[0].element != null && prev[0].next[0].element.compareTo(x) == 0)
 			return true;
 		return false;
 	}
 
 	// Return first element of list
 	public T first() {
-		SkipListEntry<T> p = head;
-		int length = p.next.length;
-		for (int i = 0; i < length; i++) {
-			if (p.next[i] != null && p.next[i].element != null)
-				return p.next[i].element;
-		}
-		return null;
+		return head.next[0].element;
 	}
 
 	// Find largest element that is less than or equal to x
 	public T floor(T x) {
 		SkipListEntry<T>[] prev = find(x);
-		if (prev[0].next[0] != null) {
-			if (prev[0].next[0].element.compareTo(x) == 0)
-				return x;
-			else
-				return prev[0].element;
-		}
-		return null;
+		if (prev[0].next[0].element.compareTo(x) == 0)
+			return x;
+		else
+			return prev[0].element;
 	}
 
 	// Return element at index n of list. First element is at index 0.
@@ -129,14 +126,33 @@ public class SkipList<T extends Comparable<? super T>> {
 
 	// Iterate through the elements of list in sorted order
 	public Iterator<T> iterator() {
-		return null;
+		return new SkipListIterator<>(head);
+	}
+
+	private class SkipListIterator<E> implements Iterator<E> {
+		List<SkipListEntry<E>> queue = new LinkedList<SkipListEntry<E>>();
+
+		private SkipListIterator(SkipListEntry<E> head) {
+			queue.add(head.next[0]);
+		}
+
+		public boolean hasNext() {
+			return !queue.isEmpty();
+		}
+
+		public E next() {
+			SkipListEntry<E> entry = queue.remove(0);
+			if (entry.next[0] != null)
+				queue.add(entry.next[0]);
+			return entry.element;
+		}
 	}
 
 	// Return last element of list
 	public T last() {
 		SkipListEntry<T> p = head;
 		for (int i = maxLevel; i >= 0; i--) {
-			while (p.next[i] != null && p.next[i].element != null)
+			while (p.next[i].element != null)
 				p = p.next[i];
 		}
 		return p.element;
@@ -152,7 +168,7 @@ public class SkipList<T extends Comparable<? super T>> {
 	public T remove(T x) {
 		SkipListEntry<T>[] prev = find(x);
 		SkipListEntry<T> n = prev[0].next[0];
-		if (n != null && n.element.compareTo(x) != 0)
+		if (n.element.compareTo(x) != 0)
 			return null;
 		else {
 			for (int i = 0; i <= maxLevel; i++) {
@@ -173,6 +189,8 @@ public class SkipList<T extends Comparable<? super T>> {
 
 	public static void main(String args[]) {
 		SkipList<Integer> skl = new SkipList<Integer>();
+		System.out.println(skl.first());
+		System.out.println(skl.last());
 		skl.add(10);
 		skl.add(20);
 		skl.add(30);
@@ -188,7 +206,6 @@ public class SkipList<T extends Comparable<? super T>> {
 		skl.add(13);
 		skl.add(23);
 		skl.add(33);
-
 		skl.add(2);
 		skl.add(14);
 		skl.add(24);
@@ -215,5 +232,7 @@ public class SkipList<T extends Comparable<? super T>> {
 		System.out.println(skl.last());
 		System.out.println(skl.floor(28));
 		System.out.println(skl.contains(30));
+		System.out.println(skl.contains(8));
+		System.out.println(skl.ceiling(29));
 	}
 }
