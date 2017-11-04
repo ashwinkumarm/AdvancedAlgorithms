@@ -64,7 +64,7 @@ public class LP3 {
 	 */
 	public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
 		DMSTGraph dmstGraph = new DMSTGraph(g);
-		FindDirectMst1 findMst = new FindDirectMst1();
+		FindDirectedMst findMst = new FindDirectedMst();
 		int originalSize = dmstGraph.size();
 		if (!checkIfRootCanReachAllTheVertices(g, start))
 			return 0;

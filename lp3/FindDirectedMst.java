@@ -115,6 +115,10 @@ public class FindDirectedMst {
 	 * @return
 	 */
 	public void transformWeights(DMSTGraph g, Vertex start) {
+		// disable incoming edges to root
+		Iterator<Edge> revIt = start.reverseIterator();
+		while (revIt.hasNext())
+			((DMSTEdge) revIt.next()).disable();
 		DMSTEdge dmstEdge;
 		for (Vertex dmstVertex : g) {
 			for (Edge edge : (DMSTVertex) dmstVertex) {
