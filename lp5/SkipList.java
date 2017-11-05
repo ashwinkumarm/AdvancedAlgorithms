@@ -13,13 +13,17 @@ public class SkipList<T extends Comparable<? super T>> {
 	public static class SkipListEntry<T> {
 		public T element;
 		public SkipListEntry<T>[] next;
+		public int index; // For get() function
 
 		public SkipListEntry(T element, int level) {
 			this.element = element;
 			next = new SkipListEntry[level + 1];
+			index = -1;
 		}
 
-		// public int level() { return next.size() - 1; }
+		public int getLevel() {
+			return next.length;
+		}
 
 	}
 
@@ -61,9 +65,15 @@ public class SkipList<T extends Comparable<? super T>> {
 		} else {
 			int lev = chooseLevel();
 			SkipListEntry<T> n = new SkipListEntry<T>(x, lev);
+			n.index = prev[0].index + 1;
 			for (int i = 0; i <= lev; i++) {
 				n.next[i] = prev[i].next[i];
 				prev[i].next[i] = n;
+			}
+			SkipListEntry<T> p = n;
+			while (p.next[0].element != null) {
+				p.next[0].index += 1;
+				p = p.next[0];
 			}
 			size++;
 		}
@@ -113,8 +123,28 @@ public class SkipList<T extends Comparable<? super T>> {
 
 	// Return element at index n of list. First element is at index 0.
 	public T get(int n) {
+		if (n >= size) {
+			return null;
+		}
+		SkipListEntry<T> p = head;
+		for (int i = maxLevel; i >= 0; i--) {
+			while (p.next[i].element != null) {
+				if (p.next[i].index == n)
+					return p.next[i].element;
+				else if (p.next[i].index > n)
+					break;
+				p = p.next[i];
+			}
+
+		}
 		return null;
 	}
+
+	/*
+	 * int idx = 0; SkipListEntry<T> p = head; for (int i = maxLevel; i >= 0; i--) {
+	 * while (idx + i <= n) { if (idx + i == n) return p.next[i].element; idx += i;
+	 * p = p.next[i]; } } return null;
+	 */
 
 	// Is the list empty?
 	public boolean isEmpty() {
@@ -157,7 +187,6 @@ public class SkipList<T extends Comparable<? super T>> {
 
 	// Reorganize the elements of the list into a perfect skip list
 	public void rebuild() {
-		// TODO: Atlast
 
 	}
 
@@ -173,6 +202,11 @@ public class SkipList<T extends Comparable<? super T>> {
 					prev[i].next[i] = n.next[i];
 				else
 					break;
+			}
+			SkipListEntry<T> p = n;
+			while (p.next[0].element != null) {
+				p.next[0].index -= 1;
+				p = p.next[0];
 			}
 			size--;
 		}
@@ -231,9 +265,10 @@ public class SkipList<T extends Comparable<? super T>> {
 		System.out.println(skl.contains(30));
 		System.out.println(skl.contains(8));
 		System.out.println(skl.ceiling(29));
+		System.out.println(skl.get(10));
 		Iterator sklIterator = skl.iterator();
 		while (sklIterator.hasNext()) {
-			System.out.println(sklIterator.next());
+			System.out.print(sklIterator.next() + " ");
 		}
 	}
 }
