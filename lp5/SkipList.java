@@ -11,14 +11,10 @@ public class SkipList<T extends Comparable<? super T>> {
 	public static class SkipListEntry<T> {
 		public T element;
 		public SkipListEntry<T>[] next;
-		// public SkipListEntry<T> prev;
-		public int index; // For get() function
 
 		public SkipListEntry(T element, int level) {
 			this.element = element;
 			next = new SkipListEntry[level + 1];
-			index = -1;
-			// prev = null;
 		}
 
 		public int getLevel() {
@@ -45,7 +41,6 @@ public class SkipList<T extends Comparable<? super T>> {
 
 	public SkipListEntry<T>[] find(T x) {
 		SkipListEntry<T>[] prev = new SkipListEntry[maxLevel + 1];
-		Arrays.fill(prev, null);
 		SkipListEntry<T> p = head;
 		for (int i = maxLevel; i >= 0; i--) {
 			while (p.next[i].element != null && p.next[i].element.compareTo(x) < 0)
@@ -65,15 +60,9 @@ public class SkipList<T extends Comparable<? super T>> {
 		} else {
 			int lev = chooseLevel();
 			SkipListEntry<T> n = new SkipListEntry<T>(x, lev);
-			n.index = prev[0].index + 1;
 			for (int i = 0; i <= lev; i++) {
 				n.next[i] = prev[i].next[i];
 				prev[i].next[i] = n;
-			}
-			SkipListEntry<T> p = n;
-			while (p.next[0].element != null) {
-				p.next[0].index += 1;
-				p = p.next[0];
 			}
 			size++;
 		}
@@ -93,10 +82,7 @@ public class SkipList<T extends Comparable<? super T>> {
 	// Find smallest element that is greater or equal to x
 	public T ceiling(T x) {
 		SkipListEntry<T>[] prev = find(x);
-		if (prev[0].next[0].element.compareTo(x) == 0)
-			return x;
-		else
-			return prev[0].next[0].element;
+		return prev[0].next[0].element;
 	}
 
 	// Does list contain x?
@@ -116,7 +102,7 @@ public class SkipList<T extends Comparable<? super T>> {
 	public T floor(T x) {
 		SkipListEntry<T>[] prev = find(x);
 		if (prev[0].next[0].element.compareTo(x) == 0)
-			return x;
+			return prev[0].next[0].element;
 		else
 			return prev[0].element;
 	}
@@ -126,25 +112,8 @@ public class SkipList<T extends Comparable<? super T>> {
 		if (n >= size) {
 			return null;
 		}
-		SkipListEntry<T> p = head;
-		for (int i = maxLevel; i >= 0; i--) {
-			while (p.next[i].element != null) {
-				if (p.next[i].index == n)
-					return p.next[i].element;
-				else if (p.next[i].index > n)
-					break;
-				p = p.next[i];
-			}
-
-		}
 		return null;
 	}
-
-	/*
-	 * int idx = 0; SkipListEntry<T> p = head; for (int i = maxLevel; i >= 0; i--) {
-	 * while (idx + i <= n) { if (idx + i == n) return p.next[i].element; idx += i;
-	 * p = p.next[i]; } } return null;
-	 */
 
 	// Is the list empty?
 	public boolean isEmpty() {
@@ -204,11 +173,6 @@ public class SkipList<T extends Comparable<? super T>> {
 					prev[i].next[i] = n.next[i];
 				else
 					break;
-			}
-			SkipListEntry<T> p = n;
-			while (p.next[0].element != null) {
-				p.next[0].index -= 1;
-				p = p.next[0];
 			}
 			size--;
 		}
