@@ -2,8 +2,6 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp5
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 // Skeleton for skip list implementation.
@@ -13,12 +11,14 @@ public class SkipList<T extends Comparable<? super T>> {
 	public static class SkipListEntry<T> {
 		public T element;
 		public SkipListEntry<T>[] next;
+		// public SkipListEntry<T> prev;
 		public int index; // For get() function
 
 		public SkipListEntry(T element, int level) {
 			this.element = element;
 			next = new SkipListEntry[level + 1];
 			index = -1;
+			// prev = null;
 		}
 
 		public int getLevel() {
@@ -157,20 +157,22 @@ public class SkipList<T extends Comparable<? super T>> {
 	}
 
 	private class SkipListIterator<E> implements Iterator<E> {
-		List<SkipListEntry<E>> queue = new LinkedList<SkipListEntry<E>>();
+		SkipListEntry<E> prev = null;
 
 		private SkipListIterator(SkipListEntry<E> head) {
-			queue.add(head.next[0]);
+			prev = head.next[0];
 		}
 
 		public boolean hasNext() {
-			return !queue.isEmpty();
+			return prev != null;
 		}
 
 		public E next() {
-			SkipListEntry<E> entry = queue.remove(0);
+			SkipListEntry<E> entry = prev;
 			if (entry.next[0] != null && entry.next[0].element != null)
-				queue.add(entry.next[0]);
+				prev = entry.next[0];
+			else
+				prev = null;
 			return entry.element;
 		}
 	}
