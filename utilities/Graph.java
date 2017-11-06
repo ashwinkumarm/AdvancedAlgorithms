@@ -270,6 +270,16 @@ public class Graph implements Iterable<Graph.Vertex> {
 		return vertex[n - 1];
 	}
 
+	/**
+	 * Find vertex no. n
+	 *
+	 * @param n
+	 *            : int
+	 */
+	public Vertex getVertexFromName(int n) {
+		return vertex[n];
+	}
+
 	/* Method to get the whole array. Why is this needed? */
 	public Vertex[] getVertexArray() {
 		return vertex;
