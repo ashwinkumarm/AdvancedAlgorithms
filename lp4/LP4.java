@@ -87,10 +87,10 @@ public class LP4 {
 		if (!sp.bellmanFord() || ((topoOrder = createTightGraphAndCheckForCycles(sp, h)) == null)) {
 			return -1;
 		}
-		HashMap<Vertex, Integer> map = new HashMap<>(); // TODO: Needs
+		HashMap<Vertex, Long> map = new HashMap<>(); // TODO: Needs
 														// refactoring
-		map.put(h.getVertexFromName(s.getName()), 1);
-		Integer Np, Nt;
+		map.put(h.getVertexFromName(s.getName()), 1L);
+		Long Np, Nt;
 		for (Vertex u : topoOrder) {
 			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
