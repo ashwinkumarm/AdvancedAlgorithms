@@ -13,10 +13,10 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class ShortestPathVertex implements Index {
 
-	Graph.Vertex vertex;
-	int distance, index, count;
-	boolean seen;
-	Graph.Vertex parent;
+	public Graph.Vertex vertex;
+	public int distance, index, count;
+	public boolean seen;
+	public Graph.Vertex parent;
 
 	/**
 	 * Constructor to initialize the variables

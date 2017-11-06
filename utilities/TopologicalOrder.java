@@ -1,8 +1,8 @@
-package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
 /**
  * This class performs topological ordering of vertices of a directed graph using two methods
- * 
+ *
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
@@ -25,12 +25,12 @@ public class TopologicalOrder {
 	/**
 	 * Remove vertices with no incoming edges, one at a time, along with their
 	 * incident edges, and add them to a list.
-	 * 
+	 *
 	 * @param g
 	 * @return
 	 * @throws List<Graph.Vertex>
 	 */
-	public static List<Graph.Vertex> toplogicalOrder1(Graph g) throws Exception {
+	public static List<Graph.Vertex> toplogicalOrder1(Graph g) {
 		TopoGraph topoGraph = new TopoGraph(g);
 		int topNum = 0;
 		Queue<Graph.Vertex> q = new LinkedList<Graph.Vertex>();
@@ -61,7 +61,7 @@ public class TopologicalOrder {
 	/**
 	 * Run DFS on g and add nodes to the front of the output list, in the order in
 	 * which they finish.
-	 * 
+	 *
 	 * @param g
 	 * @return List<Graph.Vertex>
 	 */

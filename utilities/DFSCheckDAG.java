@@ -1,4 +1,4 @@
-package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
 /**
  * This class checks whether if a directed graph has a cycle or not 

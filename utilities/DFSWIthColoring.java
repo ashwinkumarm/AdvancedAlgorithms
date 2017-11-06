@@ -9,7 +9,7 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.uti
 
 import java.util.List;
 
-public class DFSWIthColoring extends GraphAlgorithm<DFSWIthColoring.DFSVertex> {
+public class DFSWithColoring extends GraphAlgorithm<DFSWithColoring.DFSVertex> {
 
 	public static int cno, time;
 
@@ -30,7 +30,7 @@ public class DFSWIthColoring extends GraphAlgorithm<DFSWIthColoring.DFSVertex> {
 
 	}
 
-	public DFSWIthColoring(Graph g) {
+	public DFSWithColoring(Graph g) {
 		super(g);
 		node = new DFSVertex[g.size()];
 		// Create array for storing vertex properties

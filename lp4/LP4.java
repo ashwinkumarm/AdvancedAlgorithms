@@ -1,14 +1,16 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp4;
 
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopoGraph;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.BellmanFordTake1;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.ShortestPath;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.TopologicalOrder;
 
 public class LP4 {
 
@@ -22,11 +24,11 @@ public class LP4 {
 		this.s = s;
 		initializeTopoGraph(g);
 	}
-	
-	public void initializeTopoGraph(Graph g){
+
+	public void initializeTopoGraph(Graph g) {
 		tg = new TopoGraph(g);
 		for (Graph.Vertex u : g) {
-			tg.getVertex(u).inDegree = u.revAdj.size(); 
+			tg.getVertex(u).inDegree = u.revAdj.size();
 		}
 	}
 
@@ -44,8 +46,9 @@ public class LP4 {
 		findAllTopologicalOrders(topologicalOrder, allTopOrder);
 		return allTopOrder.size();
 	}
-	
-	public void findAllTopologicalOrders(LinkedList<Vertex> topologicalOrder, LinkedList<LinkedList<Vertex>> allTopOrder) {
+
+	public void findAllTopologicalOrders(LinkedList<Vertex> topologicalOrder,
+			LinkedList<LinkedList<Vertex>> allTopOrder) {
 		boolean flag = false;
 		for (Vertex v : g) {
 			if (tg.getVertex(v).inDegree == 0 && !tg.getVertex(v).seen) {
@@ -77,8 +80,37 @@ public class LP4 {
 	// Part c. Return the number of shortest paths from s to t
 	// Return -1 if the graph has a negative or zero cycle
 	public long countShortestPaths(Vertex t) {
-		// To do
-		return 0;
+		ShortestPath sp = new ShortestPath(g, s);
+		Graph h = new Graph(g.size());
+		h.setDirected(true);
+		List<Vertex> topoOrder;
+		if (!sp.bellmanFord() || ((topoOrder = createTightGraphAndCheckForCycles(sp, h)) == null)) {
+			return -1;
+		}
+		HashMap<Vertex, Long> map = new HashMap<>(); // TODO: Needs
+														// refactoring
+		map.put(h.getVertexFromName(s.getName()), 1L);
+		Long Np, Nt;
+		for (Vertex u : topoOrder) {
+			for (Edge e : u) {
+				Vertex v = e.otherEnd(u);
+				if ((Np = map.get(u)) != null) {
+					map.put(v, ((Nt = map.get(v)) != null ? Nt : 0) + Np);
+				}
+			}
+		}
+		return map.get(t);
+	}
+
+	private List<Vertex> createTightGraphAndCheckForCycles(ShortestPath sp, Graph h) {
+		for (Vertex u : g) {
+			for (Edge e : u) {
+				Vertex v = e.otherEnd(u);
+				if (sp.getVertex(v).distance == sp.getVertex(u).distance + e.weight)
+					h.addEdge(h.getVertexFromName(u.getName()), h.getVertexFromName(v.getName()), e.weight);
+			}
+		}
+		return TopologicalOrder.toplogicalOrder1(h);
 	}
 
 	// Part d. Print all shortest paths from s to t, one per line, and
@@ -91,8 +123,9 @@ public class LP4 {
 
 	// Part e. Return weight of shortest path from s to t using at most k edges
 	public int constrainedShortestPath(Vertex t, int k) {
-		// To do
-		return 0;
+		BellmanFordTake1 bf = new BellmanFordTake1(g);
+		bf.findShortestPathUsingAtmostKEdges(g, k, s);
+		return bf.getVertex(t).distance;
 	}
 
 	// Part f. Reward collection problem
