@@ -17,6 +17,8 @@ public class LP4 {
 	Graph g;
 	Vertex s;
 	TopoGraph tg;
+	ShortestPath sp;
+	int maxRewards = Integer.MIN_VALUE;
 
 	// common constructor for all parts of LP4: g is graph, s is source vertex
 	public LP4(Graph g, Vertex s) {
@@ -133,9 +135,43 @@ public class LP4 {
 	// tour is empty list passed as a parameter, for output tour
 	// Return total reward for tour
 	public int reward(HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
-		// To do
+		sp = new ShortestPath(g, s);
+		sp.dijkstra();
+		List<Vertex> tmp = new LinkedList<>(); 
+		findPathWithMaxReward(s,vertexRewardMap,tour,tmp,0);
 		return 0;
 	}
+	
+	public void findPathWithMaxReward(Vertex u, HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour,List<Vertex> tmp,int rewards){
+		
+	
+		if(u != s || tmp.isEmpty()){
+			for (Edge e : u) {
+				Vertex v = e.otherEnd(u);
+				if(!sp.getVertex(v).seen){
+					sp.getVertex(u).seen = true;
+					if(sp.getVertex(v).parent == u){
+						rewards += vertexRewardMap.get(v);
+					}
+					tmp.add(u);
+					findPathWithMaxReward(v, vertexRewardMap, tour, tmp, rewards);
+					tmp.remove(u);
+					if(sp.getVertex(v).parent == u){
+						rewards -= vertexRewardMap.get(v);
+					}
+					sp.getVertex(u).seen = false;					
+				}
+			}
+
+		}
+		else {
+				if(maxRewards < rewards ){
+					maxRewards = rewards;
+					tour = tmp;
+				}
+		}
+	}
+	
 
 	// Do not modify this function
 	static void printGraph(Graph g, HashMap<Vertex, Integer> map, Vertex s, Vertex t, int limit) {
