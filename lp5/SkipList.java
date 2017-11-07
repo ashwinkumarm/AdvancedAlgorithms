@@ -256,8 +256,7 @@ public class SkipList<T extends Comparable<? super T>> {
 	void rebuild(SkipListEntry<T>[] entryArray, int l, int r, int lev) {
 		if (l <= r) {
 			if (lev == 1) {
-				for (int i = l; i <= r; i++)
-					entryArray[i] = new SkipListEntry<T>(null, 1);
+				entryArray[l] = new SkipListEntry<T>(null, lev);
 			} else {
 				int mid = (l + r) >> 1;
 				entryArray[mid] = new SkipListEntry<T>(null, lev);
@@ -375,7 +374,14 @@ public class SkipList<T extends Comparable<? super T>> {
 		System.out.println(skl.contains(30));
 		System.out.println(skl.contains(8));
 		System.out.println(skl.ceiling(29));
-		System.out.println("Get: " + skl.get(3));
+
+		skl.add(3);
+		skl.add(4);
+		skl.add(34);
+		skl.add(56);
+		skl.add(12);
+		skl.add(9);
+		skl.add(1);
 		skl.rebuild();
 		skl.printList();
 		skl.add(38);
@@ -385,5 +391,7 @@ public class SkipList<T extends Comparable<? super T>> {
 		while (sklIterator.hasNext()) {
 			System.out.print(sklIterator.next() + " ");
 		}
+
+		System.out.println("\nGet: " + skl.get(8));
 	}
 }
