@@ -5,12 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopoGraph;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG.DFSCheckDAG;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.BellmanFordTake1;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.ShortestPath;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.TopologicalOrder;
 
 public class LP4 {
 
@@ -87,26 +87,10 @@ public class LP4 {
 	 * @return
 	 */
 	public long countShortestPaths(Vertex t) {
-		ShortestPath sp = new ShortestPath(g, s);
 		Graph h = new Graph(g.size());
-		h.setDirected(true);
-		List<Vertex> topoOrder;
-		if (!sp.bellmanFord() || ((topoOrder = createTightGraphAndCheckForCycles(sp, h)) == null)) {
+		if (checkIfGraphHasNonPositiveCycles(h))
 			return -1;
-		}
-		HashMap<Vertex, Long> map = new HashMap<>(); // TODO: Needs
-														// refactoring
-		map.put(h.getVertexFromName(s.getName()), 1L);
-		Long Np, Nt;
-		for (Vertex u : topoOrder) {
-			for (Edge e : u) {
-				Vertex v = e.otherEnd(u);
-				if ((Np = map.get(u)) != null) {
-					map.put(v, ((Nt = map.get(v)) != null ? Nt : 0) + Np);
-				}
-			}
-		}
-		return map.get(t);
+		return countShortestPaths(h.getVertexFromName(s.getName()), h.getVertexFromName(t.getName()), new HashMap<>());
 	}
 
 	/**
@@ -118,26 +102,65 @@ public class LP4 {
 	 * @return
 	 */
 	public long enumerateShortestPaths(Vertex t) {
-		ShortestPath sp = new ShortestPath(g, s);
 		Graph h = new Graph(g.size());
-		h.setDirected(true);
-		if (!sp.bellmanFord() || createTightGraphAndCheckForCycles(sp, h) == null) {
+		if (checkIfGraphHasNonPositiveCycles(h))
 			return -1;
-		}
 		return printAllThePaths(h.getVertexFromName(s.getName()), h.getVertexFromName(t.getName()), new LinkedList<>(),
 				0);
 	}
 
 	/**
+	 * Helper method which creates the tight graph H and also checks if the
+	 * input graph G has non positive cycles.
+	 *
+	 * @param h
+	 * @return
+	 */
+	private boolean checkIfGraphHasNonPositiveCycles(Graph h) {
+		ShortestPath sp = new ShortestPath(g, s);
+		h.setDirected(true);
+		if (!sp.bellmanFord() || !createTightGraphAndCheckForCycles(sp, h)) {
+			System.out.println("Non-positive cycle in graph. Unable to solve problem.");
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Recursive method to count the number of shortest path in the topological
+	 * order.
+	 *
+	 * @param s
+	 * @param t
+	 * @param map
+	 * @return
+	 */
+	private long countShortestPaths(Vertex s, Vertex t, HashMap<Vertex, Long> map) {
+		Long count = 0L, Np;
+		if (t == s)
+			count = 1L;
+		else {
+			Vertex p;
+			for (Edge e : t.revAdj) {
+				p = e.otherEnd(t);
+				count += ((Np = map.get(p)) != null) ? Np : countShortestPaths(s, p, map);
+			}
+		}
+		map.put(t, count); // memoization
+		return count;
+	}
+
+	/**
 	 * This method creates a new graph h which contains only the tight edges
 	 * [(u,v) - such that v.d = u.d + (u,v).weight] from the input graph g. It
-	 * also finds the topological order of h and checks if the graph is acyclic.
+	 * also finds the topological order of h and checks if this graph is
+	 * acyclic.
 	 *
 	 * @param sp
 	 * @param h
 	 * @return
 	 */
-	private List<Vertex> createTightGraphAndCheckForCycles(ShortestPath sp, Graph h) {
+	private boolean createTightGraphAndCheckForCycles(ShortestPath sp, Graph h) {
 		for (Vertex u : g) {
 			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
@@ -145,11 +168,12 @@ public class LP4 {
 					h.addEdge(h.getVertexFromName(u.getName()), h.getVertexFromName(v.getName()), e.weight);
 			}
 		}
-		return TopologicalOrder.toplogicalOrder1(h);
+		return DFSCheckDAG.isDAG(h);
 	}
 
 	/**
-	 * Recursive method to print all the paths between s and t in the Graph H.
+	 * Recursive method to print all the paths between s and t in the Graph H
+	 * (tight graph).
 	 *
 	 * @param u
 	 * @param t
@@ -194,41 +218,39 @@ public class LP4 {
 	public int reward(HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
 		sp = new ShortestPath(g, s);
 		sp.dijkstra();
-		List<Vertex> tmp = new LinkedList<>(); 
-		findPathWithMaxReward(s,vertexRewardMap,tour,tmp,0);
+		List<Vertex> tmp = new LinkedList<>();
+		findPathWithMaxReward(s, vertexRewardMap, tour, tmp, 0);
 		return maxRewards;
 	}
-	
-	public void findPathWithMaxReward(Vertex u, HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour,List<Vertex> tmp,int rewards){
-		
-	
-		if(u != s || tmp.isEmpty()){
+
+	public void findPathWithMaxReward(Vertex u, HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour,
+			List<Vertex> tmp, int rewards) {
+
+		if (u != s || tmp.isEmpty()) {
 			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
-				if(!sp.getVertex(v).seen){
+				if (!sp.getVertex(v).seen) {
 					sp.getVertex(u).seen = true;
-					if(sp.getVertex(v).parent == u){
+					if (sp.getVertex(v).parent == u) {
 						rewards += vertexRewardMap.get(v);
 					}
 					tmp.add(u);
 					findPathWithMaxReward(v, vertexRewardMap, tour, tmp, rewards);
 					tmp.remove(u);
-					if(sp.getVertex(v).parent == u){
+					if (sp.getVertex(v).parent == u) {
 						rewards -= vertexRewardMap.get(v);
 					}
-					sp.getVertex(u).seen = false;					
+					sp.getVertex(u).seen = false;
 				}
 			}
 
-		}
-		else {
-				if(maxRewards < rewards ){
-					maxRewards = rewards;
-					tour = tmp;
-				}
+		} else {
+			if (maxRewards < rewards) {
+				maxRewards = rewards;
+				tour = tmp;
+			}
 		}
 	}
-	
 
 	// Do not modify this function
 	static void printGraph(Graph g, HashMap<Vertex, Integer> map, Vertex s, Vertex t, int limit) {
