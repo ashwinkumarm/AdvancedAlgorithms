@@ -18,7 +18,7 @@ public class LP4 {
 	Vertex s;
 	TopoGraph tg;
 	ShortestPath sp;
-	int maxRewards = Integer.MIN_VALUE;
+	int maxRewards = 0;
 
 	// common constructor for all parts of LP4: g is graph, s is source vertex
 	public LP4(Graph g, Vertex s) {
@@ -196,7 +196,7 @@ public class LP4 {
 		sp.dijkstra();
 		List<Vertex> tmp = new LinkedList<>(); 
 		findPathWithMaxReward(s,vertexRewardMap,tour,tmp,0);
-		return 0;
+		return maxRewards;
 	}
 	
 	public void findPathWithMaxReward(Vertex u, HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour,List<Vertex> tmp,int rewards){
