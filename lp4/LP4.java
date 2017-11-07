@@ -72,15 +72,20 @@ public class LP4 {
 
 		if (!flag) {
 			for (Vertex v : topologicalOrder) {
-				System.out.print(v);
+				System.out.print(v + " ");
 			}
 			allTopOrder.add(topologicalOrder);
 			System.out.println();
 		}
 	}
 
-	// Part c. Return the number of shortest paths from s to t
-	// Return -1 if the graph has a negative or zero cycle
+	/**
+	 * (Part c) - Method to return the number of shortest paths from s to t.
+	 * Returns -1 if the graph has a negative or zero cycle
+	 *
+	 * @param t
+	 * @return
+	 */
 	public long countShortestPaths(Vertex t) {
 		ShortestPath sp = new ShortestPath(g, s);
 		Graph h = new Graph(g.size());
@@ -104,6 +109,34 @@ public class LP4 {
 		return map.get(t);
 	}
 
+	/**
+	 * (Part d) - Method to print all shortest paths from s to t, one per line,
+	 * and return number of shortest paths from s to t. Return -1 if the graph
+	 * has a negative or zero cycle.
+	 *
+	 * @param t
+	 * @return
+	 */
+	public long enumerateShortestPaths(Vertex t) {
+		ShortestPath sp = new ShortestPath(g, s);
+		Graph h = new Graph(g.size());
+		h.setDirected(true);
+		if (!sp.bellmanFord() || createTightGraphAndCheckForCycles(sp, h) == null) {
+			return -1;
+		}
+		return printAllThePaths(h.getVertexFromName(s.getName()), h.getVertexFromName(t.getName()), new LinkedList<>(),
+				0);
+	}
+
+	/**
+	 * This method creates a new graph h which contains only the tight edges
+	 * [(u,v) - such that v.d = u.d + (u,v).weight] from the input graph g. It
+	 * also finds the topological order of h and checks if the graph is acyclic.
+	 *
+	 * @param sp
+	 * @param h
+	 * @return
+	 */
 	private List<Vertex> createTightGraphAndCheckForCycles(ShortestPath sp, Graph h) {
 		for (Vertex u : g) {
 			for (Edge e : u) {
@@ -115,15 +148,39 @@ public class LP4 {
 		return TopologicalOrder.toplogicalOrder1(h);
 	}
 
-	// Part d. Print all shortest paths from s to t, one per line, and
-	// return number of shortest paths from s to t.
-	// Return -1 if the graph has a negative or zero cycle.
-	public long enumerateShortestPaths(Vertex t) {
-		// To do
-		return 0;
+	/**
+	 * Recursive method to print all the paths between s and t in the Graph H.
+	 *
+	 * @param u
+	 * @param t
+	 * @param path
+	 * @param count
+	 * @return
+	 */
+	private int printAllThePaths(Vertex u, Vertex t, LinkedList<Vertex> path, int count) {
+		path.add(u);
+		if (u == t) {
+			for (Vertex v : path)
+				System.out.print(v + " ");
+			System.out.println();
+			count++;
+		} else
+			for (Edge e : u) {
+				Vertex v = e.otherEnd(u);
+				count = printAllThePaths(v, t, path, count);
+			}
+		path.removeLast();
+		return count;
 	}
 
-	// Part e. Return weight of shortest path from s to t using at most k edges
+	/**
+	 * Part e - Method to return weight of shortest path from s to t using at
+	 * most k edges by using Bellamn-Ford Take 1 algorithm.
+	 *
+	 * @param t
+	 * @param k
+	 * @return
+	 */
 	public int constrainedShortestPath(Vertex t, int k) {
 		BellmanFordTake1 bf = new BellmanFordTake1(g);
 		bf.findShortestPathUsingAtmostKEdges(g, k, s);
