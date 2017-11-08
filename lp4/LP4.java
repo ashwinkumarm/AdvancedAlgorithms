@@ -41,8 +41,23 @@ public class LP4 {
 
 	// Part a. Return number of topological orders of g
 	public long countTopologicalOrders() {
-		// To do
-		return 0;
+		Long count = 0L;
+		boolean flag = false;
+		for (Vertex v : g) {
+			if (tg.getVertex(v).inDegree == 0 && !tg.getVertex(v).seen) {
+				for (Edge e : v)
+					tg.reduceInDegree(e.to);
+				tg.getVertex(v).seen = true;
+				count += countTopologicalOrders();
+				tg.getVertex(v).seen = false;
+				for (Edge e : v)
+					tg.increaseInDegree(e.to);
+				flag = true;
+			}
+		}
+		if (!flag)
+			count++;
+		return count;
 	}
 
 	// Part b. Print all topological orders of g, one per line, and
@@ -85,8 +100,8 @@ public class LP4 {
 	}
 
 	/**
-	 * (Part c) - Method to return the number of shortest paths from s to t.
-	 * Returns -1 if the graph has a negative or zero cycle
+	 * (Part c) - Method to return the number of shortest paths from s to t. Returns
+	 * -1 if the graph has a negative or zero cycle
 	 *
 	 * @param t
 	 * @return
@@ -99,9 +114,9 @@ public class LP4 {
 	}
 
 	/**
-	 * (Part d) - Method to print all shortest paths from s to t, one per line,
-	 * and return number of shortest paths from s to t. Return -1 if the graph
-	 * has a negative or zero cycle.
+	 * (Part d) - Method to print all shortest paths from s to t, one per line, and
+	 * return number of shortest paths from s to t. Return -1 if the graph has a
+	 * negative or zero cycle.
 	 *
 	 * @param t
 	 * @return
@@ -115,8 +130,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Helper method which creates the tight graph H and also checks if the
-	 * input graph G has non positive cycles.
+	 * Helper method which creates the tight graph H and also checks if the input
+	 * graph G has non positive cycles.
 	 *
 	 * @param h
 	 * @return
@@ -146,7 +161,7 @@ public class LP4 {
 			count = 1L;
 		else {
 			Vertex p;
-			for (Edge e : t.revAdj) { 
+			for (Edge e : t.revAdj) {
 				p = e.otherEnd(t);
 				count += ((Np = map.get(p)) != null) ? Np : countShortestPaths(s, p, map);
 			}
@@ -156,10 +171,9 @@ public class LP4 {
 	}
 
 	/**
-	 * This method creates a new graph h which contains only the tight edges
-	 * [(u,v) - such that v.d = u.d + (u,v).weight] from the input graph g. It
-	 * also finds the topological order of h and checks if this graph is
-	 * acyclic.
+	 * This method creates a new graph h which contains only the tight edges [(u,v)
+	 * - such that v.d = u.d + (u,v).weight] from the input graph g. It also finds
+	 * the topological order of h and checks if this graph is acyclic.
 	 *
 	 * @param sp
 	 * @param h
@@ -177,8 +191,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Recursive method to print all the paths between s and t in the Graph H
-	 * (tight graph).
+	 * Recursive method to print all the paths between s and t in the Graph H (tight
+	 * graph).
 	 *
 	 * @param u
 	 * @param t
@@ -204,8 +218,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Part e - Method to return weight of shortest path from s to t using at
-	 * most k edges by using Bellamn-Ford Take 1 algorithm.
+	 * Part e - Method to return weight of shortest path from s to t using at most k
+	 * edges by using Bellamn-Ford Take 1 algorithm.
 	 *
 	 * @param t
 	 * @param k
@@ -222,7 +236,7 @@ public class LP4 {
 	// tour is empty list passed as a parameter, for output tour
 	// Return total reward for tour
 	public int reward(HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
-		
+
 		PriorityQueue<RewardPath> q = new PriorityQueue<>(Collections.reverseOrder());
 		for (Vertex u : g) {
 			enumerateShortestPaths(u);
@@ -236,43 +250,42 @@ public class LP4 {
 			}
 			shortestPaths.clear();
 		}
-		
-		while(!q.isEmpty()){
+
+		while (!q.isEmpty()) {
 			RewardPath rp = q.poll();
 			resetVisitedStatus(rp.path);
 			Vertex lastVertexInPath = rp.path.get(rp.path.size());
-			if(findPathToSrc(rp.path, lastVertexInPath)){
+			if (findPathToSrc(rp.path, lastVertexInPath)) {
 				tour.addAll(rp.path);
 				return rp.totalRewards;
 			}
 			resetVisitedStatus(rp.path);
 		}
-		
+
 		return 0;
 	}
 
-	public void resetVisitedStatus(List<Vertex> path){
+	public void resetVisitedStatus(List<Vertex> path) {
 		for (Vertex u : path) {
 			u.seen = !u.seen;
 		}
 	}
-	
+
 	public boolean findPathToSrc(List<Vertex> path, Vertex u) {
-	
-		if(u != s){
+
+		if (u != s) {
 			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
-				if (!v.seen ) {
+				if (!v.seen) {
 					path.add(v);
 					findPathToSrc(path, v);
 				}
 			}
 			return false;
-		}
-		else{
+		} else {
 			return true;
 		}
-		
+
 	}
 
 	// Do not modify this function
