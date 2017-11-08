@@ -1,14 +1,18 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp4;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopoGraph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG.DFSCheckDAG;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.BellmanFordTake1;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.ShortestPath;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS.DFSVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
@@ -19,6 +23,7 @@ public class LP4 {
 	TopoGraph tg;
 	ShortestPath sp;
 	int maxRewards = 0;
+	List<List<Vertex>> shortestPaths = new LinkedList<>();
 
 	// common constructor for all parts of LP4: g is graph, s is source vertex
 	public LP4(Graph g, Vertex s) {
@@ -141,7 +146,7 @@ public class LP4 {
 			count = 1L;
 		else {
 			Vertex p;
-			for (Edge e : t.revAdj) {
+			for (Edge e : t.revAdj) { 
 				p = e.otherEnd(t);
 				count += ((Np = map.get(p)) != null) ? Np : countShortestPaths(s, p, map);
 			}
@@ -184,6 +189,7 @@ public class LP4 {
 	private int printAllThePaths(Vertex u, Vertex t, LinkedList<Vertex> path, int count) {
 		path.add(u);
 		if (u == t) {
+			shortestPaths.add(path);
 			for (Vertex v : path)
 				System.out.print(v + " ");
 			System.out.println();
@@ -216,40 +222,57 @@ public class LP4 {
 	// tour is empty list passed as a parameter, for output tour
 	// Return total reward for tour
 	public int reward(HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
-		sp = new ShortestPath(g, s);
-		sp.dijkstra();
-		List<Vertex> tmp = new LinkedList<>();
-		findPathWithMaxReward(s, vertexRewardMap, tour, tmp, 0);
-		return maxRewards;
+		
+		PriorityQueue<RewardPath> q = new PriorityQueue<>(Collections.reverseOrder());
+		for (Vertex u : g) {
+			enumerateShortestPaths(u);
+			for (List<Vertex> lst : shortestPaths) {
+				RewardPath rp = new RewardPath();
+				rp.path.addAll(lst);
+				for (Vertex v : lst) {
+					rp.totalRewards += vertexRewardMap.get(v);
+				}
+				q.add(rp);
+			}
+			shortestPaths.clear();
+		}
+		
+		while(!q.isEmpty()){
+			RewardPath rp = q.poll();
+			resetVisitedStatus(rp.path);
+			Vertex lastVertexInPath = rp.path.get(rp.path.size());
+			if(findPathToSrc(rp.path, lastVertexInPath)){
+				tour.addAll(rp.path);
+				return rp.totalRewards;
+			}
+			resetVisitedStatus(rp.path);
+		}
+		
+		return 0;
 	}
 
-	public void findPathWithMaxReward(Vertex u, HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour,
-			List<Vertex> tmp, int rewards) {
-
-		if (u != s || tmp.isEmpty()) {
+	public void resetVisitedStatus(List<Vertex> path){
+		for (Vertex u : path) {
+			u.seen = !u.seen;
+		}
+	}
+	
+	public boolean findPathToSrc(List<Vertex> path, Vertex u) {
+	
+		if(u != s){
 			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
-				if (!sp.getVertex(v).seen) {
-					sp.getVertex(u).seen = true;
-					if (sp.getVertex(v).parent == u) {
-						rewards += vertexRewardMap.get(v);
-					}
-					tmp.add(u);
-					findPathWithMaxReward(v, vertexRewardMap, tour, tmp, rewards);
-					tmp.remove(u);
-					if (sp.getVertex(v).parent == u) {
-						rewards -= vertexRewardMap.get(v);
-					}
-					sp.getVertex(u).seen = false;
+				if (!v.seen ) {
+					path.add(v);
+					findPathToSrc(path, v);
 				}
 			}
-
-		} else {
-			if (maxRewards < rewards) {
-				maxRewards = rewards;
-				tour = tmp;
-			}
+			return false;
 		}
+		else{
+			return true;
+		}
+		
 	}
 
 	// Do not modify this function
