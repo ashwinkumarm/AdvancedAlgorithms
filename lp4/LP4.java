@@ -281,6 +281,7 @@ public class LP4 {
 						return true;
 					}
 					path.remove(v);
+					v.seen = false;
 				}
 			}
 			return false;
