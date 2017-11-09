@@ -1,5 +1,6 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp4;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
@@ -9,6 +10,11 @@ public class RewardPath implements Comparable<RewardPath>{
 	
 	List<Vertex> path;
 	int totalRewards;
+	
+	public RewardPath() {
+		path = new LinkedList<>();
+		totalRewards = 0;
+	}
 	
 	public int getTotalRewards() {
 		return totalRewards;

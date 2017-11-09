@@ -1,6 +1,5 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp4;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,7 +11,6 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.BellmanFordTake1;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.ShortestPath;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS.DFSVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
@@ -203,7 +201,7 @@ public class LP4 {
 	private int printAllThePaths(Vertex u, Vertex t, LinkedList<Vertex> path, int count) {
 		path.add(u);
 		if (u == t) {
-			shortestPaths.add(path);
+			shortestPaths.add(new LinkedList<>(path));
 			for (Vertex v : path)
 				System.out.print(v + " ");
 			System.out.println();
@@ -254,7 +252,7 @@ public class LP4 {
 		while (!q.isEmpty()) {
 			RewardPath rp = q.poll();
 			resetVisitedStatus(rp.path);
-			Vertex lastVertexInPath = rp.path.get(rp.path.size());
+			Vertex lastVertexInPath = rp.path.get(rp.path.size()-1);
 			if (findPathToSrc(rp.path, lastVertexInPath)) {
 				tour.addAll(rp.path);
 				return rp.totalRewards;
@@ -274,11 +272,13 @@ public class LP4 {
 	public boolean findPathToSrc(List<Vertex> path, Vertex u) {
 
 		if (u != s) {
-			for (Edge e : u) {
+			for (Edge e : u.adj) {
 				Vertex v = e.otherEnd(u);
 				if (!v.seen) {
 					path.add(v);
-					findPathToSrc(path, v);
+					if(findPathToSrc(path, v)){
+						return true;
+					}
 				}
 			}
 			return false;
