@@ -22,6 +22,7 @@ public class LP4 {
 	ShortestPath sp;
 	int maxRewards = 0;
 	List<List<Vertex>> shortestPaths = new LinkedList<>();
+	List<Vertex> maxPath = new LinkedList<>();
 
 	// common constructor for all parts of LP4: g is graph, s is source vertex
 	public LP4(Graph g, Vertex s) {
@@ -98,8 +99,8 @@ public class LP4 {
 	}
 
 	/**
-	 * (Part c) - Method to return the number of shortest paths from s to t. Returns
-	 * -1 if the graph has a negative or zero cycle
+	 * (Part c) - Method to return the number of shortest paths from s to t.
+	 * Returns -1 if the graph has a negative or zero cycle
 	 *
 	 * @param t
 	 * @return
@@ -112,9 +113,9 @@ public class LP4 {
 	}
 
 	/**
-	 * (Part d) - Method to print all shortest paths from s to t, one per line, and
-	 * return number of shortest paths from s to t. Return -1 if the graph has a
-	 * negative or zero cycle.
+	 * (Part d) - Method to print all shortest paths from s to t, one per line,
+	 * and return number of shortest paths from s to t. Return -1 if the graph
+	 * has a negative or zero cycle.
 	 *
 	 * @param t
 	 * @return
@@ -128,8 +129,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Helper method which creates the tight graph H and also checks if the input
-	 * graph G has non positive cycles.
+	 * Helper method which creates the tight graph H and also checks if the
+	 * input graph G has non positive cycles.
 	 *
 	 * @param h
 	 * @return
@@ -169,9 +170,10 @@ public class LP4 {
 	}
 
 	/**
-	 * This method creates a new graph h which contains only the tight edges [(u,v)
-	 * - such that v.d = u.d + (u,v).weight] from the input graph g. It also finds
-	 * the topological order of h and checks if this graph is acyclic.
+	 * This method creates a new graph h which contains only the tight edges
+	 * [(u,v) - such that v.d = u.d + (u,v).weight] from the input graph g. It
+	 * also finds the topological order of h and checks if this graph is
+	 * acyclic.
 	 *
 	 * @param sp
 	 * @param h
@@ -189,8 +191,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Recursive method to print all the paths between s and t in the Graph H (tight
-	 * graph).
+	 * Recursive method to print all the paths between s and t in the Graph H
+	 * (tight graph).
 	 *
 	 * @param u
 	 * @param t
@@ -202,9 +204,10 @@ public class LP4 {
 		path.add(g.getVertexFromName(u.getName()));
 		if (u == t) {
 			shortestPaths.add(new LinkedList<>(path));
-			/*for (Vertex v : path)
-				System.out.print(v + " ");
-			System.out.println();*/
+			/*
+			 * for (Vertex v : path) System.out.print(v + " ");
+			 * System.out.println();
+			 */
 			count++;
 		} else
 			for (Edge e : u) {
@@ -216,8 +219,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Part e - Method to return weight of shortest path from s to t using at most k
-	 * edges by using Bellamn-Ford Take 1 algorithm.
+	 * Part e - Method to return weight of shortest path from s to t using at
+	 * most k edges by using Bellamn-Ford Take 1 algorithm.
 	 *
 	 * @param t
 	 * @param k
@@ -252,7 +255,7 @@ public class LP4 {
 		while (!q.isEmpty()) {
 			RewardPath rp = q.poll();
 			resetVisitedStatus(rp.path);
-			Vertex lastVertexInPath = rp.path.get(rp.path.size()-1);
+			Vertex lastVertexInPath = rp.path.get(rp.path.size() - 1);
 			if (findPathToSrc(rp.path, lastVertexInPath)) {
 				tour.addAll(rp.path);
 				return rp.totalRewards;
@@ -270,14 +273,13 @@ public class LP4 {
 	}
 
 	public boolean findPathToSrc(List<Vertex> path, Vertex u) {
-
 		if (u != s) {
 			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
 				if (!v.seen || v == s) {
 					path.add(v);
 					v.seen = true;
-					if(findPathToSrc(path, v)){
+					if (findPathToSrc(path, v)) {
 						return true;
 					}
 					path.remove(v);
@@ -289,6 +291,59 @@ public class LP4 {
 			return true;
 		}
 
+	}
+
+	public int reward1(HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
+		Graph h = new Graph(g.size());
+		h.setDirected(true);
+		ShortestPath sp = new ShortestPath(g, s);
+		sp.dijkstra();
+		for (Vertex u : g) {
+			for (Edge e : u) {
+				Vertex v = e.otherEnd(u);
+				if (sp.getVertex(v).distance == sp.getVertex(u).distance + e.weight)
+					h.addEdge(h.getVertexFromName(u.getName()), h.getVertexFromName(v.getName()), e.weight);
+			}
+		}
+		findRewards1(h.getVertexFromName(s.getName()), new LinkedList<Vertex>(), 0, vertexRewardMap);
+		tour.addAll(maxPath);
+		return maxRewards;
+	}
+
+	private void findRewards1(Vertex u, LinkedList<Vertex> path, int totalRewards,
+			HashMap<Vertex, Integer> vertexRewardMap) {
+		path.add(u);
+		totalRewards += vertexRewardMap.get(u);
+		for (Edge e : u) {
+			Vertex v = e.otherEnd(u);
+			g.getVertexFromName(v.getName()).seen = true;
+			findRewards1(v, path, totalRewards, vertexRewardMap);
+			g.getVertexFromName(v.getName()).seen = false;
+		}
+		if (totalRewards > maxRewards && findPathToSrc1(path, g.getVertexFromName(u.getName()))) {
+			maxRewards = totalRewards;
+			maxPath.clear();
+			maxPath.addAll(path);
+		}
+		path.removeLast();
+	}
+
+	public boolean findPathToSrc1(List<Vertex> path, Vertex u) {
+		if (u == s)
+			return true;
+		for (Edge e : u) {
+			Vertex v = e.otherEnd(u);
+			if (!v.seen) {
+				v.seen = true;
+				// TODO: path.add(v);
+				if (findPathToSrc1(path, v)) {
+					v.seen = false;
+					return true;
+				}
+				v.seen = false;
+			}
+		}
+		return false;
 	}
 
 	// Do not modify this function
