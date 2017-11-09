@@ -199,12 +199,12 @@ public class LP4 {
 	 * @return
 	 */
 	private int printAllThePaths(Vertex u, Vertex t, LinkedList<Vertex> path, int count) {
-		path.add(u);
+		path.add(g.getVertexFromName(u.getName()));
 		if (u == t) {
 			shortestPaths.add(new LinkedList<>(path));
-			for (Vertex v : path)
+			/*for (Vertex v : path)
 				System.out.print(v + " ");
-			System.out.println();
+			System.out.println();*/
 			count++;
 		} else
 			for (Edge e : u) {
@@ -272,13 +272,15 @@ public class LP4 {
 	public boolean findPathToSrc(List<Vertex> path, Vertex u) {
 
 		if (u != s) {
-			for (Edge e : u.adj) {
+			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
-				if (!v.seen) {
+				if (!v.seen || v == s) {
 					path.add(v);
+					v.seen = true;
 					if(findPathToSrc(path, v)){
 						return true;
 					}
+					path.remove(v);
 				}
 			}
 			return false;
