@@ -320,10 +320,11 @@ public class LP4 {
 			findRewards1(v, path, totalRewards, vertexRewardMap);
 			g.getVertexFromName(v.getName()).seen = false;
 		}
-		if (totalRewards > maxRewards && findPathToSrc1(path, g.getVertexFromName(u.getName()))) {
+		List<Vertex> tmpPath = new LinkedList<>(path);
+		if (totalRewards > maxRewards && findPathToSrc1(tmpPath, g.getVertexFromName(u.getName()))) {
 			maxRewards = totalRewards;
 			maxPath.clear();
-			maxPath.addAll(path);
+			maxPath.addAll(tmpPath);
 		}
 		path.removeLast();
 	}
@@ -335,11 +336,12 @@ public class LP4 {
 			Vertex v = e.otherEnd(u);
 			if (!v.seen) {
 				v.seen = true;
-				// TODO: path.add(v);
+				path.add(v);
 				if (findPathToSrc1(path, v)) {
 					v.seen = false;
 					return true;
 				}
+				path.remove(v);
 				v.seen = false;
 			}
 		}
