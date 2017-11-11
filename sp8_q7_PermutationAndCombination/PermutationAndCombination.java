@@ -27,7 +27,7 @@ public class PermutationAndCombination<T> {
 				System.out.print("(");
 				for (int i = 0; i < k - 1; i++)
 					System.out.print(A[i] + ",");
-				System.out.print(A[k] + ") ");
+				System.out.print(A[k - 1] + ") ");
 			}
 			count++;
 		} else {
@@ -82,7 +82,7 @@ public class PermutationAndCombination<T> {
 		}
 
 		VERBOSE = 1;
-		Integer arr[] = { 1, 2, 3, 4 };
+		Integer arr[] = { 1, 5, 2, 3, 6 };
 		k = 2;
 		n = arr.length;
 		PermutationAndCombination<Integer> pc = new PermutationAndCombination<>(arr);
