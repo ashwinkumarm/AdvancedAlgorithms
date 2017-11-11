@@ -1,10 +1,8 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp4;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopoGraph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG.DFSCheckDAG;
@@ -21,8 +19,6 @@ public class LP4 {
 	TopoGraph tg;
 	ShortestPath sp;
 	int maxRewards = 0;
-	List<List<Vertex>> shortestPaths = new LinkedList<>();
-	List<Vertex> maxPath = new LinkedList<>();
 
 	// common constructor for all parts of LP4: g is graph, s is source vertex
 	public LP4(Graph g, Vertex s) {
@@ -109,7 +105,7 @@ public class LP4 {
 		Graph h = new Graph(g.size());
 		if (checkIfGraphHasNonPositiveCycles(h))
 			return -1;
-		return countShortestPaths(h.getVertexFromName(s.getName()), h.getVertexFromName(t.getName()), new HashMap<>());
+		return countShortestPaths(h.getVertexFromName(s.getName()), h.getVertexFromName(t.getName()));
 	}
 
 	/**
@@ -129,6 +125,39 @@ public class LP4 {
 	}
 
 	/**
+	 * (Part e) - Method to return weight of shortest path from s to t using at
+	 * most k edges by using Bellamn-Ford Take 1 algorithm.
+	 *
+	 * @param t
+	 * @param k
+	 * @return
+	 */
+	public int constrainedShortestPath(Vertex t, int k) {
+		BellmanFordTake1 bf = new BellmanFordTake1(g);
+		bf.findShortestPathUsingAtmostKEdges(g, k, s);
+		return bf.getVertex(t).distance;
+	}
+
+	/**
+	 * (Part f) - Reward collection problem. Reward for vertices is passed as a
+	 * parameter in a hash map tour is empty list passed as a parameter, for
+	 * output tour. Return total reward for tour
+	 *
+	 * @param vertexRewardMap
+	 * @param tour
+	 * @return
+	 */
+	public int reward(HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
+		Graph h = new Graph(g.size());
+		h.setDirected(true);
+		sp = new ShortestPath(g, s);
+		sp.dijkstra();
+		createTightGraph(h);
+		findRewards(h.getVertexFromName(s.getName()), new LinkedList<Vertex>(), 0, vertexRewardMap, tour);
+		return maxRewards;
+	}
+
+	/**
 	 * Helper method which creates the tight graph H and also checks if the
 	 * input graph G has non positive cycles.
 	 *
@@ -136,9 +165,9 @@ public class LP4 {
 	 * @return
 	 */
 	private boolean checkIfGraphHasNonPositiveCycles(Graph h) {
-		ShortestPath sp = new ShortestPath(g, s);
+		sp = new ShortestPath(g, s);
 		h.setDirected(true);
-		if (!sp.bellmanFord() || !createTightGraphAndCheckForCycles(sp, h)) {
+		if (!sp.bellmanFord() || !createTightGraphAndCheckForCycles(h)) {
 			System.out.println("Non-positive cycle in graph. Unable to solve problem.");
 			return true;
 		}
@@ -154,7 +183,7 @@ public class LP4 {
 	 * @param map
 	 * @return
 	 */
-	private long countShortestPaths(Vertex s, Vertex t, HashMap<Vertex, Long> map) {
+	private long countShortestPaths(Vertex s, Vertex t) {
 		Long count = 0L, Np;
 		if (t == s)
 			count = 1L;
@@ -162,10 +191,10 @@ public class LP4 {
 			Vertex p;
 			for (Edge e : t.revAdj) {
 				p = e.otherEnd(t);
-				count += ((Np = map.get(p)) != null) ? Np : countShortestPaths(s, p, map);
+				count += ((Np = sp.getVertex(p).spCount) != -1) ? Np : countShortestPaths(s, p);
 			}
 		}
-		map.put(t, count); // memoization
+		sp.getVertex(t).spCount = count;
 		return count;
 	}
 
@@ -175,11 +204,20 @@ public class LP4 {
 	 * also finds the topological order of h and checks if this graph is
 	 * acyclic.
 	 *
-	 * @param sp
 	 * @param h
 	 * @return
 	 */
-	private boolean createTightGraphAndCheckForCycles(ShortestPath sp, Graph h) {
+	private boolean createTightGraphAndCheckForCycles(Graph h) {
+		createTightGraph(h);
+		return DFSCheckDAG.isDAG(h);
+	}
+
+	/**
+	 * This method creates the tight graph.
+	 *
+	 * @param h
+	 */
+	private void createTightGraph(Graph h) {
 		for (Vertex u : g) {
 			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
@@ -187,7 +225,6 @@ public class LP4 {
 					h.addEdge(h.getVertexFromName(u.getName()), h.getVertexFromName(v.getName()), e.weight);
 			}
 		}
-		return DFSCheckDAG.isDAG(h);
 	}
 
 	/**
@@ -203,11 +240,9 @@ public class LP4 {
 	private int printAllThePaths(Vertex u, Vertex t, LinkedList<Vertex> path, int count) {
 		path.add(g.getVertexFromName(u.getName()));
 		if (u == t) {
-			shortestPaths.add(new LinkedList<>(path));
-			/*
-			 * for (Vertex v : path) System.out.print(v + " ");
-			 * System.out.println();
-			 */
+			for (Vertex v : path)
+				System.out.print(v + " ");
+			System.out.println();
 			count++;
 		} else
 			for (Edge e : u) {
@@ -219,117 +254,56 @@ public class LP4 {
 	}
 
 	/**
-	 * Part e - Method to return weight of shortest path from s to t using at
-	 * most k edges by using Bellamn-Ford Take 1 algorithm.
+	 * Recursive method to enumerate all the shortest paths and find the path
+	 * with maximum rewards.
 	 *
-	 * @param t
-	 * @param k
-	 * @return
+	 * @param u
+	 * @param path
+	 * @param totalRewards
+	 * @param vertexRewardMap
+	 * @param tour
 	 */
-	public int constrainedShortestPath(Vertex t, int k) {
-		BellmanFordTake1 bf = new BellmanFordTake1(g);
-		bf.findShortestPathUsingAtmostKEdges(g, k, s);
-		return bf.getVertex(t).distance;
-	}
-
-	// Part f. Reward collection problem
-	// Reward for vertices is passed as a parameter in a hash map
-	// tour is empty list passed as a parameter, for output tour
-	// Return total reward for tour
-	public int reward(HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
-
-		PriorityQueue<RewardPath> q = new PriorityQueue<>(Collections.reverseOrder());
-		for (Vertex u : g) {
-			enumerateShortestPaths(u);
-			for (List<Vertex> lst : shortestPaths) {
-				RewardPath rp = new RewardPath();
-				rp.path.addAll(lst);
-				for (Vertex v : lst) {
-					rp.totalRewards += vertexRewardMap.get(v);
-				}
-				q.add(rp);
-			}
-			shortestPaths.clear();
-		}
-
-		while (!q.isEmpty()) {
-			RewardPath rp = q.poll();
-			resetVisitedStatus(rp.path);
-			Vertex lastVertexInPath = rp.path.get(rp.path.size() - 1);
-			if (findPathToSrc(rp.path, lastVertexInPath)) {
-				tour.addAll(rp.path);
-				return rp.totalRewards;
-			}
-			resetVisitedStatus(rp.path);
-		}
-
-		return 0;
-	}
-
-	public void resetVisitedStatus(List<Vertex> path) {
-		for (Vertex u : path) {
-			u.seen = !u.seen;
-		}
-	}
-
-	public boolean findPathToSrc(List<Vertex> path, Vertex u) {
-		if (u != s) {
-			for (Edge e : u) {
-				Vertex v = e.otherEnd(u);
-				if (!v.seen || v == s) {
-					path.add(v);
-					v.seen = true;
-					if (findPathToSrc(path, v)) {
-						return true;
-					}
-					path.remove(v);
-					v.seen = false;
-				}
-			}
-			return false;
-		} else {
-			return true;
-		}
-
-	}
-
-	public int reward1(HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
-		Graph h = new Graph(g.size());
-		h.setDirected(true);
-		ShortestPath sp = new ShortestPath(g, s);
-		sp.dijkstra();
-		for (Vertex u : g) {
-			for (Edge e : u) {
-				Vertex v = e.otherEnd(u);
-				if (sp.getVertex(v).distance == sp.getVertex(u).distance + e.weight)
-					h.addEdge(h.getVertexFromName(u.getName()), h.getVertexFromName(v.getName()), e.weight);
-			}
-		}
-		findRewards1(h.getVertexFromName(s.getName()), new LinkedList<Vertex>(), 0, vertexRewardMap);
-		tour.addAll(maxPath);
-		return maxRewards;
-	}
-
-	private void findRewards1(Vertex u, LinkedList<Vertex> path, int totalRewards,
-			HashMap<Vertex, Integer> vertexRewardMap) {
+	private void findRewards(Vertex u, LinkedList<Vertex> path, int totalRewards,
+			HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
 		path.add(u);
 		totalRewards += vertexRewardMap.get(u);
 		for (Edge e : u) {
 			Vertex v = e.otherEnd(u);
 			g.getVertexFromName(v.getName()).seen = true;
-			findRewards1(v, path, totalRewards, vertexRewardMap);
+			findRewards(v, path, totalRewards, vertexRewardMap, tour);
 			g.getVertexFromName(v.getName()).seen = false;
 		}
-		List<Vertex> tmpPath = new LinkedList<>(path);
-		if (totalRewards > maxRewards && findPathToSrc1(tmpPath, g.getVertexFromName(u.getName()))) {
+		LinkedList<Vertex> tmpPath = new LinkedList<>();
+		if (totalRewards > maxRewards && findPathToSrc(tmpPath, g.getVertexFromName(u.getName()))) {
 			maxRewards = totalRewards;
-			maxPath.clear();
-			maxPath.addAll(tmpPath);
+			// TODO: Check if its good to assign a new list here.
+			tour.clear();
+			tour.addAll(path);
+			tour.addAll(tmpPath);
 		}
+		resetSeenStatus(tmpPath);
 		path.removeLast();
 	}
 
-	public boolean findPathToSrc1(List<Vertex> path, Vertex u) {
+	/**
+	 * Method to reset the seen status of the input graph.
+	 *
+	 * @param tmpPath
+	 */
+	private void resetSeenStatus(LinkedList<Vertex> tmpPath) {
+		for (Vertex v : tmpPath)
+			v.seen = false;
+	}
+
+	/**
+	 * Method to check (also record if any) if the given vertex has a path to
+	 * the source in the input graph.
+	 *
+	 * @param path
+	 * @param u
+	 * @return
+	 */
+	public boolean findPathToSrc(List<Vertex> path, Vertex u) {
 		if (u == s)
 			return true;
 		for (Edge e : u) {
@@ -337,12 +311,8 @@ public class LP4 {
 			if (!v.seen) {
 				v.seen = true;
 				path.add(v);
-				if (findPathToSrc1(path, v)) {
-					v.seen = false;
+				if (findPathToSrc(path, v))
 					return true;
-				}
-				path.remove(v);
-				v.seen = false;
 			}
 		}
 		return false;

@@ -15,6 +15,7 @@ public class ShortestPathVertex implements Index {
 
 	public Graph.Vertex vertex;
 	public int distance, index, count;
+	public long spCount;
 	public boolean seen;
 	public Graph.Vertex parent;
 
@@ -33,6 +34,7 @@ public class ShortestPathVertex implements Index {
 		this.parent = null;
 		this.index = index;
 		this.count = 0;
+		this.spCount = -1;
 
 	}
 
@@ -42,6 +44,7 @@ public class ShortestPathVertex implements Index {
 			this.distance = distance;
 			this.index = index;
 			this.count = 0;
+			this.spCount = -1;
 	}
 
 
