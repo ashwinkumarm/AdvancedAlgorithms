@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopoGraph;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG.DFSCheckDAG;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.BellmanFordTake1;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos.ShortestPath;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
@@ -18,6 +17,7 @@ public class LP4 {
 	Graph g;
 	Vertex s;
 	TopoGraph tg;
+	LinkedList<Vertex> topologicalOrder;
 	ShortestPath sp;
 	int maxRewards = 0;
 
@@ -85,8 +85,8 @@ public class LP4 {
 	 * @return
 	 */
 	public long enumerateTopologicalOrders() {
-		LinkedList<Vertex> topologicalOrder = new LinkedList<>();
-		return findAllTopologicalOrders(topologicalOrder, g.getVertexArray(), g.size(), g.size());
+		topologicalOrder = new LinkedList<>();
+		return findAllTopologicalOrders(g.getVertexArray(), g.size(), g.size());
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class LP4 {
 	 * @param k
 	 * @return
 	 */
-	public long findAllTopologicalOrders(LinkedList<Vertex> topologicalOrder, Vertex[] vertexArray, int c, int k) {
+	public long findAllTopologicalOrders(Vertex[] vertexArray, int c, int k) {
 		Long count = 0L;
 		if (c == 0) {
 			for (Vertex v : topologicalOrder) {
@@ -119,7 +119,7 @@ public class LP4 {
 					Vertex tmp = vertexArray[d];
 					vertexArray[d] = vertexArray[i];
 					vertexArray[i] = tmp;
-					count += findAllTopologicalOrders(topologicalOrder, vertexArray, c - 1, k);
+					count += findAllTopologicalOrders(vertexArray, c - 1, k);
 					vertexArray[i] = vertexArray[d];
 					vertexArray[d] = tmp;
 					topologicalOrder.removeLast();
@@ -140,43 +140,19 @@ public class LP4 {
 	 * @return
 	 */
 	public long countShortestPaths(Vertex t) {
-		ShortestPath sp = new ShortestPath(g, s);
 		Graph h = new Graph(g.size());
-		h.setDirected(true);
-		List<Vertex> topoOrder;
-		if (!sp.bellmanFord() || ((topoOrder = createTightGraphAndCheckForCycles(sp, h)) == null)) {
+		if (checkIfGraphHasNonPositiveCycles(h))
 			return -1;
-		}
-		sp.getVertex(s).spCount1 = 1;
-		for (Vertex p : topoOrder) {
+		sp.getVertex(s).spCount = 1;
+		for (Vertex p : topologicalOrder) {
 			if (p == t)
 				break;
 			for (Edge e : p) {
 				Vertex v = e.otherEnd(p);
-				sp.getVertex(v).spCount1 += sp.getVertex(p).spCount1;
+				sp.getVertex(v).spCount += sp.getVertex(p).spCount;
 			}
 		}
-		return sp.getVertex(t).spCount1;
-	}
-
-	/**
-	 * This method creates a new graph h which contains only the tight edges
-	 * [(u,v) - such that v.d = u.d + (u,v).weight] from the input graph g. It
-	 * also finds the topological order of h and checks if the graph is acyclic.
-	 *
-	 * @param sp
-	 * @param h
-	 * @return
-	 */
-	private List<Vertex> createTightGraphAndCheckForCycles(ShortestPath sp, Graph h) {
-		for (Vertex u : g) {
-			for (Edge e : u) {
-				Vertex v = e.otherEnd(u);
-				if (sp.getVertex(v).distance == sp.getVertex(u).distance + e.weight)
-					h.addEdge(h.getVertexFromName(u.getName()), h.getVertexFromName(v.getName()), e.weight);
-			}
-		}
-		return TopologicalOrder.toplogicalOrder1(h);
+		return sp.getVertex(t).spCount;
 	}
 
 	/**
@@ -186,7 +162,7 @@ public class LP4 {
 	 * @param t
 	 * @return
 	 */
-	public long countShortestPaths1(Vertex t) {
+	public long countShortestPathsAlternate(Vertex t) {
 		Graph h = new Graph(g.size());
 		if (checkIfGraphHasNonPositiveCycles(h))
 			return -1;
@@ -293,7 +269,8 @@ public class LP4 {
 	 */
 	private boolean createTightGraphAndCheckForCycles(Graph h) {
 		createTightGraph(h);
-		return DFSCheckDAG.isDAG(h);
+		topologicalOrder = (LinkedList<Vertex>) TopologicalOrder.toplogicalOrder1(h);
+		return topologicalOrder != null;
 	}
 
 	/**
@@ -362,7 +339,6 @@ public class LP4 {
 		if (totalRewards > maxRewards
 				&& findPathToSrc(traversedVertices, reversePath, g.getVertexFromName(u.getName()))) {
 			maxRewards = totalRewards;
-			// TODO: Check if its good to assign a new list here.
 			tour.clear();
 			tour.addAll(forwardPath);
 			tour.addAll(reversePath);

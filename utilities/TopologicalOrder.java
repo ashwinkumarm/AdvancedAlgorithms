@@ -9,16 +9,11 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.uti
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
-
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFSWithColoring;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphVertexColor;
 
 public class TopologicalOrder {
 
@@ -34,7 +29,7 @@ public class TopologicalOrder {
 		TopoGraph topoGraph = new TopoGraph(g);
 		int topNum = 0;
 		Queue<Graph.Vertex> q = new LinkedList<Graph.Vertex>();
-		List<Graph.Vertex> topList = new ArrayList<Graph.Vertex>();
+		List<Graph.Vertex> topList = new LinkedList<Graph.Vertex>();
 
 		for (Graph.Vertex u : g) {
 			topoGraph.getVertex(u).inDegree = u.revAdj.size(); // get the number of incoming edges on each vertex
