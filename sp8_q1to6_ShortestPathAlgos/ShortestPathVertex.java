@@ -1,6 +1,5 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_q1to6_ShortestPathAlgos;
 
-
 /**
  * This class stores the Vertex used in Shorttest Paths algorithm
  *
@@ -16,6 +15,7 @@ public class ShortestPathVertex implements Index {
 	public Graph.Vertex vertex;
 	public int distance, index, count;
 	public long spCount;
+	public long spCount1;
 	public boolean seen;
 	public Graph.Vertex parent;
 
@@ -26,7 +26,7 @@ public class ShortestPathVertex implements Index {
 	 * @param distance
 	 * @param index
 	 */
-	public ShortestPathVertex(Vertex vertex, int index,  int distance) {
+	public ShortestPathVertex(Vertex vertex, int index, int distance) {
 
 		this.vertex = vertex;
 		this.distance = distance;
@@ -35,18 +35,18 @@ public class ShortestPathVertex implements Index {
 		this.index = index;
 		this.count = 0;
 		this.spCount = -1;
+		this.spCount1 = 0;
 
 	}
 
 	void reinitializeVertex(int distance, int index) {
-			this.seen = false;
-			this.parent = null;
-			this.distance = distance;
-			this.index = index;
-			this.count = 0;
-			this.spCount = -1;
+		this.seen = false;
+		this.parent = null;
+		this.distance = distance;
+		this.index = index;
+		this.count = 0;
+		this.spCount = -1;
 	}
-
 
 	public void putIndex(int i) {
 		index = i;
@@ -55,6 +55,5 @@ public class ShortestPathVertex implements Index {
 	public int getIndex() {
 		return index;
 	}
-
 
 }

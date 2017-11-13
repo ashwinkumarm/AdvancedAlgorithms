@@ -65,6 +65,41 @@ public class BellmanFordTake1 extends GraphAlgorithm<BellmanTake1Vertex> {
 		return false; // G has a negative cycle
 	}
 
+	public boolean find(Graph g, int K, Vertex src) {
+		for (Vertex u : g) {
+			BellmanTake1Vertex su = getVertex(u);
+			su.d[0] = Integer.MAX_VALUE;
+			su.parent = null;
+		}
+		boolean noChange;
+		BellmanTake1Vertex source = getVertex(src);
+		source.d[0] = 0;
+		for (int k = 1; k <= g.size(); k++) {
+			noChange = true;
+			for (Vertex u : g) {
+				BellmanTake1Vertex su = getVertex(u);
+				su.d[k] = su.d[k - 1];
+				for (Edge e : u.revAdj) {
+					Vertex v = e.otherEnd(u);
+					BellmanTake1Vertex otherEnd = getVertex(v);
+					if (otherEnd.d[k - 1] != Integer.MAX_VALUE && su.d[k] > otherEnd.d[k - 1] + e.weight) {
+						su.d[k] = otherEnd.d[k - 1] + e.weight;
+						su.parent = otherEnd.vertex;
+						noChange = false;
+					}
+				}
+			}
+			if (noChange) {
+				for (Vertex u : g) {
+					BellmanTake1Vertex su = getVertex(u);
+					su.distance = su.d[k];
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void copyToDistance(int K) {
 		BellmanTake1Vertex bu;
 		for (Vertex u : g) {
@@ -101,7 +136,7 @@ public class BellmanFordTake1 extends GraphAlgorithm<BellmanTake1Vertex> {
 		dest = g.getVertex(in.nextInt());
 		int K = in.nextInt();
 		BellmanFordTake1 sp = new BellmanFordTake1(g);
-		sp.findShortestPathUsingAtmostKEdges(g, K, src);
+		sp.find(g, K, src);
 		int d = sp.getVertex(dest).distance;
 		System.out.println(d == Integer.MAX_VALUE ? "Infinity" : d);
 	}
