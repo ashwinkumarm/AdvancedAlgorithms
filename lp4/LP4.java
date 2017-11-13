@@ -1,6 +1,7 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp4;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class LP4 {
 	LinkedList<Vertex> topologicalOrder;
 	ShortestPath sp;
 	int maxRewards = 0;
+	List<Vertex> maxRewardsPath;
 
 	// common constructor for all parts of LP4: g is graph, s is source vertex
 	public LP4(Graph g, Vertex s) {
@@ -143,21 +145,38 @@ public class LP4 {
 		Graph h = new Graph(g.size());
 		if (checkIfGraphHasNonPositiveCycles(h))
 			return -1;
+		Iterator<Vertex> it = topologicalOrder.iterator();
 		sp.getVertex(s).spCount = 1;
-		for (Vertex p : topologicalOrder) {
+		Vertex src = h.getVertexFromName(s.getName()), p;
+		while (it.hasNext())
+			if (it.next() == src)
+				break;
+		calculateNForOutgoingEdges(src);
+		while (it.hasNext()) {
+			p = it.next();
 			if (p == t)
 				break;
-			for (Edge e : p) {
-				Vertex v = e.otherEnd(p);
-				sp.getVertex(v).spCount += sp.getVertex(p).spCount;
-			}
+			calculateNForOutgoingEdges(p);
 		}
 		return sp.getVertex(t).spCount;
 	}
 
 	/**
-	 * (Part c) - Method to return the number of shortest paths from s to t.
-	 * Returns -1 if the graph has a negative or zero cycle
+	 * Caluclates the Number of paths for the adjacent vertices.
+	 *
+	 * @param p
+	 */
+	private void calculateNForOutgoingEdges(Vertex p) {
+		for (Edge e : p) {
+			Vertex v = e.otherEnd(p);
+			sp.getVertex(v).spCount += sp.getVertex(p).spCount;
+		}
+	}
+
+	/**
+	 * Not used. (Part c - alternate method using recursion) - Method to return
+	 * the number of shortest paths from s to t. Returns -1 if the graph has a
+	 * negative or zero cycle
 	 *
 	 * @param t
 	 * @return
@@ -214,7 +233,8 @@ public class LP4 {
 		sp = new ShortestPath(g, s);
 		sp.dijkstra();
 		createTightGraph(h);
-		findRewards(h.getVertexFromName(s.getName()), new LinkedList<Vertex>(), 0, vertexRewardMap, tour);
+		findRewards(h.getVertexFromName(s.getName()), new LinkedList<Vertex>(), 0, vertexRewardMap);
+		tour.addAll(maxRewardsPath);
 		return maxRewards;
 	}
 
@@ -325,13 +345,13 @@ public class LP4 {
 	 * @param tour
 	 */
 	private void findRewards(Vertex u, LinkedList<Vertex> forwardPath, int totalRewards,
-			HashMap<Vertex, Integer> vertexRewardMap, List<Vertex> tour) {
+			HashMap<Vertex, Integer> vertexRewardMap) {
 		forwardPath.add(u);
 		totalRewards += vertexRewardMap.get(u);
 		for (Edge e : u) {
 			Vertex v = e.otherEnd(u);
 			g.getVertexFromName(v.getName()).seen = true;
-			findRewards(v, forwardPath, totalRewards, vertexRewardMap, tour);
+			findRewards(v, forwardPath, totalRewards, vertexRewardMap);
 			g.getVertexFromName(v.getName()).seen = false;
 		}
 		LinkedList<Vertex> traversedVertices = new LinkedList<>();
@@ -339,9 +359,9 @@ public class LP4 {
 		if (totalRewards > maxRewards
 				&& findPathToSrc(traversedVertices, reversePath, g.getVertexFromName(u.getName()))) {
 			maxRewards = totalRewards;
-			tour.clear();
-			tour.addAll(forwardPath);
-			tour.addAll(reversePath);
+			maxRewardsPath = new LinkedList<>();
+			maxRewardsPath.addAll(forwardPath);
+			maxRewardsPath.addAll(reversePath);
 		}
 		resetSeenStatus(traversedVertices);
 		forwardPath.removeLast();
