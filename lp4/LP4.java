@@ -13,6 +13,14 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.TopologicalOrder;
 
+/**
+ * This class performs the functions to count and print all the topological
+ * orders, shortest paths from s to t, shortest paths from s to t with atmost k
+ * and reward collection problem
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class LP4 {
 
 	Graph g;
@@ -30,6 +38,11 @@ public class LP4 {
 		initializeTopoGraph(g);
 	}
 
+	/**
+	 * Constructor to initialize the Topograph
+	 * 
+	 * @param g
+	 */
 	public void initializeTopoGraph(Graph g) {
 		tg = new TopoGraph(g);
 		for (Graph.Vertex u : g) {
@@ -47,8 +60,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Helper function for counting the number of topological orders for the
-	 * given graph
+	 * Helper function for counting the number of topological orders for the given
+	 * graph
 	 *
 	 * @param vertexArray
 	 * @param c
@@ -81,8 +94,8 @@ public class LP4 {
 	}
 
 	/**
-	 * (Part b) Enumerates and prints all the topological orders for the given
-	 * graph and also returns the number of topological orders
+	 * (Part b) Enumerates and prints all the topological orders for the given graph
+	 * and also returns the number of topological orders
 	 *
 	 * @return
 	 */
@@ -92,8 +105,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Helper function for enumerating and printing all the topological orders
-	 * for the given graph and also the number of topological orders
+	 * Helper function for enumerating and printing all the topological orders for
+	 * the given graph and also the number of topological orders
 	 *
 	 * @param topologicalOrder
 	 * @param vertexArray
@@ -135,8 +148,8 @@ public class LP4 {
 	}
 
 	/**
-	 * (Part c) - Method to return the number of shortest paths from s to t.
-	 * Returns -1 if the graph has a negative or zero cycle
+	 * (Part c) - Method to return the number of shortest paths from s to t. Returns
+	 * -1 if the graph has a negative or zero cycle
 	 *
 	 * @param t
 	 * @return
@@ -174,9 +187,9 @@ public class LP4 {
 	}
 
 	/**
-	 * Not used. (Part c - alternate method using recursion) - Method to return
-	 * the number of shortest paths from s to t. Returns -1 if the graph has a
-	 * negative or zero cycle
+	 * Not used. (Part c - alternate method using recursion) - Method to return the
+	 * number of shortest paths from s to t. Returns -1 if the graph has a negative
+	 * or zero cycle
 	 *
 	 * @param t
 	 * @return
@@ -189,9 +202,9 @@ public class LP4 {
 	}
 
 	/**
-	 * (Part d) - Method to print all shortest paths from s to t, one per line,
-	 * and return number of shortest paths from s to t. Return -1 if the graph
-	 * has a negative or zero cycle.
+	 * (Part d) - Method to print all shortest paths from s to t, one per line, and
+	 * return number of shortest paths from s to t. Return -1 if the graph has a
+	 * negative or zero cycle.
 	 *
 	 * @param t
 	 * @return
@@ -205,8 +218,8 @@ public class LP4 {
 	}
 
 	/**
-	 * (Part e) - Method to return weight of shortest path from s to t using at
-	 * most k edges by using Bellamn-Ford Take 1 algorithm.
+	 * (Part e) - Method to return weight of shortest path from s to t using at most
+	 * k edges by using Bellamn-Ford Take 1 algorithm.
 	 *
 	 * @param t
 	 * @param k
@@ -220,8 +233,8 @@ public class LP4 {
 
 	/**
 	 * (Part f) - Reward collection problem. Reward for vertices is passed as a
-	 * parameter in a hash map tour is empty list passed as a parameter, for
-	 * output tour. Return total reward for tour
+	 * parameter in a hash map tour is empty list passed as a parameter, for output
+	 * tour. Return total reward for tour
 	 *
 	 * @param vertexRewardMap
 	 * @param tour
@@ -239,8 +252,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Helper method which creates the tight graph H and also checks if the
-	 * input graph G has non positive cycles.
+	 * Helper method which creates the tight graph H and also checks if the input
+	 * graph G has non positive cycles.
 	 *
 	 * @param h
 	 * @return
@@ -280,9 +293,9 @@ public class LP4 {
 	}
 
 	/**
-	 * This method creates a new graph h which contains only the tight edges
-	 * [(u,v) - such that v.d = u.d + (u,v).weight] from the input graph g. It
-	 * also checks if this graph is acyclic.
+	 * This method creates a new graph h which contains only the tight edges [(u,v)
+	 * - such that v.d = u.d + (u,v).weight] from the input graph g. It also checks
+	 * if this graph is acyclic.
 	 *
 	 * @param h
 	 * @return
@@ -309,8 +322,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Recursive method to print all the paths between s and t in the Graph H
-	 * (tight graph).
+	 * Recursive method to print all the paths between s and t in the Graph H (tight
+	 * graph).
 	 *
 	 * @param u
 	 * @param t
@@ -335,8 +348,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Recursive method to enumerate all the shortest paths and find the path
-	 * with maximum rewards.
+	 * Recursive method to enumerate all the shortest paths and find the path with
+	 * maximum rewards.
 	 *
 	 * @param u
 	 * @param forwardPath
@@ -346,7 +359,7 @@ public class LP4 {
 	 */
 	private void findRewards(Vertex u, LinkedList<Vertex> forwardPath, int totalRewards,
 			HashMap<Vertex, Integer> vertexRewardMap) {
-		forwardPath.add(u);
+		forwardPath.add(g.getVertexFromName(u.getName()));
 		totalRewards += vertexRewardMap.get(u);
 		for (Edge e : u) {
 			Vertex v = e.otherEnd(u);
@@ -378,8 +391,8 @@ public class LP4 {
 	}
 
 	/**
-	 * Method to check (also record if any) if the given vertex has a path to
-	 * the source in the input graph.
+	 * Method to check (also record if any) if the given vertex has a path to the
+	 * source in the input graph.
 	 *
 	 * @param traversedVertices
 	 * @param reversePath
