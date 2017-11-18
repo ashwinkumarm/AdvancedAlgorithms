@@ -5,7 +5,6 @@ import java.util.HashMap;
 /**
  * This class finds the number of pairs of elements that sums to X
  * @author Ashwin, Arun, Deepak, Haritha
- * @param <T>
  */
 
 public class CountPairSum {
