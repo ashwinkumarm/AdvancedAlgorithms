@@ -14,7 +14,7 @@ public class ArrayIterator<T> implements Iterator<T> {
 		cursor = -1;
 	}
 
-	ArrayIterator(T[] a, int start, int end) {
+	public ArrayIterator(T[] a, int start, int end) {
 		arr = a;
 		startIndex = start;
 		endIndex = end;
