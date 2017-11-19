@@ -1,8 +1,21 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MDS {
 
+	Map<Long,ArrayList<Long>> productDescription;
+	Map<Long,Float> supplierReputation;
+	Map<Long,HashMap<Long,Integer>> productPricePerSupplier;
+	
 	public MDS() {
+		productDescription = new HashMap<>();
+		supplierReputation = new HashMap<>();
+		productPricePerSupplier = new HashMap<>();
 	}
 
 	public static class Pair {
@@ -21,7 +34,15 @@ public class MDS {
 	 * if the item is new, and false otherwise.
 	 */
 	public boolean add(Long id, Long[] description) {
-		return true;
+		boolean newItemFlag = true;
+		ArrayList<Long> descriptionArray = new ArrayList<>();
+		if(productDescription.containsKey(id)){
+			descriptionArray = productDescription.get(id);
+			newItemFlag = false;
+		}
+		descriptionArray.addAll(Arrays.asList(description));
+		productDescription.put(id,descriptionArray);
+		return newItemFlag;
 	}
 
 	/*
@@ -30,7 +51,12 @@ public class MDS {
 	 * new value. Return true if the supplier is new, and false otherwise.
 	 */
 	public boolean add(Long supplier, float reputation) {
-		return true;
+		boolean newSupplierFlag = true;
+		if(supplierReputation.containsKey(supplier)){
+			newSupplierFlag = false;
+		}
+		supplierReputation.put(supplier,reputation);
+		return newSupplierFlag;
 	}
 
 	/*
@@ -39,7 +65,21 @@ public class MDS {
 	 * is replaced by the new price. Returns the number of new entries created.
 	 */
 	public int add(Long supplier, Pair[] idPrice) {
-		return 0;
+		
+		int noOfNewItems = 0;
+		HashMap<Long, Integer> productPricePair = new HashMap<>();
+		if(productPricePerSupplier.containsKey(supplier)){
+			productPricePair = productPricePerSupplier.get(supplier);
+		}
+		
+		for (Pair pair : idPrice) {
+			if(!productPricePair.containsKey(pair.id)){
+				noOfNewItems++;
+			}
+			productPricePair.put(pair.id, pair.price);
+		}
+
+		return noOfNewItems;
 	}
 
 	/*
@@ -47,7 +87,7 @@ public class MDS {
 	 * with this id.
 	 */
 	public Long[] description(Long id) {
-		return null;
+		return (Long[])productDescription.get(id).toArray();
 	}
 
 	/*
