@@ -345,8 +345,8 @@ public class ResidualGraph extends Graph {
 	 * @param name
 	 * @return
 	 */
-	public ResidueEdge addEdge(ResidueVertex from, ResidueVertex to, int weight, int name) {
-		ResidueEdge e = new ResidueEdge(from, to, weight, name);
+	public ResidueEdge addEdge(ResidueVertex from, ResidueVertex to, int weight, int capacity, int name) {
+		ResidueEdge e = new ResidueEdge(from, to, weight, capacity, name);
 		if (directed) {
 			from.Residueadj.add(e);
 			to.Residuerevadj.add(e);

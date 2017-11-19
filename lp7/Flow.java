@@ -9,8 +9,9 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 
 public class Flow {
 	ResidualGraph rg;
+
 	public Flow(Graph g, Vertex s, Vertex t, HashMap<Edge, Integer> capacity) {
-		rg = new ResidualGraph(g);
+		rg = new ResidualGraph(g, capacity);
 	}
 
 	// Return max flow found by Dinitz's algorithm
