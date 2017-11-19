@@ -12,15 +12,23 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 	public static final int INFINITY = Integer.MAX_VALUE;
 
 	// Class to store information about a vertex in this algorithm
-	static class BFSVertex {
+	public static class BFSVertex {
 		boolean seen;
-		Graph.Vertex parent;
-		int distance; // distance of vertex from source
+		public Graph.Vertex parent;
+		private int distance; // distance of vertex from source
 
 		BFSVertex(Graph.Vertex u) {
 			seen = false;
 			parent = null;
-			distance = INFINITY;
+			setDistance(INFINITY);
+		}
+
+		public int getDistance() {
+			return distance;
+		}
+
+		public void setDistance(int distance) {
+			this.distance = distance;
 		}
 	}
 
@@ -35,7 +43,7 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 			node[u.getName()] = new BFSVertex(u);
 		}
 		// Set source to be at distance 0
-		getVertex(src).distance = 0;
+		getVertex(src).setDistance(0);
 	}
 
 	// reinitialize allows running BFS many times, with different sources
@@ -45,12 +53,12 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 			BFSVertex bu = getVertex(u);
 			bu.seen = false;
 			bu.parent = null;
-			bu.distance = INFINITY;
+			bu.setDistance(INFINITY);
 		}
-		getVertex(src).distance = 0;
+		getVertex(src).setDistance(0);
 	}
 
-	void bfs() {
+	public void bfs() {
 		Queue<Graph.Vertex> q = new LinkedList<>();
 		visit(null, src);
 		q.add(src);
@@ -70,12 +78,12 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 		return getVertex(u).seen;
 	}
 
-	Graph.Vertex getParent(Graph.Vertex u) {
+	public Graph.Vertex getParent(Graph.Vertex u) {
 		return getVertex(u).parent;
 	}
 
 	int distance(Graph.Vertex u) {
-		return getVertex(u).distance;
+		return getVertex(u).getDistance();
 	}
 
 	// Visit a node v from u
@@ -83,6 +91,6 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 		BFSVertex bv = getVertex(v);
 		bv.seen = true;
 		bv.parent = u;
-		bv.distance = distance(u) + 1;
+		bv.setDistance(distance(u) + 1);
 	}
 }

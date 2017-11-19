@@ -22,9 +22,8 @@ public class ResidualGraph extends Graph {
 	 * Nested class to represent a Vertex of a ResidueGraph
 	 */
 	public static class ResidueVertex extends Vertex {
-		boolean disabled;
-		List<ResidueEdge> Residueadj;
-		List<ResidueEdge> Residuerevadj;
+		List<ResidueEdge> residueAdj;
+		List<ResidueEdge> residueRevadj;
 
 		/**
 		 * Constructor for Residue vertex
@@ -33,32 +32,8 @@ public class ResidualGraph extends Graph {
 		 */
 		public ResidueVertex(Vertex u) {
 			super(u);
-			disabled = false;
-			Residueadj = new LinkedList<>();
-			Residuerevadj = new LinkedList<>();
-		}
-
-		/**
-		 * Returns the disability status of a vertex
-		 *
-		 * @return
-		 */
-		boolean isDisabled() {
-			return disabled;
-		}
-
-		/**
-		 * Disables a vertex
-		 */
-		void disable() {
-			disabled = true;
-		}
-
-		/**
-		 * Enables a vertex
-		 */
-		void enable() {
-			disabled = false;
+			residueAdj = new LinkedList<>();
+			residueRevadj = new LinkedList<>();
 		}
 
 		@Override
@@ -69,15 +44,6 @@ public class ResidualGraph extends Graph {
 		@Override
 		public Iterator<Edge> reverseIterator() {
 			return new ResidueVertexRevIterator(this);
-		}
-
-		/**
-		 * Iterates over all the vertices of the graph
-		 *
-		 * @return
-		 */
-		public Iterator<Edge> allIterator() {
-			return new ResidueVertexAllIterator(this);
 		}
 
 		/**
@@ -95,7 +61,7 @@ public class ResidualGraph extends Graph {
 			 * @param u
 			 */
 			ResidueVertexIterator(ResidueVertex u) {
-				this.it = u.Residueadj.iterator();
+				this.it = u.residueAdj.iterator();
 				ready = false;
 			}
 
@@ -107,63 +73,11 @@ public class ResidualGraph extends Graph {
 					return false;
 				}
 				cur = it.next();
-				while ((cur.isDisabled() || ((ResidueVertex) cur.from).isDisabled()
-						|| ((ResidueVertex) cur.to).isDisabled()) && it.hasNext()) {
+				while (cur.residualCapacity == 0 && it.hasNext()) {
 					cur = it.next();
 				}
 				ready = true;
-				return !(cur.isDisabled() || ((ResidueVertex) cur.from).isDisabled()
-						|| ((ResidueVertex) cur.to).isDisabled());
-			}
-
-			public Edge next() {
-				if (!ready) {
-					if (!hasNext()) {
-						throw new java.util.NoSuchElementException();
-					}
-				}
-				ready = false;
-				return cur;
-			}
-
-			public void remove() {
-				throw new java.lang.UnsupportedOperationException();
-			}
-		}
-
-		/**
-		 * Nested class for all vertex iterator
-		 *
-		 */
-		class ResidueVertexAllIterator implements Iterator<Edge> {
-			ResidueEdge cur;
-			Iterator<ResidueEdge> it;
-			boolean ready;
-
-			/**
-			 * Constructor for initializing the all vertex iterator
-			 *
-			 * @param u
-			 */
-			ResidueVertexAllIterator(ResidueVertex u) {
-				this.it = u.Residueadj.iterator();
-				ready = false;
-			}
-
-			public boolean hasNext() {
-				if (ready) {
-					return true;
-				}
-				if (!it.hasNext()) {
-					return false;
-				}
-				cur = it.next();
-				while ((((ResidueVertex) cur.from).isDisabled() || ((ResidueVertex) cur.to).isDisabled())
-						&& it.hasNext()) {
-					cur = it.next();
-				}
-				ready = true;
-				return !(((ResidueVertex) cur.from).isDisabled() || ((ResidueVertex) cur.to).isDisabled());
+				return !(cur.residualCapacity == 0);
 			}
 
 			public Edge next() {
@@ -196,7 +110,7 @@ public class ResidualGraph extends Graph {
 			 * @param u
 			 */
 			ResidueVertexRevIterator(ResidueVertex u) {
-				this.it = u.Residuerevadj.iterator();
+				this.it = u.residueRevadj.iterator();
 				ready = false;
 			}
 
@@ -208,13 +122,11 @@ public class ResidualGraph extends Graph {
 					return false;
 				}
 				cur = it.next();
-				while ((cur.isDisabled() || ((ResidueVertex) cur.from).isDisabled()
-						|| ((ResidueVertex) cur.to).isDisabled()) && it.hasNext()) {
+				while (cur.residualCapacity == 0 && it.hasNext()) {
 					cur = it.next();
 				}
 				ready = true;
-				return !(cur.isDisabled() || ((ResidueVertex) cur.from).isDisabled()
-						|| ((ResidueVertex) cur.to).isDisabled());
+				return !(cur.residualCapacity == 0);
 			}
 
 			public Edge next() {
@@ -247,22 +159,9 @@ public class ResidualGraph extends Graph {
 	 *
 	 */
 	public static class ResidueEdge extends Edge {
-		int capacity;
-		boolean disabled;
-
-		/**
-		 * Disable the Residue Edge
-		 */
-		void disable() {
-			disabled = true;
-		}
-
-		/**
-		 * Enable the Residue Edge
-		 */
-		void enable() {
-			disabled = false;
-		}
+		int residualCapacity;
+		int flow;
+		boolean isResidualEdge;
 
 		/**
 		 * Constructor for initializing the Residue Edge
@@ -272,22 +171,11 @@ public class ResidualGraph extends Graph {
 		 * @param weight
 		 * @param name
 		 */
-		ResidueEdge(Vertex from, Vertex to, int weight, int capacity, int name) {
+		ResidueEdge(Vertex from, Vertex to, int weight, int residualCapacity, boolean isResidualEdge, int name) {
 			super(from, to, weight, name);
-			this.capacity = capacity;
+			this.residualCapacity = residualCapacity;
+			this.isResidualEdge = isResidualEdge;
 		}
-
-		/**
-		 * Checks the disability status of the edge
-		 *
-		 * @return
-		 */
-		boolean isDisabled() {
-			ResidueVertex xfrom = (ResidueVertex) from;
-			ResidueVertex xto = (ResidueVertex) to;
-			return disabled || xfrom.isDisabled() || xto.isDisabled();
-		}
-
 	}
 
 	/**
@@ -307,16 +195,15 @@ public class ResidualGraph extends Graph {
 		// Make copy of edges
 		ResidueEdge residueEdge;
 		for (Vertex u : g) {
-			for (Edge e : u.adj) {
+			ResidueVertex x1 = getVertex(u);
+			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
-				ResidueVertex x1 = getVertex(u);
 				ResidueVertex x2 = getVertex(v);
-				residueEdge = new ResidueEdge(x1, x2, e.weight, capacity.get(e), e.getName());
-				x1.Residueadj.add(residueEdge);
-				x2.Residuerevadj.add(residueEdge);
-				residueEdge = new ResidueEdge(x2, x1, e.weight, 0, e.getName());
-				x2.Residueadj.add(residueEdge);
-				x1.Residuerevadj.add(residueEdge);
+				residueEdge = new ResidueEdge(x1, x2, e.weight, capacity.get(e), false, e.getName());
+				x1.residueAdj.add(residueEdge);
+				x2.residueRevadj.add(residueEdge);
+				residueEdge = new ResidueEdge(x2, x1, e.weight, 0, true, e.getName());
+				x2.residueAdj.add(residueEdge);
 			}
 		}
 	}
@@ -333,7 +220,7 @@ public class ResidualGraph extends Graph {
 
 	@Override
 	public Iterator<Vertex> iterator() {
-		return new ResidueGraphIterator(this);
+		return new ArrayIterator<Vertex>(residueVertexArray);
 	}
 
 	/**
@@ -346,48 +233,16 @@ public class ResidualGraph extends Graph {
 	 * @return
 	 */
 	public ResidueEdge addEdge(ResidueVertex from, ResidueVertex to, int weight, int capacity, int name) {
-		ResidueEdge e = new ResidueEdge(from, to, weight, capacity, name);
+		ResidueEdge e = new ResidueEdge(from, to, weight, capacity, false, name);
 		if (directed) {
-			from.Residueadj.add(e);
-			to.Residuerevadj.add(e);
+			from.residueAdj.add(e);
+			to.residueRevadj.add(e);
 		} else {
-			from.Residueadj.add(e);
-			to.Residueadj.add(e);
+			from.residueAdj.add(e);
+			to.residueAdj.add(e);
 		}
 		m++; // Increment edge count
 		return e;
-	}
-
-	/**
-	 * Nested class for iterating he entire graph
-	 *
-	 */
-	class ResidueGraphIterator implements Iterator<Vertex> {
-		Iterator<ResidueVertex> it;
-		ResidueVertex xcur;
-
-		ResidueGraphIterator(ResidualGraph xg) {
-			this.it = new ArrayIterator<ResidueVertex>(xg.residueVertexArray, 0, xg.size() - 1);
-		}
-
-		public boolean hasNext() {
-			if (!it.hasNext()) {
-				return false;
-			}
-			xcur = it.next();
-			while (xcur.isDisabled() && it.hasNext()) {
-				xcur = it.next();
-			}
-			return !xcur.isDisabled();
-		}
-
-		public Vertex next() {
-			return xcur;
-		}
-
-		public void remove() {
-		}
-
 	}
 
 	/**
@@ -419,43 +274,4 @@ public class ResidualGraph extends Graph {
 	public ResidueVertex[] getResidueVertexArray() {
 		return residueVertexArray;
 	}
-
-	/**
-	 * Disables all the edges of the graph
-	 */
-	public void disableAllEdges() {
-		for (Vertex v : this)
-			for (Edge e : v)
-				((ResidueEdge) e).disable();
-	}
-
-	/**
-	 * Disables all the vertices of the graph
-	 */
-	public void disableAllVertices() {
-		for (Vertex v : this)
-			((ResidueVertex) v).disable();
-	}
-
-	/**
-	 * Disables all the edges of the graph
-	 */
-	public void enableAllEdges() {
-		for (Vertex v : this.residueVertexArray)
-			if (v != null) {
-				for (Edge e : v)
-					((ResidueEdge) e).enable();
-			}
-	}
-
-	/**
-	 * Enables all the vertices of the graph
-	 */
-	public void enableAllVertices() {
-		for (Vertex v : this.residueVertexArray)
-			if (v != null) {
-				((ResidueVertex) v).enable();
-			}
-	}
-
 }
