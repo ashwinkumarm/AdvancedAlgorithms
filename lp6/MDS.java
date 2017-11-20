@@ -3,12 +3,15 @@ package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
 public class MDS {
 
-	Map<Long,ArrayList<Long>> productDescription;
+	Map<Long,LinkedHashSet<Long>> productDescription;
+	Map<Long,HashSet<Long>> desrciptionProductIdMap;
 	Map<Long,Float> supplierReputation;
 	Map<Long,HashMap<Long,Integer>> productPricePerSupplier;
 	
@@ -35,13 +38,22 @@ public class MDS {
 	 */
 	public boolean add(Long id, Long[] description) {
 		boolean newItemFlag = true;
-		ArrayList<Long> descriptionArray = new ArrayList<>();
+		LinkedHashSet<Long> descriptionArray = new LinkedHashSet<>();
 		if(productDescription.containsKey(id)){
 			descriptionArray = productDescription.get(id);
 			newItemFlag = false;
 		}
 		descriptionArray.addAll(Arrays.asList(description));
 		productDescription.put(id,descriptionArray);
+		for (Long desc : description) {
+			HashSet<Long> idSet = new HashSet<>();
+    		if(desrciptionProductIdMap.containsKey(desc))
+    		{
+    			idSet = desrciptionProductIdMap.get(desc);
+    		}
+    		idSet.add(id);
+    		desrciptionProductIdMap.put(desc, idSet);
+		}
 		return newItemFlag;
 	}
 
