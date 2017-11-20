@@ -12,24 +12,25 @@ public class CountPairSum {
 	static int howMany(int[] A, int X) {
 		HashMap<Integer, Integer> freqCount = new HashMap<Integer, Integer>();
 		int count = 0;
-
+		Integer val;
 		for (int a : A) {
-			if (freqCount.containsKey(Math.abs(X - a))) {
-				count += freqCount.get(X-a);
-			}
-			if (!freqCount.containsKey(a)) {
-				freqCount.put(a, 0);
-			}
-			int v = freqCount.get(a);
-			freqCount.put(a, ++v);
 
+			if ((val = freqCount.get(Math.abs(X - a))) != null) {
+				count += val;
+			}
+
+			if ((val = freqCount.get(a)) == null) {
+				freqCount.put(a, 1);
+			} else {
+				freqCount.put(a, ++val);
+			}
 		}
 
 		return count;
 	}
-	
-	public static void main(String[] args){
-		int[] A = {3,3,4,5,3,5};
-		System.out.println(howMany(A,8));
+
+	public static void main(String[] args) {
+		int[] A = { 3, 3, 4, 5, 3, 5 };
+		System.out.println(howMany(A, 8));
 	}
 }
