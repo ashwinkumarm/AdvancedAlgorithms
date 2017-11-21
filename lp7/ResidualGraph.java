@@ -9,19 +9,22 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
 /**
- * This class extends the graph class by adding features like disabling the
- * vertices and edges, vertices array with twice the size
+ * This class extends the graph class with a modified iterator to iterate only
+ * through the edges which has a positive residual capacity for maximum flow
+ * applications.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
 public class ResidualGraph extends Graph {
 	ResidueVertex[] residueVertexArray;
+	static HashMap<Edge, Integer> edgeCapacity;
 
 	/**
 	 * Nested class to represent a Vertex of a ResidueGraph
 	 */
 	public static class ResidueVertex extends Vertex {
+		int height, excess;
 		List<ResidueEdge> residueAdj;
 		List<ResidueEdge> residueRevadj;
 
@@ -41,11 +44,6 @@ public class ResidualGraph extends Graph {
 			return new ResidueVertexIterator(this);
 		}
 
-		@Override
-		public Iterator<Edge> reverseIterator() {
-			return new ResidueVertexRevIterator(this);
-		}
-
 		/**
 		 * Nested class for Vertex iterator
 		 *
@@ -54,6 +52,7 @@ public class ResidualGraph extends Graph {
 			ResidueEdge cur;
 			Iterator<ResidueEdge> it;
 			boolean ready;
+			Vertex u;
 
 			/**
 			 * Constructor for initializing the iterator
@@ -63,6 +62,7 @@ public class ResidualGraph extends Graph {
 			ResidueVertexIterator(ResidueVertex u) {
 				this.it = u.residueAdj.iterator();
 				ready = false;
+				this.u = u;
 			}
 
 			public boolean hasNext() {
@@ -73,11 +73,11 @@ public class ResidualGraph extends Graph {
 					return false;
 				}
 				cur = it.next();
-				while (cur.residualCapacity == 0 && it.hasNext()) {
+				while (((cur.from == u && edgeCapacity.get(cur) - cur.flow == 0) || cur.flow > 0) && it.hasNext()) {
 					cur = it.next();
 				}
 				ready = true;
-				return !(cur.residualCapacity == 0);
+				return !((cur.from == u && edgeCapacity.get(cur) - cur.flow == 0) || cur.flow > 0);
 			}
 
 			public Edge next() {
@@ -94,74 +94,14 @@ public class ResidualGraph extends Graph {
 				throw new java.lang.UnsupportedOperationException();
 			}
 		}
-
-		/**
-		 * Nested class for reverse iterator
-		 *
-		 */
-		class ResidueVertexRevIterator implements Iterator<Edge> {
-			ResidueEdge cur;
-			Iterator<ResidueEdge> it;
-			boolean ready;
-
-			/**
-			 * Constructor for initializing the vertex reverse iterator
-			 *
-			 * @param u
-			 */
-			ResidueVertexRevIterator(ResidueVertex u) {
-				this.it = u.residueRevadj.iterator();
-				ready = false;
-			}
-
-			public boolean hasNext() {
-				if (ready) {
-					return true;
-				}
-				if (!it.hasNext()) {
-					return false;
-				}
-				cur = it.next();
-				while (cur.residualCapacity == 0 && it.hasNext()) {
-					cur = it.next();
-				}
-				ready = true;
-				return !(cur.residualCapacity == 0);
-			}
-
-			public Edge next() {
-				if (!ready) {
-					if (!hasNext()) {
-						throw new java.util.NoSuchElementException();
-					}
-				}
-				ready = false;
-				return cur;
-			}
-
-			public void remove() {
-				throw new java.lang.UnsupportedOperationException();
-			}
-		}
-
 	}
 
 	/**
 	 * Nested class for Residue Edge class
 	 *
 	 */
-	/**
-	 * @author deepaks
-	 *
-	 */
-	/**
-	 * @author deepaks
-	 *
-	 */
 	public static class ResidueEdge extends Edge {
-		int residualCapacity;
 		int flow;
-		boolean isResidualEdge;
 
 		/**
 		 * Constructor for initializing the Residue Edge
@@ -171,10 +111,8 @@ public class ResidualGraph extends Graph {
 		 * @param weight
 		 * @param name
 		 */
-		ResidueEdge(Vertex from, Vertex to, int weight, int residualCapacity, boolean isResidualEdge, int name) {
+		ResidueEdge(Vertex from, Vertex to, int weight, int residualCapacity, int name) {
 			super(from, to, weight, name);
-			this.residualCapacity = residualCapacity;
-			this.isResidualEdge = isResidualEdge;
 		}
 	}
 
@@ -187,7 +125,7 @@ public class ResidualGraph extends Graph {
 	public ResidualGraph(Graph g, HashMap<Edge, Integer> capacity) {
 		super(g);
 		residueVertexArray = new ResidueVertex[g.size()];
-
+		edgeCapacity = capacity;
 		for (Vertex u : g) {
 			residueVertexArray[u.getName()] = new ResidueVertex(u);
 		}
@@ -199,13 +137,14 @@ public class ResidualGraph extends Graph {
 			for (Edge e : u) {
 				Vertex v = e.otherEnd(u);
 				ResidueVertex x2 = getVertex(v);
-				residueEdge = new ResidueEdge(x1, x2, e.weight, capacity.get(e), false, e.getName());
+				residueEdge = new ResidueEdge(x1, x2, e.weight, capacity.get(e), e.getName());
 				x1.residueAdj.add(residueEdge);
 				x2.residueRevadj.add(residueEdge);
-				residueEdge = new ResidueEdge(x2, x1, e.weight, 0, true, e.getName());
-				x2.residueAdj.add(residueEdge);
+				// TODO: x2.adj.add(residueEdge);
 			}
 		}
+		for (ResidueVertex u : residueVertexArray)
+			u.residueAdj.addAll(u.residueRevadj);
 	}
 
 	/**
@@ -233,7 +172,7 @@ public class ResidualGraph extends Graph {
 	 * @return
 	 */
 	public ResidueEdge addEdge(ResidueVertex from, ResidueVertex to, int weight, int capacity, int name) {
-		ResidueEdge e = new ResidueEdge(from, to, weight, capacity, false, name);
+		ResidueEdge e = new ResidueEdge(from, to, weight, capacity, name);
 		if (directed) {
 			from.residueAdj.add(e);
 			to.residueRevadj.add(e);

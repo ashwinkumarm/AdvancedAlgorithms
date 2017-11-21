@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueEdge;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BFS;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
@@ -26,21 +25,20 @@ public class Flow {
 
 	// Return max flow found by Dinitz's algorithm
 	public int dinitzMaxFlow() {
-		// for e in E do f( e ) = 0
+		int maxFlow = 0;
 		while (true) {
 			bfs.bfs();
 			if (bfs.getVertex(t).getDistance() == Integer.MAX_VALUE)
 				break;
-			findMinimumResidualCapacityAndIncreaseFlow();
+			maxFlow += findMinimumResidualCapacityAndIncreaseFlow();
 		}
-		// return maxflow
-		return 0;
+		return maxFlow;
 	}
 
-	private void findMinimumResidualCapacityAndIncreaseFlow() {
+	private int findMinimumResidualCapacityAndIncreaseFlow() {
 		int minResidualCapacity = Integer.MAX_VALUE;
 		Vertex u, v = t;
-		ResidueEdge e;
+		ResidueEdge e, revEdge;
 		List<ResidueEdge> path = new LinkedList<>();
 		while (v != null) {
 			u = bfs.getParent(v);
@@ -54,10 +52,16 @@ public class Flow {
 			if (!edge.isResidualEdge) {
 				edge.flow += minResidualCapacity;
 				edge.residualCapacity -= minResidualCapacity;
+				revEdge = (ResidueEdge) getEdgeFromGraph(edge.to, edge.from);
+				revEdge.residualCapacity += minResidualCapacity;
 			} else {
-				// f( e^R ) = f( e^R ) - cmin
+				edge.residualCapacity -= minResidualCapacity;
+				revEdge = (ResidueEdge) getEdgeFromGraph(edge.to, edge.from);
+				revEdge.flow -= minResidualCapacity;
+				revEdge.residualCapacity += minResidualCapacity;
 			}
 		}
+		return minResidualCapacity;
 	}
 
 	/**
@@ -68,7 +72,7 @@ public class Flow {
 	 * @param g
 	 * @return
 	 */
-	private Edge getEdgeFromGraph(ResidueVertex parent, ResidueVertex vertex) {
+	private Edge getEdgeFromGraph(Vertex parent, Vertex vertex) {
 		for (Edge e : parent)
 			if (e.to.getName() == vertex.getName())
 				return e;
@@ -77,6 +81,7 @@ public class Flow {
 
 	// Return max flow found by relabelToFront algorithm
 	public int relabelToFront() {
+		PreflowRelabelToFront relabelToFront = new PreflowRelabelToFront(gf, s, t, ca);
 		return 0;
 	}
 
