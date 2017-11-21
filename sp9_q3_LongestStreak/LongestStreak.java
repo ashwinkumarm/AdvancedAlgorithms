@@ -24,15 +24,13 @@ public class LongestStreak {
 			int right = i + 1;
 			int streak = 1;
 
-			while (elementsSet.contains(left)) {
+			while (elementsSet.remove(left)) {
 				streak++;
-				elementsSet.remove(left);
 				left--;
 			}
 
-			while (elementsSet.contains(right)) {
+			while (elementsSet.remove(right)) {
 				streak++;
-				elementsSet.remove(right);
 				right++;
 			}
 

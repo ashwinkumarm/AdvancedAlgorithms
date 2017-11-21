@@ -6,7 +6,6 @@ public class ExactlyOnce {
 
 	static <T> void display(T[] o) {
 		for (T i : o) {
-			if (i != null)
 				System.out.println(i);
 		}
 	}
@@ -14,16 +13,30 @@ public class ExactlyOnce {
 	static <T extends Comparable<? super T>> T[] exactlyOnce(T[] A) {
 		T[] output = (T[]) new Comparable[A.length];
 
+		int size = 0;
 		HashMap<T, Integer> valueWithIndexPos = new HashMap<T, Integer>();
+		Integer ind;
 		for (int i = 0; i < A.length; i++) {
-			if (!valueWithIndexPos.containsKey(A[i])) {
+			if ((ind = valueWithIndexPos.get(A[i])) == null) {
 				valueWithIndexPos.put(A[i], i);
 				output[i] = A[i];
+				size++;
 			} else {
-				output[valueWithIndexPos.get(A[i])] = null;
+				output[ind] = null;
+				size--;
 			}
 		}
-		return output;
+
+		T[] result = (T[]) new Comparable[size];
+		int index = 0;
+		for (T i : output) {
+			if (i != null) {
+				result[index] = i;
+				index++;
+			}
+		}
+
+		return result;
 	}
 
 	public static void main(String[] args) {
