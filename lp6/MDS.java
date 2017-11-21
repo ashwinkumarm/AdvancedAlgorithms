@@ -1,24 +1,24 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class MDS {
 
-	Map<Long,LinkedHashSet<Long>> productDescription;
-	Map<Long,HashSet<Long>> desrciptionProductIdMap;
+	Map<Long,LinkedHashSet<Long>> itemDescription;
+	Map<Long,HashSet<Long>> desrciptionItemIdMap;
 	Map<Long,Float> supplierReputation;
-	Map<Long,HashMap<Long,Integer>> productPricePerSupplier;
+	Map<Long,HashMap<Long,Integer>> itemPricePerSupplier;
 	
 	public MDS() {
-		productDescription = new HashMap<>();
+		itemDescription = new HashMap<>();
 		supplierReputation = new HashMap<>();
-		productPricePerSupplier = new HashMap<>();
+		itemPricePerSupplier = new HashMap<>();
 	}
 
 	public static class Pair {
@@ -39,20 +39,20 @@ public class MDS {
 	public boolean add(Long id, Long[] description) {
 		boolean newItemFlag = true;
 		LinkedHashSet<Long> descriptionArray = new LinkedHashSet<>();
-		if(productDescription.containsKey(id)){
-			descriptionArray = productDescription.get(id);
+		if(itemDescription.containsKey(id)){
+			descriptionArray = itemDescription.get(id);
 			newItemFlag = false;
 		}
 		descriptionArray.addAll(Arrays.asList(description));
-		productDescription.put(id,descriptionArray);
+		itemDescription.put(id,descriptionArray);
 		for (Long desc : description) {
-			HashSet<Long> idSet = new HashSet<>();
-    		if(desrciptionProductIdMap.containsKey(desc))
+			HashSet<Long> itemIdSet = new HashSet<>();
+    		if(desrciptionItemIdMap.containsKey(desc))
     		{
-    			idSet = desrciptionProductIdMap.get(desc);
+    			itemIdSet = desrciptionItemIdMap.get(desc);
     		}
-    		idSet.add(id);
-    		desrciptionProductIdMap.put(desc, idSet);
+    		itemIdSet.add(id);
+    		desrciptionItemIdMap.put(desc, itemIdSet);
 		}
 		return newItemFlag;
 	}
@@ -80,8 +80,8 @@ public class MDS {
 		
 		int noOfNewItems = 0;
 		HashMap<Long, Integer> productPricePair = new HashMap<>();
-		if(productPricePerSupplier.containsKey(supplier)){
-			productPricePair = productPricePerSupplier.get(supplier);
+		if(itemPricePerSupplier.containsKey(supplier)){
+			productPricePair = itemPricePerSupplier.get(supplier);
 		}
 		
 		for (Pair pair : idPrice) {
@@ -99,7 +99,7 @@ public class MDS {
 	 * with this id.
 	 */
 	public Long[] description(Long id) {
-		return (Long[])productDescription.get(id).toArray();
+		return (Long[])itemDescription.get(id).toArray();
 	}
 
 	/*
@@ -108,7 +108,16 @@ public class MDS {
 	 * array that are in the item's description (non-increasing order).
 	 */
 	public Long[] findItem(Long[] arr) {
-		return null;
+		TreeMap<Long, Integer> items = new TreeMap<>();
+		for (Long desc : arr) {
+			if(desrciptionItemIdMap.containsKey(desc)){
+				HashSet<Long> itemsIdSet = desrciptionItemIdMap.get(desc);
+				for (Long item : itemsIdSet) {
+					items.put(item, items.getOrDefault(item, 0)+1);
+				}
+			}
+		}
+		return (Long[])sortByValues(items).keySet().toArray();
 	}
 
 	/*
@@ -120,6 +129,7 @@ public class MDS {
 	 * order).
 	 */
 	public Long[] findItem(Long n, int minPrice, int maxPrice, float minReputation) {
+		
 		return null;
 	}
 
@@ -197,5 +207,21 @@ public class MDS {
 	 */
 	public int removeAll(Long[] arr) {
 		return 0;
+	}
+	
+	public static <K, V extends Comparable<V>> Map<K, V> sortByValues(final Map<K, V> map) {
+	    Comparator<K> valueComparator = new Comparator<K>() {
+	      public int compare(K k1, K k2) {
+	        int compare = map.get(k2).compareTo(map.get(k1));
+	        if (compare == 0) 
+	          return 1;
+	        else 
+	          return compare;
+	      }
+	    };
+	 
+	    Map<K, V> sortedByValues = new TreeMap<K, V>(valueComparator);
+	    sortedByValues.putAll(map);
+	    return sortedByValues;
 	}
 }
