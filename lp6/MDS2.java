@@ -131,7 +131,7 @@ public class MDS2 {
 	public Long[] description(Long id) {
 		TreeSet<Long> productDescription;
 		if ((productDescription = productMap.get(id)) != null)
-			return (Long[]) productDescription.toArray();
+			return productDescription.toArray(new Long[productDescription.size()]);
 		return null;
 	}
 
@@ -150,7 +150,8 @@ public class MDS2 {
 				}
 			}
 		}
-		return (Long[]) sortByValues(itemsMap).keySet().toArray();
+		int size = itemsMap.keySet().size();
+		return sortByValues(itemsMap, false).keySet().toArray(new Long[size]);
 	}
 
 	/*
@@ -174,13 +175,14 @@ public class MDS2 {
 					for (Long supplier : supplierSet) {
 						sp = supplierMap.get(supplier);
 						int price = sp.pairMap.get(product);
-						if (sp.reputation >= minReputation && minPrice >= price && price <= maxPrice)
+						if (sp.reputation >= minReputation && price >= minPrice && price <= maxPrice)
 							minPriceSoFar = price < minPriceSoFar ? price : minPriceSoFar;
 					}
 					productPriceMap.put(product, minPriceSoFar);
 				}
 			}
-			return (Long[]) sortByValues(productPriceMap).keySet().toArray();
+			int size = productPriceMap.keySet().size();
+			return sortByValues(productPriceMap, true).keySet().toArray(new Long[size]);
 		}
 		return new Long[0];
 	}
@@ -198,7 +200,8 @@ public class MDS2 {
 				price = supplierMap.get(supplier).pairMap.get(id);
 				supplierPriceMap.put(supplier, price);
 			}
-			return (Long[]) sortByValues(supplierPriceMap).keySet().toArray();
+			int size = supplierPriceMap.keySet().size();
+			return sortByValues(supplierPriceMap, true).keySet().toArray(new Long[size]);
 		}
 		return new Long[0];
 	}
@@ -222,7 +225,8 @@ public class MDS2 {
 					supplierPriceMap.put(supplier, price);
 				}
 			}
-			return (Long[]) sortByValues(supplierPriceMap).keySet().toArray();
+			int size = supplierPriceMap.keySet().size();
+			return sortByValues(supplierPriceMap, true).keySet().toArray(new Long[size]);
 		}
 		return new Long[0];
 	}
@@ -251,7 +255,7 @@ public class MDS2 {
 		SupplierPair sp;
 		int minPriceSoFar, totalPrice = 0;
 		for (Long product : arr) {
-			minPriceSoFar = Integer.MAX_VALUE;
+			minPriceSoFar = 0;
 			if ((supplierSet = productSupplierMap.get(product)) != null) {
 				for (Long supplier : supplierSet) {
 					sp = supplierMap.get(supplier);
@@ -282,7 +286,7 @@ public class MDS2 {
 				removedProductSet.addAll(sp.pairMap.keySet());
 			}
 		}
-		return (Long[]) removedProductSet.toArray();
+		return removedProductSet.toArray(new Long[removedProductSet.size()]);
 	}
 
 	/*
@@ -362,10 +366,14 @@ public class MDS2 {
 		return maxElementsAffected;
 	}
 
-	public static <K, V extends Comparable<V>> Map<K, V> sortByValues(final Map<K, V> map) {
+	public static <K, V extends Comparable<V>> Map<K, V> sortByValues(final Map<K, V> map, boolean ascendingFlag) {
 		Comparator<K> valueComparator = new Comparator<K>() {
 			public int compare(K k1, K k2) {
-				int compare = map.get(k2).compareTo(map.get(k1));
+				int compare;
+				if (ascendingFlag)
+					compare = map.get(k1).compareTo(map.get(k2));
+				else
+					compare = map.get(k2).compareTo(map.get(k1));
 				if (compare == 0)
 					return 1;
 				else
