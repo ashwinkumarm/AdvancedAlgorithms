@@ -163,9 +163,8 @@ public class MDS2 {
 	 * order).
 	 */
 	public Long[] findItem(Long n, int minPrice, int maxPrice, float minReputation) {
-		TreeSet<Long> productSet;
+		TreeSet<Long> productSet, supplierSet;
 		if ((productSet = descriptionMap.get(n)) != null) {
-			TreeSet<Long> supplierSet;
 			TreeMap<Long, Integer> productPriceMap = new TreeMap<Long, Integer>();
 			SupplierPair sp;
 			int minPriceSoFar;
@@ -223,9 +222,8 @@ public class MDS2 {
 			Integer price;
 			for (Long supplier : supplierSet) {
 				sp = supplierMap.get(supplier);
-				if (sp.reputation >= minReputation && (price = sp.pairMap.get(id)) != null) {
+				if (sp.reputation >= minReputation && (price = sp.pairMap.get(id)) != null)
 					supplierPriceMap.put(supplier, price);
-				}
 			}
 			int size = supplierPriceMap.keySet().size();
 			return sortByValues(supplierPriceMap, true).keySet().toArray(new Long[size]);
@@ -307,12 +305,9 @@ public class MDS2 {
 				productSet.remove(id);
 				descriptionMap.put(description, productSet);
 			}
-			supplierSet = productSupplierMap.get(id);
-			SupplierPair sp;
-			for (Long supplier : supplierSet) {
-				sp = supplierMap.get(supplier);
-				sp.pairMap.remove(id);
-			}
+			supplierSet = productSupplierMap.remove(id);
+			for (Long supplier : supplierSet)
+				supplierMap.get(supplier).pairMap.remove(id);
 		}
 		return totalDescription;
 	}
