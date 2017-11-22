@@ -47,7 +47,7 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 	}
 
 	// reinitialize allows running BFS many times, with different sources
-	void reinitialize(Graph.Vertex newSource) {
+	public void reinitialize(Graph.Vertex newSource) {
 		src = newSource;
 		for (Graph.Vertex u : g) {
 			BFSVertex bu = getVertex(u);

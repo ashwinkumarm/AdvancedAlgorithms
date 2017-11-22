@@ -114,6 +114,29 @@ public class ResidualGraph extends Graph {
 		ResidueEdge(Vertex from, Vertex to, int weight, int residualCapacity, int name) {
 			super(from, to, weight, name);
 		}
+
+		/**
+		 * Method to calculate the residual capacity of an edge based on whether
+		 * it is an actual edge from the graph or eR.
+		 *
+		 * @param u
+		 * @return
+		 */
+		public int getResidualCapacity(Vertex u) {
+			return from == u ? flow - edgeCapacity.get(this) : flow;
+		}
+
+		/**
+		 * Method to check if the edge (edge out of u in Gf because of e/ edge
+		 * out of u in Gf because of flow) has residual capacity greater than 0.
+		 *
+		 * @param u
+		 * @param e
+		 * @return
+		 */
+		public boolean inGf(Vertex u) {
+			return from == u ? flow < edgeCapacity.get(this) : flow > 0;
+		}
 	}
 
 	/**

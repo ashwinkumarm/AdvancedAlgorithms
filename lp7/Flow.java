@@ -6,20 +6,27 @@ import java.util.List;
 import java.util.Set;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueEdge;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BFS;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
+/**
+ * @author Arun
+ *
+ */
 public class Flow {
 	ResidualGraph gf;
-	Vertex s, t;
+	ResidueVertex s, t;
+	HashMap<Edge, Integer> capacity;
 	BFS bfs;
 
 	public Flow(Graph g, Vertex s, Vertex t, HashMap<Edge, Integer> capacity) {
 		gf = new ResidualGraph(g, capacity);
-		this.s = s;
-		this.t = t;
+		this.s = gf.getResidueVertexWithName(s.getName());
+		this.t = gf.getResidueVertexWithName(t.getName());
+		this.capacity = capacity;
 		bfs = new BFS(gf, s);
 	}
 
@@ -31,35 +38,59 @@ public class Flow {
 			if (bfs.getVertex(t).getDistance() == Integer.MAX_VALUE)
 				break;
 			maxFlow += findMinimumResidualCapacityAndIncreaseFlow();
+			maxFlow += findAugmentingPaths(s, Integer.MAX_VALUE);
+			bfs.reinitialize(s);
 		}
 		return maxFlow;
 	}
 
+	private int findAugmentingPaths(ResidueVertex u, int minFlow) {
+		if (u == t)
+			return minFlow;
+		ResidueEdge re;
+		for (Edge e : u) {
+			re = (ResidueEdge) e;
+			ResidueVertex v = (ResidueVertex) e.otherEnd(u);
+			if (bfs.getVertex(v).getDistance() == bfs.getVertex(u).getDistance() + 1 && re.inGf(u)) {
+				minFlow = Math.min(minFlow, re.getResidualCapacity(u));
+				int flow = findAugmentingPaths(v, minFlow);
+				if (flow > 0) {
+					if (re.from == u)
+						re.flow += flow;
+					else
+						re.flow -= flow;
+					return flow;
+				}
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * Used in Edmond-Karp Algorithm
+	 *
+	 * @return
+	 */
 	private int findMinimumResidualCapacityAndIncreaseFlow() {
-		int minResidualCapacity = Integer.MAX_VALUE;
+		int minResidualCapacity = Integer.MAX_VALUE, cf;
 		Vertex u, v = t;
-		ResidueEdge e, revEdge;
+		ResidueEdge e;
 		List<ResidueEdge> path = new LinkedList<>();
 		while (v != null) {
 			u = bfs.getParent(v);
 			e = (ResidueEdge) getEdgeFromGraph(gf.getVertex(u), gf.getVertex(v));
-			if (e.residualCapacity < minResidualCapacity)
-				minResidualCapacity = e.residualCapacity;
+			if ((cf = e.getResidualCapacity(u)) < minResidualCapacity)
+				minResidualCapacity = cf;
 			v = u;
 			path.add(e);
 		}
+		u = t;
 		for (ResidueEdge edge : path) {
-			if (!edge.isResidualEdge) {
+			if (edge.to == u)
 				edge.flow += minResidualCapacity;
-				edge.residualCapacity -= minResidualCapacity;
-				revEdge = (ResidueEdge) getEdgeFromGraph(edge.to, edge.from);
-				revEdge.residualCapacity += minResidualCapacity;
-			} else {
-				edge.residualCapacity -= minResidualCapacity;
-				revEdge = (ResidueEdge) getEdgeFromGraph(edge.to, edge.from);
-				revEdge.flow -= minResidualCapacity;
-				revEdge.residualCapacity += minResidualCapacity;
-			}
+			else
+				edge.flow -= minResidualCapacity;
+			u = edge.from;
 		}
 		return minResidualCapacity;
 	}
@@ -81,7 +112,8 @@ public class Flow {
 
 	// Return max flow found by relabelToFront algorithm
 	public int relabelToFront() {
-		PreflowRelabelToFront relabelToFront = new PreflowRelabelToFront(gf, s, t, ca);
+		PreflowRelabelToFront relabelToFront = new PreflowRelabelToFront(gf, s, t, capacity);
+		relabelToFront.relabelToFront();
 		return 0;
 	}
 
