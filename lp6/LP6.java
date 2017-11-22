@@ -191,6 +191,7 @@ public class LP6 {
 				returnValue = null;
 			}
 			if (returnValue != null) {
+				//System.out.println("Return Value: "+returnValue);
 				result += returnValue;
 				if (VERBOSE > 0) {
 					System.out.println(lineno + " : " + operation + " : " + returnValue);

@@ -178,7 +178,8 @@ public class MDS2 {
 						if (sp.reputation >= minReputation && price >= minPrice && price <= maxPrice)
 							minPriceSoFar = price < minPriceSoFar ? price : minPriceSoFar;
 					}
-					productPriceMap.put(product, minPriceSoFar);
+					if (minPriceSoFar != Integer.MAX_VALUE)
+						productPriceMap.put(product, minPriceSoFar);
 				}
 			}
 			int size = productPriceMap.keySet().size();
@@ -195,10 +196,12 @@ public class MDS2 {
 		TreeMap<Long, Integer> supplierPriceMap = new TreeMap<Long, Integer>();
 		TreeSet<Long> supplierSet;
 		if ((supplierSet = productSupplierMap.get(id)) != null) {
-			int price;
+			Integer price;
+			SupplierPair sp;
 			for (Long supplier : supplierSet) {
-				price = supplierMap.get(supplier).pairMap.get(id);
-				supplierPriceMap.put(supplier, price);
+				sp = supplierMap.get(supplier);
+				if ((price = sp.pairMap.get(id)) != null)
+					supplierPriceMap.put(supplier, price);
 			}
 			int size = supplierPriceMap.keySet().size();
 			return sortByValues(supplierPriceMap, true).keySet().toArray(new Long[size]);
@@ -217,11 +220,10 @@ public class MDS2 {
 		TreeSet<Long> supplierSet;
 		if ((supplierSet = productSupplierMap.get(id)) != null) {
 			SupplierPair sp;
-			int price;
+			Integer price;
 			for (Long supplier : supplierSet) {
 				sp = supplierMap.get(supplier);
-				if (sp.reputation >= minReputation) {
-					price = sp.pairMap.get(id);
+				if (sp.reputation >= minReputation && (price = sp.pairMap.get(id)) != null) {
 					supplierPriceMap.put(supplier, price);
 				}
 			}
@@ -255,17 +257,18 @@ public class MDS2 {
 		SupplierPair sp;
 		int minPriceSoFar, totalPrice = 0;
 		for (Long product : arr) {
-			minPriceSoFar = 0;
+			minPriceSoFar = Integer.MAX_VALUE;
 			if ((supplierSet = productSupplierMap.get(product)) != null) {
 				for (Long supplier : supplierSet) {
 					sp = supplierMap.get(supplier);
-					if (sp.reputation >= minReputation) {
-						int price = sp.pairMap.get(product);
+					Integer price;
+					if (sp.reputation >= minReputation && (price = sp.pairMap.get(product)) != null) {
 						minPriceSoFar = price < minPriceSoFar ? price : minPriceSoFar;
 
 					}
 				}
-				totalPrice += minPriceSoFar;
+				if (minPriceSoFar != Integer.MAX_VALUE)
+					totalPrice += minPriceSoFar;
 			}
 		}
 		return totalPrice;
