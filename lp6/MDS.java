@@ -112,7 +112,13 @@ public class MDS {
 	 * with this id.
 	 */
 	public Long[] description(Long id) {
-		return (Long[])itemInfo.get(id).getDescription().toArray();
+		Long[] descriptions = null;
+		ItemDetails item = itemInfo.get(id);
+		if(item != null){
+			HashSet<Long> descriptionSet = item.getDescription();
+			descriptions = descriptionSet.toArray(new Long[descriptionSet.size()]);
+		}
+		return descriptions;
 	}
 
 	/*
@@ -130,7 +136,7 @@ public class MDS {
 				}
 			}
 		}
-		return (Long[])sortByValues(items, false).keySet().toArray();
+		return sortByValues(items, false).keySet().toArray(new Long[items.size()]);
 	}
 
 	/*
@@ -164,7 +170,7 @@ public class MDS {
 				}
 			}
 		}
-		return (Long[])sortByValues(items, true).keySet().toArray();
+		return sortByValues(items, true).keySet().toArray(new Long[items.size()]);
 	}
 
 	/*
@@ -172,8 +178,13 @@ public class MDS {
 	 * price at which they sell the item (non-decreasing order).
 	 */
 	public Long[] findSupplier(Long id) {
+		Long[] suppliers = null;
 		ItemDetails item = itemInfo.get(id);
-		return (Long[])sortByValues(item.getPricePerSupplier(), true).keySet().toArray();
+		if(item != null){
+			Set<Long> supplierIdSet = sortByValues(item.getPricePerSupplier(), true).keySet();
+			suppliers = supplierIdSet.toArray(new Long[supplierIdSet.size()]);
+		}
+		return suppliers;
 	}
 
 	/*
@@ -195,7 +206,7 @@ public class MDS {
 			}
 			
 		}
-		return (Long[])sortByValues(suppliers, true).keySet().toArray();
+		return sortByValues(suppliers, true).keySet().toArray(new Long[suppliers.size()]);
 	}
 
 	/*
