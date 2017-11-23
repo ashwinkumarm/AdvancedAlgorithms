@@ -1,12 +1,15 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
+import java.util.LinkedList;
+
 /** Breadth-first search
  *  @author rbk
  *  Version 1.0: 2017/09/08
  */
 
 import java.util.Queue;
-import java.util.LinkedList;
+
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
 public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 	public static final int INFINITY = Integer.MAX_VALUE;
@@ -28,6 +31,12 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 		}
 
 		public void setDistance(int distance) {
+			this.distance = distance;
+		}
+
+		void set(boolean seen, Vertex parent, int distance) {
+			this.seen = seen;
+			this.parent = parent;
 			this.distance = distance;
 		}
 	}
@@ -60,7 +69,8 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 
 	public void bfs() {
 		Queue<Graph.Vertex> q = new LinkedList<>();
-		visit(null, src);
+		// Set source to be at distance 0
+		getVertex(src).set(true, null, 0);
 		q.add(src);
 		while (!q.isEmpty()) {
 			Graph.Vertex u = q.remove();
@@ -89,8 +99,6 @@ public class BFS extends GraphAlgorithm<BFS.BFSVertex> {
 	// Visit a node v from u
 	void visit(Graph.Vertex u, Graph.Vertex v) {
 		BFSVertex bv = getVertex(v);
-		bv.seen = true;
-		bv.parent = u;
-		bv.setDistance(distance(u) + 1);
+		bv.set(true, u, distance(u) + 1);
 	}
 }

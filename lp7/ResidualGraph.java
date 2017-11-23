@@ -73,11 +73,11 @@ public class ResidualGraph extends Graph {
 					return false;
 				}
 				cur = it.next();
-				while (((cur.from == u && edgeCapacity.get(cur) - cur.flow == 0) || cur.flow > 0) && it.hasNext()) {
+				while (!cur.inGf(u) && it.hasNext()) {
 					cur = it.next();
 				}
 				ready = true;
-				return !((cur.from == u && edgeCapacity.get(cur) - cur.flow == 0) || cur.flow > 0);
+				return (cur.inGf(u));
 			}
 
 			public Edge next() {
@@ -123,7 +123,7 @@ public class ResidualGraph extends Graph {
 		 * @return
 		 */
 		public int getResidualCapacity(Vertex u) {
-			return from == u ? flow - edgeCapacity.get(this) : flow;
+			return from == u ? edgeCapacity.get(this) - flow : flow;
 		}
 
 		/**
@@ -235,5 +235,20 @@ public class ResidualGraph extends Graph {
 	 */
 	public ResidueVertex[] getResidueVertexArray() {
 		return residueVertexArray;
+	}
+
+	/**
+	 * This method gets the edge from the graph.
+	 *
+	 * @param parent
+	 * @param vertex
+	 * @param g
+	 * @return
+	 */
+	public Edge getEdgeFromGraph(Vertex parent, Vertex vertex) {
+		for (Edge e : ((ResidueVertex) parent).residueAdj)
+			if (e.to.getName() == vertex.getName())
+				return e;
+		return null;
 	}
 }

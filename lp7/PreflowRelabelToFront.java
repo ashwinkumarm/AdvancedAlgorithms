@@ -10,9 +10,8 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
 /**
- * This class extends the graph class with a modified iterator to iterate only
- * through the edges which has a positive residual capacity for maximum flow
- * applications.
+ * This class implements Preflow-push relabel to front algorithm to find the
+ * maximum flow in the given graph.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *
@@ -27,28 +26,29 @@ public class PreflowRelabelToFront {
 	 * @param gf
 	 * @param s
 	 * @param t
-	 * @param capacity2
+	 * @param capacity
 	 */
-	public PreflowRelabelToFront(ResidualGraph gf, Vertex s, Vertex t, HashMap<Edge, Integer> capacity) {
+	public PreflowRelabelToFront(ResidualGraph gf, ResidueVertex s, ResidueVertex t, HashMap<Edge, Integer> capacity) {
 		super();
 		this.gf = gf;
-		this.s = gf.getResidueVertexWithName(s.getName());
-		this.t = gf.getResidueVertexWithName(t.getName());
+		this.s = s;
+		this.t = t;
 		this.capacity = capacity;
 	}
 
 	/**
-	 *
+	 * Initializes the height to inital values and pushes the initial flow from
+	 * the source.
 	 */
 	private void initialize() {
-		for (Vertex u : gf) {
+		/*-for (Vertex u : gf) {
 			ResidueVertex ru = (ResidueVertex) u;
 			ru.height = 0;
 			ru.excess = 0;
 		}
 		for (Vertex u : gf)
 			for (Edge e : u)
-				((ResidueEdge) e).flow = 0;
+				((ResidueEdge) e).flow = 0;*/
 		s.height = gf.size();
 		for (Edge e : s) {
 			ResidueVertex ru = (ResidueVertex) e.otherEnd(s);
@@ -84,10 +84,16 @@ public class PreflowRelabelToFront {
 	 * @param u
 	 */
 	private void relabel(ResidueVertex u) {
-		u.height = 1 + getEdgeWithMinimumHeight(u);
+		u.height = 1 + getAdjacentVertexWithMinimumHeight(u);
 	}
 
-	private int getEdgeWithMinimumHeight(ResidueVertex u) {
+	/**
+	 * Finds the adjacent vertex with minimum height.
+	 *
+	 * @param u
+	 * @return
+	 */
+	private int getAdjacentVertexWithMinimumHeight(ResidueVertex u) {
 		int minHeight = Integer.MAX_VALUE, vHeight;
 		for (Edge e : u) {
 			if ((vHeight = ((ResidueVertex) e.otherEnd(u)).height) < minHeight)
@@ -102,11 +108,13 @@ public class PreflowRelabelToFront {
 	 * @param u
 	 */
 	private void discharge(ResidueVertex u) {
+		ResidueEdge re;
 		while (u.excess > 0) {
-			for (ResidueEdge e : u.residueRevadj) {
+			for (Edge e : u) {
+				re = (ResidueEdge) e;
 				ResidueVertex v = (ResidueVertex) e.otherEnd(u);
-				if (e.inGf(u) && u.height == 1 + v.height) {
-					push(u, v, e);
+				if (re.inGf(u) && u.height == 1 + v.height) {
+					push(u, v, re);
 					if (u.excess == 0)
 						return;
 				}
@@ -144,7 +152,7 @@ public class PreflowRelabelToFront {
 			if (!done) {
 				// Move u to beginning of L
 				it.remove();
-				L.addFirst(ru);// ??
+				L.addFirst(ru);
 			}
 		}
 	}
