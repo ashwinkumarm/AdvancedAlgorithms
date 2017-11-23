@@ -6,7 +6,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Timer;
 
 public class LP7 {
-	static int VERBOSE = 0;
+	static int VERBOSE = 1;
 
 	public static void main(String[] args) {
 		if (args.length > 0) {
@@ -20,13 +20,17 @@ public class LP7 {
 		java.util.HashMap<Edge, Integer> capacity = new java.util.HashMap<>();
 		for (Vertex u : g) {
 			for (Edge e : u) {
-				capacity.put(e, 1);
+				capacity.put(e, in.nextInt());
+				// capacity.put(e, 1);
 			}
 		}
 		Flow f = new Flow(g, g.getVertex(s), g.getVertex(t), capacity);
 		int value = f.relabelToFront();
+		// int value = f.dinitzMaxFlow();
 
 		System.out.println(value);
+		System.out.println(f.minCutS());
+		System.out.println(f.minCutT());
 
 		if (VERBOSE > 0) {
 			for (Vertex u : g) {
