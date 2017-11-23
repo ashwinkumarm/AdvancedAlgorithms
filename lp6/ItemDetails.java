@@ -1,5 +1,6 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
@@ -16,14 +17,14 @@ public class ItemDetails {
 	public HashMap<Long, Integer> getPricePerSupplier() {
 		return pricePerSupplier;
 	}
-	public void setPricePerSupplier(HashMap<Long, Integer> pricePerSupplier) {
-		this.pricePerSupplier = pricePerSupplier;
+	public void setPricePerSupplier(Long supplier, Integer price) {
+		pricePerSupplier.put(supplier, price);
 	}
 	public LinkedHashSet<Long> getDescription() {
 		return description;
 	}
-	public void setDescription(LinkedHashSet<Long> description) {
-		this.description = description;
+	public void setDescription(Long[] description) {
+		this.description.addAll(Arrays.asList(description));
 	}
 
 }

@@ -1,10 +1,11 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6;
 
-
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class MDS {
@@ -12,13 +13,14 @@ public class MDS {
 	Map<Long,ItemDetails> itemInfo;
 	Map<Long,HashSet<Long>> desrciptionItemIdMap;
 	Map<Long,Float> supplierReputation;
+	Map<Long,HashSet<Long>> supplierItemIdMap;
 
 	
 	public MDS() {
 		itemInfo = new HashMap<>();
 		desrciptionItemIdMap = new HashMap<>();
 		supplierReputation = new HashMap<>();
-
+		supplierItemIdMap = new HashMap<>();
 	}
 
 	public static class Pair {
@@ -37,8 +39,23 @@ public class MDS {
 	 * if the item is new, and false otherwise.
 	 */
 	public boolean add(Long id, Long[] description) {
-		boolean newItemFlag = true;
-		
+		boolean newItemFlag = false;
+		ItemDetails item = itemInfo.get(id);
+		if(item == null){
+			item = new ItemDetails();
+			itemInfo.put(id, item);
+			newItemFlag = true;
+		}
+		item.setDescription(description);
+		for (Long desc : description) {
+			HashSet<Long> itemIdSet = desrciptionItemIdMap.get(desc);
+    		if(itemIdSet == null)
+    		{
+    			itemIdSet = new HashSet<>();
+    		}
+    		itemIdSet.add(id);
+    		desrciptionItemIdMap.put(desc, itemIdSet);
+		}
 		return newItemFlag;
 	}
 
@@ -49,7 +66,10 @@ public class MDS {
 	 */
 	public boolean add(Long supplier, float reputation) {
 		boolean newSupplierFlag = true;
-		
+		if(supplierReputation.containsKey(supplier)){
+			newSupplierFlag = false;
+		}
+		supplierReputation.put(supplier, reputation);
 		return newSupplierFlag;
 	}
 
@@ -61,7 +81,29 @@ public class MDS {
 	public int add(Long supplier, Pair[] idPrice) {
 		
 		int noOfNewItems = 0;
-		
+		HashSet<Long> itemIdSet = supplierItemIdMap.get(supplier);
+		if(itemIdSet == null){
+			itemIdSet = new HashSet<>();
+			supplierItemIdMap.put(supplier, itemIdSet);
+		}
+		for (Pair pair : idPrice) {
+			Long id = pair.id;
+			Integer price = pair.price;
+			ItemDetails item = itemInfo.get(id);
+			if(item != null){
+				Set<Long> supplierIdSet = item.getPricePerSupplier().keySet();
+				if(!supplierIdSet.contains(supplier)){
+					noOfNewItems++;
+				}			
+			}
+			else{
+				item = new ItemDetails();
+				itemInfo.put(id,item);
+				noOfNewItems++;
+			}
+			item.setPricePerSupplier(supplier, price);
+			itemIdSet.add(id);
+		}		
 		return noOfNewItems;
 	}
 
@@ -70,7 +112,7 @@ public class MDS {
 	 * with this id.
 	 */
 	public Long[] description(Long id) {
-		return null;
+		return (Long[])itemInfo.get(id).getDescription().toArray();
 	}
 
 	/*
@@ -79,8 +121,16 @@ public class MDS {
 	 * array that are in the item's description (non-increasing order).
 	 */
 	public Long[] findItem(Long[] arr) {
-		
-		return null;
+		TreeMap<Long, Integer> items = new TreeMap<>();
+		for (Long desc : arr) {
+			if(desrciptionItemIdMap.containsKey(desc)){
+				HashSet<Long> itemsIdSet = desrciptionItemIdMap.get(desc);
+				for (Long item : itemsIdSet) {
+					items.put(item, items.getOrDefault(item, 0)+1);
+				}
+			}
+		}
+		return (Long[])sortByValues(items, false).keySet().toArray();
 	}
 
 	/*
@@ -93,8 +143,28 @@ public class MDS {
 	 */
 	public Long[] findItem(Long n, int minPrice, int maxPrice, float minReputation) {
 		
-		
-		return null;
+		TreeMap<Long, Integer> items = new TreeMap<>();
+		HashSet<Long> itemIdSet = desrciptionItemIdMap.get(n);
+		if(itemIdSet != null){
+			for (Long itemId : itemIdSet) {
+				ItemDetails item = itemInfo.get(itemId);
+				for(Entry<Long, Integer> pricePerSupplier : item.getPricePerSupplier().entrySet()){
+					Long supplier = pricePerSupplier.getKey();
+					Integer price = pricePerSupplier.getValue();
+					Float reputation = supplierReputation.get(supplier);
+					if(reputation != null && reputation >= minReputation){
+						if(price > minPrice && price < maxPrice){
+							Integer minimumPrice = items.get(itemId);
+							if(minimumPrice == null || minimumPrice > price){
+								items.put(itemId, price);
+							}
+						}
+					}
+					
+				}
+			}
+		}
+		return (Long[])sortByValues(items, true).keySet().toArray();
 	}
 
 	/*
@@ -102,7 +172,8 @@ public class MDS {
 	 * price at which they sell the item (non-decreasing order).
 	 */
 	public Long[] findSupplier(Long id) {
-		return null;
+		ItemDetails item = itemInfo.get(id);
+		return (Long[])sortByValues(item.getPricePerSupplier(), true).keySet().toArray();
 	}
 
 	/*
@@ -112,7 +183,19 @@ public class MDS {
 	 * order).
 	 */
 	public Long[] findSupplier(Long id, float minReputation) {
-		return null;
+		
+		TreeMap<Long, Integer> suppliers = new TreeMap<>();
+		ItemDetails item = itemInfo.get(id);
+		for(Entry<Long, Integer> pricePerSupplier : item.getPricePerSupplier().entrySet()){
+			Long supplier = pricePerSupplier.getKey();
+			Integer price = pricePerSupplier.getValue();
+			Float reputation = supplierReputation.get(supplier);
+			if(reputation != null && reputation >= minReputation){
+				suppliers.put(supplier, price);
+			}
+			
+		}
+		return (Long[])sortByValues(suppliers, true).keySet().toArray();
 	}
 
 	/*
@@ -144,6 +227,19 @@ public class MDS {
 	 * removed.
 	 */
 	public Long[] purge(float maxReputation) {
+		HashSet<Long> itemsRemoved = new HashSet<>();
+		for (Entry<Long, HashSet<Long>> supplierItemsPair : supplierItemIdMap.entrySet()) {
+			Long supplier = supplierItemsPair.getKey();
+			if(supplierReputation.get(supplier) <= maxReputation){
+				for (Long itemId : supplierItemsPair.getValue()) {
+					ItemDetails itemDetail = itemInfo.get(itemId);
+					itemDetail.getPricePerSupplier().remove(supplier);
+					itemsRemoved.add(itemId);
+				}
+				supplierItemIdMap.remove(supplier);
+				supplierReputation.remove(supplier);
+			}
+		}
 		return null;
 	}
 
@@ -152,7 +248,17 @@ public class MDS {
 	 * description of the item deleted (or 0, if such an id did not exist).
 	 */
 	public Long remove(Long id) {
-		return 0L;
+		Long sum = 0L;
+		ItemDetails item = itemInfo.get(id);
+		if(item != null){
+			for (Long desc : item.description) {
+				sum += desc;
+				HashSet<Long> itemIdSet = desrciptionItemIdMap.get(desc);
+				itemIdSet.remove(id);
+			}
+			itemInfo.remove(id);
+		}
+		return sum;
 	}
 
 	/*
@@ -162,7 +268,18 @@ public class MDS {
 	 * from the description.
 	 */
 	public int remove(Long id, Long[] arr) {
-		return 0;
+		int noOfElementsRemoved = 0;
+		ItemDetails item = itemInfo.get(id);
+		if(item != null) {
+			for (Long desc : arr) {
+				if(item.getDescription().remove(desc)){
+					noOfElementsRemoved++;
+					HashSet<Long> itemIdSet = desrciptionItemIdMap.get(desc);
+					itemIdSet.remove(id);
+				}
+			}
+		}
+		return noOfElementsRemoved;
 	}
 
 	/*
@@ -170,13 +287,33 @@ public class MDS {
 	 * the number of items that lost one or more terms from their descriptions.
 	 */
 	public int removeAll(Long[] arr) {
-		return 0;
+		
+		HashSet<Long> itemsRemoved = new HashSet<>();
+		for (Long desc : arr) {
+			itemsRemoved = desrciptionItemIdMap.remove(desc);
+			if(itemsRemoved != null){
+				for (Long item : itemsRemoved) {
+					ItemDetails itemDetail = itemInfo.get(item);
+					if(itemDetail.getDescription().remove(desc)){
+						itemsRemoved.add(item);
+					}
+				}
+			}
+		}
+		return itemsRemoved.size();
 	}
 	
-	public static <K, V extends Comparable<V>> Map<K, V> sortByValues(final Map<K, V> map) {
+	public static <K, V extends Comparable<V>> Map<K, V> sortByValues(final Map<K, V> map, boolean isAsc) {
 	    Comparator<K> valueComparator = new Comparator<K>() {
 	      public int compare(K k1, K k2) {
-	        int compare = map.get(k2).compareTo(map.get(k1));
+	    	int compare;
+	    	if(isAsc){
+	    		compare = map.get(k1).compareTo(map.get(k2));
+	    	}
+	    	else{
+	    		 compare = map.get(k2).compareTo(map.get(k1));
+	    	}
+	    	
 	        if (compare == 0) 
 	          return 1;
 	        else 
