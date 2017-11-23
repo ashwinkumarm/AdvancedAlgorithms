@@ -127,7 +127,7 @@ public class MDS {
 	 * array that are in the item's description (non-increasing order).
 	 */
 	public Long[] findItem(Long[] arr) {
-		TreeMap<Long, Integer> items = new TreeMap<>();
+		Map<Long, Integer> items = new HashMap<>();
 		for (Long desc : arr) {
 			if(desrciptionItemIdMap.containsKey(desc)){
 				HashSet<Long> itemsIdSet = desrciptionItemIdMap.get(desc);
@@ -229,7 +229,25 @@ public class MDS {
 	 * different seller.
 	 */
 	public int invoice(Long[] arr, float minReputation) {
-		return 0;
+		
+		int totalPrice = 0;
+		
+		for (Long itemId : arr) {
+			ItemDetails item = itemInfo.get(itemId);
+			if(item != null){
+				TreeMap<Long, Integer>  sortedPricePerSupplier = (TreeMap<Long, Integer>) sortByValues(item.getPricePerSupplier(), true);
+				for (Entry<Long, Integer> supplierPricePair : sortedPricePerSupplier.entrySet()) {
+					Long supplier = supplierPricePair.getKey();
+					Integer price = supplierPricePair.getValue();
+					Float reputation = supplierReputation.get(supplier);
+					if(reputation != null && reputation >= minReputation){
+						totalPrice += price;
+						break;
+					}
+				}
+			}
+		}
+		return totalPrice;
 	}
 
 	/*
@@ -301,9 +319,9 @@ public class MDS {
 		
 		HashSet<Long> itemsRemoved = new HashSet<>();
 		for (Long desc : arr) {
-			itemsRemoved = desrciptionItemIdMap.remove(desc);
-			if(itemsRemoved != null){
-				for (Long item : itemsRemoved) {
+			HashSet<Long> itemIdSet = desrciptionItemIdMap.remove(desc);
+			if(itemIdSet != null){
+				for (Long item : itemIdSet) {
 					ItemDetails itemDetail = itemInfo.get(item);
 					if(itemDetail.getDescription().remove(desc)){
 						itemsRemoved.add(item);
