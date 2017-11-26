@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 public class MDS {
 
@@ -219,56 +218,109 @@ public class MDS {
 	 * excellence credit. Return array of suppliers satisfying above condition.
 	 * Make sure that each supplier appears only once in the returned array.
 	 */
+	/*
+	 * public Long[] identical() {
+	 * 
+	 * HashMap<HashSet<Long>, HashSet<Long>> suppliersGroupedByItemIds =
+	 * (HashMap<HashSet<Long>, HashSet<Long>>) supplierItemIdMap
+	 * .entrySet().stream().filter(x -> x.getValue().size() >= 5)
+	 * .collect(Collectors.groupingBy(Map.Entry::getValue)).values().stream()
+	 * .collect( Collectors.toMap(item -> item.get(0).getValue(), item -> new
+	 * HashSet<>(
+	 * item.stream().map(Map.Entry::getKey).collect(Collectors.toList()))))
+	 * .entrySet().stream().filter(x -> x.getValue().size() > 1)
+	 * .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+	 * 
+	 * HashMap<HashSet<Long>, HashSet<Long>> suppliersWithSameReputation = new
+	 * HashMap<>();
+	 * 
+	 * for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair :
+	 * suppliersGroupedByItemIds.entrySet()) { HashSet<Long> itemIdSet =
+	 * suppliersItemIdsPair.getKey(); HashSet<Long> supplierIdSet =
+	 * suppliersItemIdsPair.getValue(); HashSet<Float> reputationSet = new
+	 * HashSet<>(); for (Long supplierId : supplierIdSet) {
+	 * reputationSet.add(supplierReputation.get(supplierId)); }
+	 * if(reputationSet.size() == 1){ suppliersWithSameReputation.put(itemIdSet,
+	 * supplierIdSet); } }
+	 * 
+	 * HashSet<Long> identicalSuppliers = new HashSet<>(); for
+	 * (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair :
+	 * suppliersWithSameReputation.entrySet()) { HashSet<Long> itemIdSet =
+	 * suppliersItemIdsPair.getKey(); HashSet<Long> supplierIdSet =
+	 * suppliersItemIdsPair.getValue(); boolean identical = true; for (Long
+	 * itemId : itemIdSet) { HashSet<Integer> price = new HashSet<>(); for (Long
+	 * supplierId : supplierIdSet) { ItemDetails itemDetail =
+	 * itemInfo.get(itemId); if(itemDetail != null){
+	 * price.add(itemDetail.getPricePerSupplier().get(supplierId)); } }
+	 * if(price.size() > 1){ identical = false; break; } } if(identical){
+	 * identicalSuppliers.addAll(supplierIdSet); } }
+	 * 
+	 * return identicalSuppliers.toArray(new Long[identicalSuppliers.size()]); }
+	 * 
+	 */
 	public Long[] identical() {
 
-		HashMap<HashSet<Long>, HashSet<Long>> suppliersGroupedByItemIds = (HashMap<HashSet<Long>, HashSet<Long>>) supplierItemIdMap
-				.entrySet().stream().filter(x -> x.getValue().size() >= 5)
-				.collect(Collectors.groupingBy(Map.Entry::getValue)).values().stream()
-				.collect(
-						Collectors.toMap(item -> item.get(0).getValue(),
-								item -> new HashSet<>(
-										item.stream().map(Map.Entry::getKey).collect(Collectors.toList()))))
-				.entrySet().stream().filter(x -> x.getValue().size() > 1)
-				.collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
-		
-		HashMap<HashSet<Long>, HashSet<Long>> suppliersWithSameReputation = new HashMap<>();
-		
+		HashMap<HashSet<Long>, HashSet<Long>> suppliersGroupedByItemIds = new HashMap<>();
+		HashSet<Long> supplierSet;
+		for (Entry<Long, HashSet<Long>> entry : supplierItemIdMap.entrySet()) {
+			if ((supplierSet = suppliersGroupedByItemIds.get(entry.getValue())) != null) {
+				supplierSet.add(entry.getKey());
+			} else {
+				HashSet<Long> set = new HashSet<Long>();
+				set.add(entry.getKey());
+				suppliersGroupedByItemIds.put(entry.getValue(), set);
+			}
+
+		}
+
+		HashMap<HashSet<Long>, HashSet<Long>> identicalSuppliers = new HashMap<>();
 		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : suppliersGroupedByItemIds.entrySet()) {
 			HashSet<Long> itemIdSet = suppliersItemIdsPair.getKey();
-			HashSet<Long> supplierIdSet = suppliersItemIdsPair.getValue();
-			HashSet<Float> reputationSet = new HashSet<>();
-			for (Long supplierId : supplierIdSet) {
-				reputationSet.add(supplierReputation.get(supplierId));
-			}
-			if(reputationSet.size() == 1){
-				suppliersWithSameReputation.put(itemIdSet, supplierIdSet);
-			}
-		}
-		
-		HashSet<Long> identicalSuppliers = new HashSet<>();
-		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : suppliersWithSameReputation.entrySet()) {
-			HashSet<Long> itemIdSet = suppliersItemIdsPair.getKey();
+			if(itemIdSet.size() >= 5){
 			HashSet<Long> supplierIdSet = suppliersItemIdsPair.getValue();
 			boolean identical = true;
+			HashSet<Long> supp = new HashSet<Long>();
 			for (Long itemId : itemIdSet) {
 				HashSet<Integer> price = new HashSet<>();
-				for (Long supplierId : supplierIdSet) {
-					ItemDetails itemDetail = itemInfo.get(itemId);
-					if(itemDetail != null){
-						price.add(itemDetail.getPricePerSupplier().get(supplierId));
+				for (Long supplierId1 : supplierIdSet) {
+					for (Long supplierId2 : supplierIdSet) {
+						if (supplierId1 != supplierId2) {
+							ItemDetails itemDetail = itemInfo.get(itemId);
+							if (itemDetail != null && itemDetail.getPricePerSupplier().get(supplierId1) != null
+									&& itemDetail.getPricePerSupplier().get(supplierId2) != null) {
+								if (itemDetail.getPricePerSupplier().get(supplierId1).intValue() == itemDetail
+										.getPricePerSupplier().get(supplierId2).intValue()) {
+									supp.add(supplierId2);
+									supp.add(supplierId1);
+								}
+							}
+
+						}
 					}
 				}
-				if(price.size() > 1){
-					identical = false;
-					break;
+			}
+
+			if (supp.size() > 0) {
+				identicalSuppliers.put(itemIdSet, supp);
+			}
+			}
+		}
+
+		HashSet<Long> suppliers = new HashSet<>();
+		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : identicalSuppliers.entrySet()) {
+			HashSet<Long> supp = suppliersItemIdsPair.getValue();
+			for (Long s1 : supp) {
+				for (Long s2 : supp) {
+					if (s1 != s2
+							&& supplierReputation.get(s1).floatValue() == supplierReputation.get(s2).floatValue()) {
+						suppliers.add(s1);
+						suppliers.add(s2);
+					}
 				}
 			}
-			if(identical){
-				identicalSuppliers.addAll(supplierIdSet);
-			}			
 		}
-		
-		return identicalSuppliers.toArray(new Long[identicalSuppliers.size()]);
+
+		return suppliers.toArray(new Long[suppliers.size()]);
 	}
 
 	/*
@@ -313,9 +365,9 @@ public class MDS {
 			if (supplierReputation.get(supplier) <= maxReputation) {
 				for (Long itemId : supplierItemsPair.getValue()) {
 					ItemDetails itemDetail = itemInfo.get(itemId);
-					if(itemDetail != null && !itemDetail.getPricePerSupplier().isEmpty()){
+					if (itemDetail != null && !itemDetail.getPricePerSupplier().isEmpty()) {
 						itemDetail.getPricePerSupplier().remove(supplier);
-						if(itemDetail.getPricePerSupplier().isEmpty()){
+						if (itemDetail.getPricePerSupplier().isEmpty()) {
 							itemsRemoved.add(itemId);
 						}
 					}
@@ -336,6 +388,11 @@ public class MDS {
 		Long sum = 0L;
 		ItemDetails item = itemInfo.get(id);
 		if (item != null) {
+			Set<Long> supplierSet = item.getPricePerSupplier().keySet();
+
+			for (Long s : supplierSet) {
+				supplierItemIdMap.get(s).remove(id);
+			}
 			for (Long desc : item.getDescription()) {
 				sum += desc;
 				HashSet<Long> itemIdSet = desrciptionItemIdMap.get(desc);
