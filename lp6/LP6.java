@@ -5,11 +5,11 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6.MDS2.Pair;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6.MDS.Pair;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Timer;
 
 public class LP6 {
-	static int VERBOSE = 0;
+	static int VERBOSE = 1;
 	static int limit = 0;
 
 	static class Container {
@@ -96,7 +96,7 @@ public class LP6 {
 		Pair[] parr;
 		long result = 0;
 		Long returnValue = 0L;
-		MDS2 mds = new MDS2();
+		MDS mds = new MDS();
 		Timer timer = new Timer();
 		int lineno = 0;
 
