@@ -34,8 +34,8 @@ public class MDS1 {
 
 	/*
 	 * add a new item. If an entry with the same id already exists, the new
-	 * description is merged with the existing description of the item. Returns true
-	 * if the item is new, and false otherwise.
+	 * description is merged with the existing description of the item. Returns
+	 * true if the item is new, and false otherwise.
 	 */
 	public boolean add(Long id, Long[] description) {
 		boolean newItemFlag = false;
@@ -58,9 +58,10 @@ public class MDS1 {
 	}
 
 	/*
-	 * add a new supplier (Long) and their reputation (float in [0.0-5.0], single
-	 * decimal place). If the supplier exists, their reputation is replaced by the
-	 * new value. Return true if the supplier is new, and false otherwise.
+	 * add a new supplier (Long) and their reputation (float in [0.0-5.0],
+	 * single decimal place). If the supplier exists, their reputation is
+	 * replaced by the new value. Return true if the supplier is new, and false
+	 * otherwise.
 	 */
 	public boolean add(Long supplier, float reputation) {
 		boolean newSupplierFlag = false;
@@ -76,8 +77,9 @@ public class MDS1 {
 
 	/*
 	 * add products and their prices at which the supplier sells the product. If
-	 * there is an entry for the price of an id by the same supplier, then the price
-	 * is replaced by the new price. Returns the number of new entries created.
+	 * there is an entry for the price of an id by the same supplier, then the
+	 * price is replaced by the new price. Returns the number of new entries
+	 * created.
 	 */
 	public int add(Long supplier, Pair[] idPrice) {
 		int noOfNewItems = 0;
@@ -106,8 +108,8 @@ public class MDS1 {
 	}
 
 	/*
-	 * return an array with the description of id. Return null if there is no item
-	 * with this id.
+	 * return an array with the description of id. Return null if there is no
+	 * item with this id.
 	 */
 	public Long[] description(Long id) {
 		Long[] descriptions = null;
@@ -120,9 +122,10 @@ public class MDS1 {
 	}
 
 	/*
-	 * given an array of Longs, return an array of items whose description contains
-	 * one or more elements of the array, sorted by the number of elements of the
-	 * array that are in the item's description (non-increasing order).
+	 * given an array of Longs, return an array of items whose description
+	 * contains one or more elements of the array, sorted by the number of
+	 * elements of the array that are in the item's description (non-increasing
+	 * order).
 	 */
 	public Long[] findItem(Long[] arr) {
 		Map<Long, Integer> items = new HashMap<>();
@@ -138,12 +141,12 @@ public class MDS1 {
 	}
 
 	/*
-	 * given a Long n, return an array of items whose description contains n, which
-	 * have one or more suppliers whose reputation meets or exceeds the given
-	 * minimum reputation, that sell that item at a price that falls within the
-	 * price range [minPrice, maxPrice] given. Items should be sorted in order of
-	 * their minimum price charged by a supplier for that item (non-decreasing
-	 * order).
+	 * given a Long n, return an array of items whose description contains n,
+	 * which have one or more suppliers whose reputation meets or exceeds the
+	 * given minimum reputation, that sell that item at a price that falls
+	 * within the price range [minPrice, maxPrice] given. Items should be sorted
+	 * in order of their minimum price charged by a supplier for that item
+	 * (non-decreasing order).
 	 */
 	public Long[] findItem(Long n, int minPrice, int maxPrice, float minReputation) {
 		TreeMap<Long, Integer> items = new TreeMap<>();
@@ -174,8 +177,8 @@ public class MDS1 {
 	}
 
 	/*
-	 * given an id, return an array of suppliers who sell that item, ordered by the
-	 * price at which they sell the item (non-decreasing order).
+	 * given an id, return an array of suppliers who sell that item, ordered by
+	 * the price at which they sell the item (non-decreasing order).
 	 */
 	public Long[] findSupplier(Long id) {
 		Long[] suppliers = null;
@@ -188,10 +191,10 @@ public class MDS1 {
 	}
 
 	/*
-	 * given an id and a minimum reputation, return an array of suppliers who sell
-	 * that item, whose reputation meets or exceeds the given reputation. The array
-	 * should be ordered by the price at which they sell the item (non-decreasing
-	 * order).
+	 * given an id and a minimum reputation, return an array of suppliers who
+	 * sell that item, whose reputation meets or exceeds the given reputation.
+	 * The array should be ordered by the price at which they sell the item
+	 * (non-decreasing order).
 	 */
 	public Long[] findSupplier(Long id, float minReputation) {
 
@@ -214,9 +217,9 @@ public class MDS1 {
 	 * profile as another supplier: same reputation, and, sell the same set of
 	 * products, at identical prices. This is a rare operation, so do not do
 	 * additional work in the other operations so that this operation is fast.
-	 * Creative solutions that are elegant and efficient will be awarded excellence
-	 * credit. Return array of suppliers satisfying above condition. Make sure that
-	 * each supplier appears only once in the returned array.
+	 * Creative solutions that are elegant and efficient will be awarded
+	 * excellence credit. Return array of suppliers satisfying above condition.
+	 * Make sure that each supplier appears only once in the returned array.
 	 */
 	/*--public Long[] identical() {
 	
@@ -270,11 +273,77 @@ public class MDS1 {
 		return identicalSuppliers.toArray(new Long[identicalSuppliers.size()]);
 	}*/
 
+	public Long[] identical() {
+
+		HashMap<HashSet<Long>, HashSet<Long>> suppliersGroupedByItemIds = new HashMap<>();
+		HashSet<Long> supplierSet;
+		for (Entry<Long, SupplierDetails> entry : supplierInfo.entrySet()) {
+			if ((supplierSet = suppliersGroupedByItemIds.get(entry.getValue().getItems())) != null) {
+				supplierSet.add(entry.getKey());
+			} else {
+				suppliersGroupedByItemIds.put(entry.getValue().getItems(), new HashSet<Long>() {
+					{
+						add(entry.getKey());
+					}
+				});
+			}
+
+		}
+
+		HashMap<HashSet<Long>, HashSet<Long>> identicalSuppliers = new HashMap<>();
+		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : suppliersGroupedByItemIds.entrySet()) {
+			HashSet<Long> itemIdSet = suppliersItemIdsPair.getKey();
+			if (itemIdSet.size() >= 5) {
+				HashSet<Long> supplierIdSet = suppliersItemIdsPair.getValue();
+				// boolean identical = true;
+				HashSet<Long> supp = new HashSet<Long>();
+				for (Long itemId : itemIdSet) {
+					// HashSet<Integer> price = new HashSet<>();
+					for (Long supplierId1 : supplierIdSet) {
+						for (Long supplierId2 : supplierIdSet) {
+							if (supplierId1 != supplierId2) {
+								ItemDetails itemDetail = itemInfo.get(itemId);
+								if (itemDetail != null && itemDetail.getPricePerSupplier().get(supplierId1) != null
+										&& itemDetail.getPricePerSupplier().get(supplierId2) != null) {
+									if (itemDetail.getPricePerSupplier().get(supplierId1).intValue() == itemDetail
+											.getPricePerSupplier().get(supplierId2).intValue()) {
+										supp.add(supplierId2);
+										supp.add(supplierId1);
+									}
+								}
+
+							}
+						}
+					}
+				}
+
+				if (supp.size() > 0) {
+					identicalSuppliers.put(itemIdSet, supp);
+				}
+			}
+		}
+
+		HashSet<Long> suppliers = new HashSet<>();
+		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : identicalSuppliers.entrySet()) {
+			HashSet<Long> supp = suppliersItemIdsPair.getValue();
+			for (Long s1 : supp) {
+				for (Long s2 : supp) {
+					if (s1 != s2 && supplierInfo.get(s1).getRepuation() == supplierInfo.get(s2).getRepuation()) {
+						suppliers.add(s1);
+						suppliers.add(s2);
+					}
+				}
+			}
+		}
+
+		return suppliers.toArray(new Long[suppliers.size()]);
+	}
+
 	/*
-	 * given an array of ids, find the total price of those items, if those items
-	 * were purchased at the lowest prices, but only from sellers meeting or
-	 * exceeding the given minimum reputation. Each item can be purchased from a
-	 * different seller.
+	 * given an array of ids, find the total price of those items, if those
+	 * items were purchased at the lowest prices, but only from sellers meeting
+	 * or exceeding the given minimum reputation. Each item can be purchased
+	 * from a different seller.
 	 */
 	public int invoice(Long[] arr, float minReputation) {
 		int totalPrice = 0;
@@ -297,9 +366,9 @@ public class MDS1 {
 	}
 
 	/*
-	 * remove all items, all of whose suppliers have a reputation that is equal or
-	 * lower than the given maximum reputation. Returns an array with the items
-	 * removed.
+	 * remove all items, all of whose suppliers have a reputation that is equal
+	 * or lower than the given maximum reputation. Returns an array with the
+	 * items removed.
 	 */
 	public Long[] purge(float maxReputation) {
 		HashSet<Long> itemsRemoved = new HashSet<>();
@@ -339,15 +408,18 @@ public class MDS1 {
 				sum += desc;
 				descriptionItemIdMap.get(desc).remove(id);
 			}
+			Set<Long> supplierSet = item.getPricePerSupplier().keySet();
+			for (Long supplier : supplierSet)
+				supplierInfo.get(supplier).getItems().remove(id);
 		}
 		return sum;
 	}
 
 	/*
-	 * remove from the given id's description those elements that are in the given
-	 * array. It is possible that some elements of the array are not part of the
-	 * item's description. Return the number of elements that were actually removed
-	 * from the description.
+	 * remove from the given id's description those elements that are in the
+	 * given array. It is possible that some elements of the array are not part
+	 * of the item's description. Return the number of elements that were
+	 * actually removed from the description.
 	 */
 	public int remove(Long id, Long[] arr) {
 		int noOfElementsRemoved = 0;
@@ -364,8 +436,9 @@ public class MDS1 {
 	}
 
 	/*
-	 * remove the elements of the array from the description of all items. Return
-	 * the number of items that lost one or more terms from their descriptions.
+	 * remove the elements of the array from the description of all items.
+	 * Return the number of items that lost one or more terms from their
+	 * descriptions.
 	 */
 	public int removeAll(Long[] arr) {
 		HashSet<Long> itemsRemoved = new HashSet<>();
