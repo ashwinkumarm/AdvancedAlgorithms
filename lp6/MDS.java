@@ -249,7 +249,10 @@ public class MDS {
 			for (Long itemId : itemIdSet) {
 				HashSet<Integer> price = new HashSet<>();
 				for (Long supplierId : supplierIdSet) {
-					price.add(itemInfo.get(itemId).getPricePerSupplier().get(supplierId));
+					ItemDetails itemDetail = itemInfo.get(itemId);
+					if(itemDetail != null){
+						price.add(itemDetail.getPricePerSupplier().get(supplierId));
+					}
 				}
 				if(price.size() > 1){
 					identical = false;
@@ -306,9 +309,11 @@ public class MDS {
 			if (supplierReputation.get(supplier) <= maxReputation) {
 				for (Long itemId : supplierItemsPair.getValue()) {
 					ItemDetails itemDetail = itemInfo.get(itemId);
-					if(itemDetail != null){
+					if(itemDetail != null && !itemDetail.getPricePerSupplier().isEmpty()){
 						itemDetail.getPricePerSupplier().remove(supplier);
-						itemsRemoved.add(itemId);
+						if(itemDetail.getPricePerSupplier().isEmpty()){
+							itemsRemoved.add(itemId);
+						}
 					}
 				}
 				suppliersRemoved.add(supplier);
