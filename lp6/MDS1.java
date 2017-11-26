@@ -223,9 +223,13 @@ public class MDS1 {
 		HashMap<HashSet<Long>, HashSet<Long>> suppliersGroupedByItemIds = (HashMap<HashSet<Long>, HashSet<Long>>) supplierItemIdMap
 				.entrySet().stream().filter(x -> x.getValue().size() >= 5)
 				.collect(Collectors.groupingBy(Map.Entry::getValue)).values().stream()
-				.collect(Collectors.toMap(item -> item.get(0).getValue(),
-						item -> new HashSet<>(item.stream().map(Map.Entry::getKey).collect(Collectors.toList()))));
-		
+				.collect(
+						Collectors.toMap(item -> item.get(0).getValue(),
+								item -> new HashSet<>(
+										item.stream().map(Map.Entry::getKey).collect(Collectors.toList()))))
+				.entrySet().stream().filter(x -> x.getValue().size() > 1)
+				.collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+				
 		HashMap<HashSet<Long>, HashSet<Long>> suppliersWithSameReputation = new HashMap<>();
 		
 		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : suppliersGroupedByItemIds.entrySet()) {
