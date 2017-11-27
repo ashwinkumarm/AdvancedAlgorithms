@@ -126,7 +126,7 @@ public class PreflowRelabelToFront {
 			for (Edge e : u) {
 				re = (ResidueEdge) e;
 				ResidueVertex v = (ResidueVertex) e.otherEnd(u);
-				if (re.inGf(u) && u.height == 1 + v.height) {
+				if (u.height == 1 + v.height) {
 					push(u, v, re);
 					if (u.excess == 0)
 						return;
