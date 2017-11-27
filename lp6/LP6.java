@@ -5,11 +5,17 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6.MDS1.Pair;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6.MDS.Pair;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Timer;
 
+/**
+ * This class tests the multidimensional search by calling various functions
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class LP6 {
-	static int VERBOSE = 0;
+	static int VERBOSE = 1;
 	static int limit = 0;
 
 	static class Container {
@@ -96,7 +102,7 @@ public class LP6 {
 		Pair[] parr;
 		long result = 0;
 		Long returnValue = 0L;
-		MDS1 mds = new MDS1();
+		MDS mds = new MDS();
 		Timer timer = new Timer();
 		int lineno = 0;
 
@@ -154,11 +160,11 @@ public class LP6 {
 				printFive(lineno, operation, rarr);
 				returnValue = sumArray(rarr);
 				break;
-			// case "I":
-			// rarr = mds.identical();
-			// printFive(lineno, operation, rarr);
-			// returnValue = sumArray(rarr);
-			// break;
+			case "I":
+				rarr = mds.identical();
+				printFive(lineno, operation, rarr);
+				returnValue = sumArray(rarr);
+				break;
 			case "INV":
 				len = in.nextInt();
 				arr = readLongArray(len, in);

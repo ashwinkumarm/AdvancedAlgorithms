@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 
 public class MDS1 {
 
-	Map<Long, ItemDetails> itemInfo;
+	Map<Long, ItemDetails1> itemInfo;
 	Map<Long, HashSet<Long>> descriptionItemIdMap;
-	Map<Long, SupplierDetails> supplierInfo;
+	Map<Long, SupplierDetails1> supplierInfo;
 
 	public MDS1() {
 		itemInfo = new HashMap<>();
@@ -39,9 +39,9 @@ public class MDS1 {
 	 */
 	public boolean add(Long id, Long[] description) {
 		boolean newItemFlag = false;
-		ItemDetails item;
+		ItemDetails1 item;
 		if ((item = itemInfo.get(id)) == null) {
-			item = new ItemDetails();
+			item = new ItemDetails1();
 			itemInfo.put(id, item);
 			newItemFlag = true;
 		}
@@ -65,9 +65,9 @@ public class MDS1 {
 	 */
 	public boolean add(Long supplier, float reputation) {
 		boolean newSupplierFlag = false;
-		SupplierDetails supplierDetails;
+		SupplierDetails1 supplierDetails;
 		if ((supplierDetails = supplierInfo.get(supplier)) == null) {
-			supplierDetails = new SupplierDetails();
+			supplierDetails = new SupplierDetails1();
 			supplierInfo.put(supplier, supplierDetails);
 			newSupplierFlag = true;
 		}
@@ -83,21 +83,21 @@ public class MDS1 {
 	 */
 	public int add(Long supplier, Pair[] idPrice) {
 		int noOfNewItems = 0;
-		SupplierDetails supplierDetails;
+		SupplierDetails1 supplierDetails;
 		if ((supplierDetails = supplierInfo.get(supplier)) == null) {
-			supplierDetails = new SupplierDetails();
+			supplierDetails = new SupplierDetails1();
 			supplierInfo.put(supplier, supplierDetails);
 		}
 		HashSet<Long> itemIdSet = supplierDetails.getItems();
 		for (Pair pair : idPrice) {
 			Long id = pair.id;
 			Integer price = pair.price;
-			ItemDetails item;
+			ItemDetails1 item;
 			if ((item = itemInfo.get(id)) != null) {
 				if (!item.getPricePerSupplier().containsKey(supplier))
 					noOfNewItems++;
 			} else {
-				item = new ItemDetails();
+				item = new ItemDetails1();
 				itemInfo.put(id, item);
 				noOfNewItems++;
 			}
@@ -113,7 +113,7 @@ public class MDS1 {
 	 */
 	public Long[] description(Long id) {
 		Long[] descriptions = null;
-		ItemDetails item;
+		ItemDetails1 item;
 		if ((item = itemInfo.get(id)) != null) {
 			HashSet<Long> descriptionSet = item.getDescription();
 			descriptions = descriptionSet.toArray(new Long[descriptionSet.size()]);
@@ -151,7 +151,7 @@ public class MDS1 {
 	public Long[] findItem(Long n, int minPrice, int maxPrice, float minReputation) {
 		TreeMap<Long, Integer> items = new TreeMap<>();
 		HashSet<Long> itemIdSet;
-		ItemDetails item;
+		ItemDetails1 item;
 		Integer minimumPrice;
 		if ((itemIdSet = descriptionItemIdMap.get(n)) != null) {
 			for (Long itemId : itemIdSet) {
@@ -182,7 +182,7 @@ public class MDS1 {
 	 */
 	public Long[] findSupplier(Long id) {
 		Long[] suppliers = null;
-		ItemDetails item;
+		ItemDetails1 item;
 		if ((item = itemInfo.get(id)) != null) {
 			Set<Long> supplierIdSet = sortByValues(item.getPricePerSupplier(), true).keySet();
 			suppliers = supplierIdSet.toArray(new Long[supplierIdSet.size()]);
@@ -199,7 +199,7 @@ public class MDS1 {
 	public Long[] findSupplier(Long id, float minReputation) {
 
 		TreeMap<Long, Integer> suppliers = new TreeMap<>();
-		ItemDetails item;
+		ItemDetails1 item;
 		if ((item = itemInfo.get(id)) != null) {
 			for (Entry<Long, Integer> pricePerSupplier : item.getPricePerSupplier().entrySet()) {
 				Long supplier = pricePerSupplier.getKey();
@@ -277,7 +277,7 @@ public class MDS1 {
 
 		HashMap<HashSet<Long>, HashSet<Long>> suppliersGroupedByItemIds = new HashMap<>();
 		HashSet<Long> supplierSet;
-		for (Entry<Long, SupplierDetails> entry : supplierInfo.entrySet()) {
+		for (Entry<Long, SupplierDetails1> entry : supplierInfo.entrySet()) {
 			if ((supplierSet = suppliersGroupedByItemIds.get(entry.getValue().getItems())) != null) {
 				supplierSet.add(entry.getKey());
 			} else {
@@ -302,7 +302,7 @@ public class MDS1 {
 					for (Long supplierId1 : supplierIdSet) {
 						for (Long supplierId2 : supplierIdSet) {
 							if (supplierId1 != supplierId2) {
-								ItemDetails itemDetail = itemInfo.get(itemId);
+								ItemDetails1 itemDetail = itemInfo.get(itemId);
 								if (itemDetail != null && itemDetail.getPricePerSupplier().get(supplierId1) != null
 										&& itemDetail.getPricePerSupplier().get(supplierId2) != null) {
 									if (itemDetail.getPricePerSupplier().get(supplierId1).intValue() == itemDetail
@@ -348,7 +348,7 @@ public class MDS1 {
 	public int invoice(Long[] arr, float minReputation) {
 		int totalPrice = 0;
 		for (Long itemId : arr) {
-			ItemDetails item;
+			ItemDetails1 item;
 			if ((item = itemInfo.get(itemId)) != null) {
 				TreeMap<Long, Integer> sortedPricePerSupplier = (TreeMap<Long, Integer>) sortByValues(
 						item.getPricePerSupplier(), true);
@@ -373,9 +373,9 @@ public class MDS1 {
 	public Long[] purge(float maxReputation) {
 		HashSet<Long> itemsRemoved = new HashSet<>();
 		Long supplier;
-		SupplierDetails supplierDetails;
-		Iterator<Entry<Long, SupplierDetails>> itr = supplierInfo.entrySet().iterator();
-		Entry<Long, SupplierDetails> supplierItemsPair;
+		SupplierDetails1 supplierDetails;
+		Iterator<Entry<Long, SupplierDetails1>> itr = supplierInfo.entrySet().iterator();
+		Entry<Long, SupplierDetails1> supplierItemsPair;
 		while (itr.hasNext()) {
 			supplierItemsPair = itr.next();
 			supplier = supplierItemsPair.getKey();
@@ -383,7 +383,7 @@ public class MDS1 {
 			if (supplierDetails.getRepuation() <= maxReputation) {
 				itr.remove();
 				for (Long itemId : supplierDetails.getItems()) {
-					ItemDetails itemDetail;
+					ItemDetails1 itemDetail;
 					if ((itemDetail = itemInfo.get(itemId)) != null) {
 						HashMap<Long, Integer> supplierPriceMap = itemDetail.getPricePerSupplier();
 						supplierPriceMap.remove(supplier);
@@ -402,7 +402,7 @@ public class MDS1 {
 	 */
 	public Long remove(Long id) {
 		Long sum = 0L;
-		ItemDetails item;
+		ItemDetails1 item;
 		if ((item = itemInfo.remove(id)) != null) {
 			for (Long desc : item.getDescription()) {
 				sum += desc;
@@ -423,7 +423,7 @@ public class MDS1 {
 	 */
 	public int remove(Long id, Long[] arr) {
 		int noOfElementsRemoved = 0;
-		ItemDetails item;
+		ItemDetails1 item;
 		if ((item = itemInfo.get(id)) != null) {
 			for (Long desc : arr) {
 				if (item.getDescription().remove(desc)) {
@@ -446,7 +446,7 @@ public class MDS1 {
 			HashSet<Long> itemIdSet;
 			if ((itemIdSet = descriptionItemIdMap.remove(desc)) != null) {
 				for (Long item : itemIdSet) {
-					ItemDetails itemDetail = itemInfo.get(item);
+					ItemDetails1 itemDetail = itemInfo.get(item);
 					if (itemDetail.getDescription().remove(desc)) {
 						itemsRemoved.add(item);
 					}

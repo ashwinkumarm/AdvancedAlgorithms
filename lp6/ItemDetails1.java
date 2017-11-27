@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class ItemDetails {
+public class ItemDetails1 {
 
 	private HashMap<Long, Integer> pricePerSupplier;
 	private HashSet<Long> description;
 
-	public ItemDetails() {
+	public ItemDetails1() {
 		pricePerSupplier = new HashMap<>();
 		description = new HashSet<>();
 	}

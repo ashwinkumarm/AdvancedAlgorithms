@@ -1,25 +1,34 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
+/**
+ * This class performs the multidimensional search by performing the following
+ * functions: addItems, addSuppliers, findItems, findSuppliers, invoice, purge,
+ * removeItems, removeAll
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class MDS {
 
 	Map<Long, ItemDetails> itemInfo;
-	Map<Long, HashSet<Long>> desrciptionItemIdMap;
-	Map<Long, Float> supplierReputation;
-	Map<Long, HashSet<Long>> supplierItemIdMap;
+	Map<Long, HashSet<Long>> descriptionItemIdMap;
+	Map<Long, SupplierDetails> supplierInfo;
 
 	public MDS() {
 		itemInfo = new HashMap<>();
-		desrciptionItemIdMap = new HashMap<>();
-		supplierReputation = new HashMap<>();
-		supplierItemIdMap = new HashMap<>();
+		descriptionItemIdMap = new HashMap<>();
+		supplierInfo = new HashMap<>();
 	}
 
 	public static class Pair {
@@ -32,6 +41,46 @@ public class MDS {
 		}
 	}
 
+	public class ItemDetails {
+		Long itemId;
+		TreeSet<Long> supplierSet;
+		HashSet<Long> description;
+
+		public ItemDetails(Long itemId) {
+			this.itemId = itemId;
+			supplierSet = new TreeSet<>(new PriceComparator(itemId));
+			description = new HashSet<>();
+		}
+
+		public void setSupplierSet(Long supplier) {
+			supplierSet.add(supplier);
+		}
+
+		public void setDescription(Long[] description) {
+			this.description.addAll(Arrays.asList(description));
+		}
+
+	}
+
+	class PriceComparator implements Comparator<Long> {
+		Long itemId;
+
+		public PriceComparator(Long itemId) {
+			this.itemId = itemId;
+		}
+
+		@Override
+		public int compare(Long s1, Long s2) {
+			Integer price1 = supplierInfo.get(s1).getItemPriceMap().get(itemId);
+			Integer price2 = supplierInfo.get(s2).getItemPriceMap().get(itemId);
+			int compare = price1.compareTo(price2);
+			if (compare == 0)
+				return 1;
+			else
+				return compare;
+		}
+	}
+
 	/*
 	 * add a new item. If an entry with the same id already exists, the new
 	 * description is merged with the existing description of the item. Returns
@@ -39,20 +88,20 @@ public class MDS {
 	 */
 	public boolean add(Long id, Long[] description) {
 		boolean newItemFlag = false;
-		ItemDetails item = itemInfo.get(id);
-		if (item == null) {
-			item = new ItemDetails();
+		ItemDetails item;
+		if ((item = itemInfo.get(id)) == null) {
+			item = new ItemDetails(id);
 			itemInfo.put(id, item);
 			newItemFlag = true;
 		}
 		item.setDescription(description);
 		for (Long desc : description) {
-			HashSet<Long> itemIdSet = desrciptionItemIdMap.get(desc);
-			if (itemIdSet == null) {
+			HashSet<Long> itemIdSet;
+			if ((itemIdSet = descriptionItemIdMap.get(desc)) == null) {
 				itemIdSet = new HashSet<>();
+				descriptionItemIdMap.put(desc, itemIdSet);
 			}
 			itemIdSet.add(id);
-			desrciptionItemIdMap.put(desc, itemIdSet);
 		}
 		return newItemFlag;
 	}
@@ -64,11 +113,14 @@ public class MDS {
 	 * otherwise.
 	 */
 	public boolean add(Long supplier, float reputation) {
-		boolean newSupplierFlag = true;
-		if (supplierReputation.containsKey(supplier)) {
-			newSupplierFlag = false;
+		boolean newSupplierFlag = false;
+		SupplierDetails supplierDetails;
+		if ((supplierDetails = supplierInfo.get(supplier)) == null) {
+			supplierDetails = new SupplierDetails();
+			supplierInfo.put(supplier, supplierDetails);
+			newSupplierFlag = true;
 		}
-		supplierReputation.put(supplier, reputation);
+		supplierDetails.setReputation(reputation);
 		return newSupplierFlag;
 	}
 
@@ -79,29 +131,26 @@ public class MDS {
 	 * created.
 	 */
 	public int add(Long supplier, Pair[] idPrice) {
-
 		int noOfNewItems = 0;
-		HashSet<Long> itemIdSet = supplierItemIdMap.get(supplier);
-		if (itemIdSet == null) {
-			itemIdSet = new HashSet<>();
-			supplierItemIdMap.put(supplier, itemIdSet);
+		SupplierDetails supplierDetails;
+		if ((supplierDetails = supplierInfo.get(supplier)) == null) {
+			supplierDetails = new SupplierDetails();
+			supplierInfo.put(supplier, supplierDetails);
 		}
+		HashMap<Long, Integer> itemPriceMap = supplierDetails.getItemPriceMap();
+		Long id;
+		Integer price;
 		for (Pair pair : idPrice) {
-			Long id = pair.id;
-			Integer price = pair.price;
-			ItemDetails item = itemInfo.get(id);
-			if (item != null) {
-				Set<Long> supplierIdSet = item.getPricePerSupplier().keySet();
-				if (!supplierIdSet.contains(supplier)) {
-					noOfNewItems++;
-				}
+			id = pair.id;
+			price = pair.price;
+			if (itemPriceMap.containsKey(id)) {
+				itemPriceMap.put(id, price);
 			} else {
-				item = new ItemDetails();
-				itemInfo.put(id, item);
 				noOfNewItems++;
+				itemPriceMap.put(id, price);
+				itemInfo.get(id).supplierSet.add(supplier);
 			}
-			item.setPricePerSupplier(supplier, price);
-			itemIdSet.add(id);
+
 		}
 		return noOfNewItems;
 	}
@@ -112,9 +161,9 @@ public class MDS {
 	 */
 	public Long[] description(Long id) {
 		Long[] descriptions = null;
-		ItemDetails item = itemInfo.get(id);
-		if (item != null) {
-			HashSet<Long> descriptionSet = item.getDescription();
+		ItemDetails item;
+		if ((item = itemInfo.get(id)) != null) {
+			HashSet<Long> descriptionSet = item.description;
 			descriptions = descriptionSet.toArray(new Long[descriptionSet.size()]);
 		}
 		return descriptions;
@@ -128,9 +177,9 @@ public class MDS {
 	 */
 	public Long[] findItem(Long[] arr) {
 		Map<Long, Integer> items = new HashMap<>();
+		HashSet<Long> itemsIdSet;
 		for (Long desc : arr) {
-			if (desrciptionItemIdMap.containsKey(desc)) {
-				HashSet<Long> itemsIdSet = desrciptionItemIdMap.get(desc);
+			if ((itemsIdSet = descriptionItemIdMap.get(desc)) != null) {
 				for (Long item : itemsIdSet) {
 					items.put(item, items.getOrDefault(item, 0) + 1);
 				}
@@ -148,25 +197,27 @@ public class MDS {
 	 * (non-decreasing order).
 	 */
 	public Long[] findItem(Long n, int minPrice, int maxPrice, float minReputation) {
-
-		TreeMap<Long, Integer> items = new TreeMap<>();
-		HashSet<Long> itemIdSet = desrciptionItemIdMap.get(n);
-		if (itemIdSet != null) {
+		HashMap<Long, Integer> items = new HashMap<>();
+		HashSet<Long> itemIdSet;
+		ItemDetails item;
+		Integer minimumPrice, price;
+		if ((itemIdSet = descriptionItemIdMap.get(n)) != null) {
 			for (Long itemId : itemIdSet) {
-				ItemDetails item = itemInfo.get(itemId);
-				for (Entry<Long, Integer> pricePerSupplier : item.getPricePerSupplier().entrySet()) {
-					Long supplier = pricePerSupplier.getKey();
-					Integer price = pricePerSupplier.getValue();
-					Float reputation = supplierReputation.get(supplier);
-					if (reputation != null && reputation >= minReputation) {
-						if (price > minPrice && price < maxPrice) {
-							Integer minimumPrice = items.get(itemId);
-							if (minimumPrice == null || minimumPrice > price) {
-								items.put(itemId, price);
+				if ((item = itemInfo.get(itemId)) != null) {
+					minimumPrice = Integer.MAX_VALUE;
+					for (Long supplier : item.supplierSet) {
+						SupplierDetails supplierDetails = supplierInfo.get(supplier);
+						price = supplierDetails.getItemPriceMap().get(itemId);
+						Float reputation = supplierDetails.getRepuation();
+						if (reputation >= minReputation) {
+							if (price >= minPrice && price <= maxPrice) {
+								minimumPrice = price;
+								break;
 							}
 						}
 					}
-
+					if (minimumPrice != Integer.MAX_VALUE)
+						items.put(itemId, minimumPrice);
 				}
 			}
 		}
@@ -179,11 +230,9 @@ public class MDS {
 	 */
 	public Long[] findSupplier(Long id) {
 		Long[] suppliers = null;
-		ItemDetails item = itemInfo.get(id);
-		if (item != null) {
-			Set<Long> supplierIdSet = sortByValues(item.getPricePerSupplier(), true).keySet();
-			suppliers = supplierIdSet.toArray(new Long[supplierIdSet.size()]);
-		}
+		ItemDetails item;
+		if ((item = itemInfo.get(id)) != null)
+			suppliers = item.supplierSet.toArray(new Long[item.supplierSet.size()]);
 		return suppliers;
 	}
 
@@ -194,19 +243,16 @@ public class MDS {
 	 * (non-decreasing order).
 	 */
 	public Long[] findSupplier(Long id, float minReputation) {
-
-		TreeMap<Long, Integer> suppliers = new TreeMap<>();
-		ItemDetails item = itemInfo.get(id);
-		for (Entry<Long, Integer> pricePerSupplier : item.getPricePerSupplier().entrySet()) {
-			Long supplier = pricePerSupplier.getKey();
-			Integer price = pricePerSupplier.getValue();
-			Float reputation = supplierReputation.get(supplier);
-			if (reputation != null && reputation >= minReputation) {
-				suppliers.put(supplier, price);
+		LinkedList<Long> suppliers = new LinkedList<>();
+		ItemDetails item;
+		if ((item = itemInfo.get(id)) != null) {
+			for (Long supplier : item.supplierSet) {
+				Float reputation = supplierInfo.get(supplier).getRepuation();
+				if (reputation >= minReputation)
+					suppliers.addLast(supplier);
 			}
-
 		}
-		return sortByValues(suppliers, true).keySet().toArray(new Long[suppliers.size()]);
+		return suppliers.toArray(new Long[suppliers.size()]);
 	}
 
 	/*
@@ -218,101 +264,112 @@ public class MDS {
 	 * excellence credit. Return array of suppliers satisfying above condition.
 	 * Make sure that each supplier appears only once in the returned array.
 	 */
-	/*
-	 * public Long[] identical() {
-	 * 
-	 * HashMap<HashSet<Long>, HashSet<Long>> suppliersGroupedByItemIds =
-	 * (HashMap<HashSet<Long>, HashSet<Long>>) supplierItemIdMap
-	 * .entrySet().stream().filter(x -> x.getValue().size() >= 5)
-	 * .collect(Collectors.groupingBy(Map.Entry::getValue)).values().stream()
-	 * .collect( Collectors.toMap(item -> item.get(0).getValue(), item -> new
-	 * HashSet<>(
-	 * item.stream().map(Map.Entry::getKey).collect(Collectors.toList()))))
-	 * .entrySet().stream().filter(x -> x.getValue().size() > 1)
-	 * .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
-	 * 
-	 * HashMap<HashSet<Long>, HashSet<Long>> suppliersWithSameReputation = new
-	 * HashMap<>();
-	 * 
-	 * for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair :
-	 * suppliersGroupedByItemIds.entrySet()) { HashSet<Long> itemIdSet =
-	 * suppliersItemIdsPair.getKey(); HashSet<Long> supplierIdSet =
-	 * suppliersItemIdsPair.getValue(); HashSet<Float> reputationSet = new
-	 * HashSet<>(); for (Long supplierId : supplierIdSet) {
-	 * reputationSet.add(supplierReputation.get(supplierId)); }
-	 * if(reputationSet.size() == 1){ suppliersWithSameReputation.put(itemIdSet,
-	 * supplierIdSet); } }
-	 * 
-	 * HashSet<Long> identicalSuppliers = new HashSet<>(); for
-	 * (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair :
-	 * suppliersWithSameReputation.entrySet()) { HashSet<Long> itemIdSet =
-	 * suppliersItemIdsPair.getKey(); HashSet<Long> supplierIdSet =
-	 * suppliersItemIdsPair.getValue(); boolean identical = true; for (Long
-	 * itemId : itemIdSet) { HashSet<Integer> price = new HashSet<>(); for (Long
-	 * supplierId : supplierIdSet) { ItemDetails itemDetail =
-	 * itemInfo.get(itemId); if(itemDetail != null){
-	 * price.add(itemDetail.getPricePerSupplier().get(supplierId)); } }
-	 * if(price.size() > 1){ identical = false; break; } } if(identical){
-	 * identicalSuppliers.addAll(supplierIdSet); } }
-	 * 
-	 * return identicalSuppliers.toArray(new Long[identicalSuppliers.size()]); }
-	 * 
-	 */
+	/*--public Long[] identical() {
+	
+		HashMap<HashSet<Long>, HashSet<Long>> suppliersGroupedByItemIds = (HashMap<HashSet<Long>, HashSet<Long>>) supplierItemIdMap
+				.entrySet().stream().filter(x -> x.getValue().size() >= 5)
+				.collect(Collectors.groupingBy(Map.Entry::getValue)).values().stream()
+				.collect(
+						Collectors.toMap(item -> item.get(0).getValue(),
+								item -> new HashSet<>(
+										item.stream().map(Map.Entry::getKey).collect(Collectors.toList()))))
+				.entrySet().stream().filter(x -> x.getValue().size() > 1)
+				.collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+				
+		HashMap<HashSet<Long>, HashSet<Long>> suppliersWithSameReputation = new HashMap<>();
+		
+		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : suppliersGroupedByItemIds.entrySet()) {
+			HashSet<Long> itemIdSet = suppliersItemIdsPair.getKey();
+			HashSet<Long> supplierIdSet = suppliersItemIdsPair.getValue();
+			HashSet<Float> reputationSet = new HashSet<>();
+			for (Long supplierId : supplierIdSet) {
+				reputationSet.add(supplierReputation.get(supplierId));
+			}
+			if(reputationSet.size() == 1){
+				suppliersWithSameReputation.put(itemIdSet, supplierIdSet);
+			}
+		}
+		
+		HashSet<Long> identicalSuppliers = new HashSet<>();
+		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : suppliersWithSameReputation.entrySet()) {
+			HashSet<Long> itemIdSet = suppliersItemIdsPair.getKey();
+			HashSet<Long> supplierIdSet = suppliersItemIdsPair.getValue();
+			boolean identical = true;
+			for (Long itemId : itemIdSet) {
+				HashSet<Integer> price = new HashSet<>();
+				for (Long supplierId : supplierIdSet) {
+					ItemDetails itemDetail = itemInfo.get(itemId);
+					if(itemDetail != null){
+						price.add(itemDetail.getPricePerSupplier().get(supplierId));
+					}
+				}
+				if(price.size() > 1){
+					identical = false;
+					break;
+				}
+			}
+			if(identical){
+				identicalSuppliers.addAll(supplierIdSet);
+			}			
+		}
+		
+		return identicalSuppliers.toArray(new Long[identicalSuppliers.size()]);
+	}*/
+
 	public Long[] identical() {
 
-		HashMap<HashSet<Long>, HashSet<Long>> suppliersGroupedByItemIds = new HashMap<>();
+		HashMap<Set<Long>, HashSet<Long>> suppliersGroupedByItemIds = new HashMap<>();
 		HashSet<Long> supplierSet;
-		for (Entry<Long, HashSet<Long>> entry : supplierItemIdMap.entrySet()) {
-			if ((supplierSet = suppliersGroupedByItemIds.get(entry.getValue())) != null) {
+		for (Entry<Long, SupplierDetails> entry : supplierInfo.entrySet()) {
+			if ((supplierSet = suppliersGroupedByItemIds.get(entry.getValue().getItemPriceMap().keySet())) != null) {
 				supplierSet.add(entry.getKey());
 			} else {
-				HashSet<Long> set = new HashSet<Long>();
-				set.add(entry.getKey());
-				suppliersGroupedByItemIds.put(entry.getValue(), set);
+				HashSet<Long> suppliers = new HashSet<>();
+				suppliers.add(entry.getKey());
+				suppliersGroupedByItemIds.put(entry.getValue().getItemPriceMap().keySet(), suppliers);
 			}
 
 		}
 
-		HashMap<HashSet<Long>, HashSet<Long>> identicalSuppliers = new HashMap<>();
-		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : suppliersGroupedByItemIds.entrySet()) {
-			HashSet<Long> itemIdSet = suppliersItemIdsPair.getKey();
-			if(itemIdSet.size() >= 5){
-			HashSet<Long> supplierIdSet = suppliersItemIdsPair.getValue();
-			boolean identical = true;
-			HashSet<Long> supp = new HashSet<Long>();
-			for (Long itemId : itemIdSet) {
-				HashSet<Integer> price = new HashSet<>();
-				for (Long supplierId1 : supplierIdSet) {
-					for (Long supplierId2 : supplierIdSet) {
-						if (supplierId1 != supplierId2) {
-							ItemDetails itemDetail = itemInfo.get(itemId);
-							if (itemDetail != null && itemDetail.getPricePerSupplier().get(supplierId1) != null
-									&& itemDetail.getPricePerSupplier().get(supplierId2) != null) {
-								if (itemDetail.getPricePerSupplier().get(supplierId1).intValue() == itemDetail
-										.getPricePerSupplier().get(supplierId2).intValue()) {
-									supp.add(supplierId2);
-									supp.add(supplierId1);
+		HashMap<Set<Long>, HashSet<Long>> identicalSuppliers = new HashMap<>();
+		for (Entry<Set<Long>, HashSet<Long>> suppliersItemIdsPair : suppliersGroupedByItemIds.entrySet()) {
+			Set<Long> itemIdSet = suppliersItemIdsPair.getKey();
+			if (itemIdSet.size() >= 5) {
+				HashSet<Long> supplierIdSet = suppliersItemIdsPair.getValue();
+				HashSet<Long> supp = new HashSet<Long>();
+				for (Long itemId : itemIdSet) {
+					for (Long supplierId1 : supplierIdSet) {
+						SupplierDetails supplierDetails1 = supplierInfo.get(supplierId1);
+						for (Long supplierId2 : supplierIdSet) {
+							if (supplierId1 != supplierId2) {
+								Integer price1, price2;
+								SupplierDetails supplierDetails2 = supplierInfo.get(supplierId2);
+								if (supplierDetails1 != null && supplierDetails2 != null
+										&& (price1 = supplierDetails1.getItemPriceMap().get(itemId)) != null
+										&& (price2 = supplierDetails2.getItemPriceMap().get(itemId)) != null) {
+									if (price1.intValue() == price2.intValue()) {
+										supp.add(supplierId2);
+										supp.add(supplierId1);
+									}
 								}
-							}
 
+							}
 						}
 					}
 				}
-			}
 
-			if (supp.size() > 0) {
-				identicalSuppliers.put(itemIdSet, supp);
-			}
+				if (supp.size() > 0) {
+					identicalSuppliers.put(itemIdSet, supp);
+				}
 			}
 		}
 
 		HashSet<Long> suppliers = new HashSet<>();
-		for (Entry<HashSet<Long>, HashSet<Long>> suppliersItemIdsPair : identicalSuppliers.entrySet()) {
+		for (Entry<Set<Long>, HashSet<Long>> suppliersItemIdsPair : identicalSuppliers.entrySet()) {
 			HashSet<Long> supp = suppliersItemIdsPair.getValue();
 			for (Long s1 : supp) {
 				for (Long s2 : supp) {
-					if (s1 != s2
-							&& supplierReputation.get(s1).floatValue() == supplierReputation.get(s2).floatValue()) {
+					if (s1 != s2 && supplierInfo.get(s1).getRepuation() == supplierInfo.get(s2).getRepuation()) {
 						suppliers.add(s1);
 						suppliers.add(s2);
 					}
@@ -330,20 +387,16 @@ public class MDS {
 	 * from a different seller.
 	 */
 	public int invoice(Long[] arr, float minReputation) {
-
 		int totalPrice = 0;
-
 		for (Long itemId : arr) {
-			ItemDetails item = itemInfo.get(itemId);
-			if (item != null) {
-				TreeMap<Long, Integer> sortedPricePerSupplier = (TreeMap<Long, Integer>) sortByValues(
-						item.getPricePerSupplier(), true);
-				for (Entry<Long, Integer> supplierPricePair : sortedPricePerSupplier.entrySet()) {
-					Long supplier = supplierPricePair.getKey();
-					Integer price = supplierPricePair.getValue();
-					Float reputation = supplierReputation.get(supplier);
-					if (reputation != null && reputation >= minReputation) {
-						totalPrice += price;
+			ItemDetails item;
+			SupplierDetails supplierDetails;
+			if ((item = itemInfo.get(itemId)) != null) {
+				for (Long supplier : item.supplierSet) {
+					supplierDetails = supplierInfo.get(supplier);
+					Float reputation = supplierDetails.getRepuation();
+					if (reputation >= minReputation) {
+						totalPrice += supplierDetails.getItemPriceMap().get(itemId);
 						break;
 					}
 				}
@@ -359,24 +412,21 @@ public class MDS {
 	 */
 	public Long[] purge(float maxReputation) {
 		HashSet<Long> itemsRemoved = new HashSet<>();
-		HashSet<Long> suppliersRemoved = new HashSet<>();
-		for (Entry<Long, HashSet<Long>> supplierItemsPair : supplierItemIdMap.entrySet()) {
-			Long supplier = supplierItemsPair.getKey();
-			if (supplierReputation.get(supplier) <= maxReputation) {
-				for (Long itemId : supplierItemsPair.getValue()) {
-					ItemDetails itemDetail = itemInfo.get(itemId);
-					if (itemDetail != null && !itemDetail.getPricePerSupplier().isEmpty()) {
-						itemDetail.getPricePerSupplier().remove(supplier);
-						if (itemDetail.getPricePerSupplier().isEmpty()) {
-							itemsRemoved.add(itemId);
-						}
-					}
+		boolean toBeRemoved;
+		for (Entry<Long, ItemDetails> itemIdDetailPair : itemInfo.entrySet()) {
+			toBeRemoved = true;
+			TreeSet<Long> supplierSet = itemIdDetailPair.getValue().supplierSet;
+			for (Long supplier : supplierSet) {
+				if (supplierInfo.get(supplier).getRepuation() > maxReputation) {
+					toBeRemoved = false;
+					break;
 				}
-				suppliersRemoved.add(supplier);
 			}
+			if (toBeRemoved)
+				itemsRemoved.add(itemIdDetailPair.getKey());
 		}
-		supplierItemIdMap.remove(suppliersRemoved);
-		supplierReputation.remove(suppliersRemoved);
+		for (Long item : itemsRemoved)
+			remove(item);
 		return itemsRemoved.toArray(new Long[itemsRemoved.size()]);
 	}
 
@@ -385,22 +435,17 @@ public class MDS {
 	 * description of the item deleted (or 0, if such an id did not exist).
 	 */
 	public Long remove(Long id) {
-		Long sum = 0L;
-		ItemDetails item = itemInfo.get(id);
-		if (item != null) {
-			Set<Long> supplierSet = item.getPricePerSupplier().keySet();
-
-			for (Long s : supplierSet) {
-				supplierItemIdMap.get(s).remove(id);
+		Long total = 0L;
+		ItemDetails item;
+		if ((item = itemInfo.remove(id)) != null) {
+			for (Long desc : item.description) {
+				total += desc;
+				descriptionItemIdMap.get(desc).remove(id);
 			}
-			for (Long desc : item.getDescription()) {
-				sum += desc;
-				HashSet<Long> itemIdSet = desrciptionItemIdMap.get(desc);
-				itemIdSet.remove(id);
-			}
-			itemInfo.remove(id);
+			for (Long supplier : item.supplierSet)
+				supplierInfo.get(supplier).getItemPriceMap().remove(id);
 		}
-		return sum;
+		return total;
 	}
 
 	/*
@@ -411,13 +456,12 @@ public class MDS {
 	 */
 	public int remove(Long id, Long[] arr) {
 		int noOfElementsRemoved = 0;
-		ItemDetails item = itemInfo.get(id);
-		if (item != null) {
+		ItemDetails item;
+		if ((item = itemInfo.get(id)) != null) {
 			for (Long desc : arr) {
-				if (item.getDescription().remove(desc)) {
+				if (item.description.remove(desc)) {
 					noOfElementsRemoved++;
-					HashSet<Long> itemIdSet = desrciptionItemIdMap.get(desc);
-					itemIdSet.remove(id);
+					descriptionItemIdMap.get(desc).remove(id);
 				}
 			}
 		}
@@ -430,14 +474,13 @@ public class MDS {
 	 * descriptions.
 	 */
 	public int removeAll(Long[] arr) {
-
 		HashSet<Long> itemsRemoved = new HashSet<>();
 		for (Long desc : arr) {
-			HashSet<Long> itemIdSet = desrciptionItemIdMap.remove(desc);
-			if (itemIdSet != null) {
+			HashSet<Long> itemIdSet;
+			if ((itemIdSet = descriptionItemIdMap.remove(desc)) != null) {
 				for (Long item : itemIdSet) {
 					ItemDetails itemDetail = itemInfo.get(item);
-					if (itemDetail.getDescription().remove(desc)) {
+					if (itemDetail.description.remove(desc)) {
 						itemsRemoved.add(item);
 					}
 				}

@@ -1,16 +1,15 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp6;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 
 public class SupplierDetails {
 
-	private float reputation;
-	private HashSet<Long> items;
+	private Float reputation;
+	private HashMap<Long, Integer> itemPriceMap;
 
 	public SupplierDetails() {
 		reputation = (float) -1.0;
-		items = new HashSet<>();
+		itemPriceMap = new HashMap<>();
 	}
 
 	public float getRepuation() {
@@ -21,12 +20,12 @@ public class SupplierDetails {
 		this.reputation = reputation;
 	}
 
-	public HashSet<Long> getItems() {
-		return items;
+	public HashMap<Long, Integer> getItemPriceMap() {
+		return itemPriceMap;
 	}
 
-	public void setItems(Long[] items) {
-		this.items.addAll(Arrays.asList(items));
+	public void setItemPriceMap(Long item, Integer price) {
+		itemPriceMap.put(item, price);
 	}
 
 }
