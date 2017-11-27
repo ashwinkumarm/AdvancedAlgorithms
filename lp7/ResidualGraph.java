@@ -27,6 +27,8 @@ public class ResidualGraph extends Graph {
 		int height, excess;
 		List<ResidueEdge> residueAdj;
 		List<ResidueEdge> residueRevadj;
+		Iterator<Edge> iterator;
+		int priority;
 
 		/**
 		 * Constructor for Residue vertex
@@ -76,8 +78,8 @@ public class ResidualGraph extends Graph {
 				while (!cur.inGf(u) && it.hasNext()) {
 					cur = it.next();
 				}
-				ready = true;
-				return (cur.inGf(u));
+				ready = cur.inGf(u);
+				return ready;
 			}
 
 			public Edge next() {
@@ -163,7 +165,6 @@ public class ResidualGraph extends Graph {
 				residueEdge = new ResidueEdge(x1, x2, e.weight, capacity.get(e), e.getName());
 				x1.residueAdj.add(residueEdge);
 				x2.residueRevadj.add(residueEdge);
-				// TODO: x2.adj.add(residueEdge);
 			}
 		}
 		for (ResidueVertex u : residueVertexArray)

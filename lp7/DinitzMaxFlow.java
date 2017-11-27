@@ -10,6 +10,12 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
+/**
+ * * This class implements the Dinitz maximum flow algorithm.
+ *
+ * @author Ashwin, Arun, Deepak, Haritha
+ *
+ */
 public class DinitzMaxFlow {
 	ResidualGraph gf;
 	ResidueVertex s, t;
@@ -31,6 +37,8 @@ public class DinitzMaxFlow {
 	}
 
 	/**
+	 * Routine to find the paths in the BFS tree with inceremental levels.
+	 *
 	 * @param u
 	 * @param minFlow
 	 * @return
@@ -39,12 +47,14 @@ public class DinitzMaxFlow {
 		if (u == t)
 			return minFlow;
 		ResidueEdge re;
-		for (Edge e : u) {
-			re = (ResidueEdge) e;
-			ResidueVertex v = (ResidueVertex) e.otherEnd(u);
-			if (bfs.getVertex(v).getDistance() == bfs.getVertex(u).getDistance() + 1 && re.inGf(u)) {
-				int flow = Math.min(minFlow, re.getResidualCapacity(u));
-				int finalFlow = findAugmentingPaths(v, flow);
+		int flow, finalFlow = 0;
+
+		while (u.iterator.hasNext()) {
+			re = (ResidueEdge) u.iterator.next();
+			ResidueVertex v = (ResidueVertex) re.otherEnd(u);
+			if (bfs.getVertex(v).getDistance() == bfs.getVertex(u).getDistance() + 1) {
+				flow = Math.min(minFlow, re.getResidualCapacity(u));
+				finalFlow = findAugmentingPaths(v, flow);
 				if (finalFlow > 0) {
 					if (re.from == u)
 						re.flow += finalFlow;
@@ -54,7 +64,7 @@ public class DinitzMaxFlow {
 				}
 			}
 		}
-		return 0;
+		return finalFlow;
 	}
 
 	/**
@@ -63,7 +73,7 @@ public class DinitzMaxFlow {
 	 * @return
 	 */
 	public int findMinimumResidualCapacityAndIncreaseFlow() {
-		int minResidualCapacity = Integer.MAX_VALUE, cf;
+		int minResidualCapacity = Flow.INFINITY, cf;
 		Vertex u, v = t;
 		ResidueEdge e;
 		List<ResidueEdge> path = new LinkedList<>();
@@ -89,20 +99,30 @@ public class DinitzMaxFlow {
 	/**
 	 * Dinitz max flow algorithm.
 	 *
-	 * @return
+	 * @return maxFlow
 	 */
 	public int dinitzMaxFlow() {
 		int maxFlow = 0, flow;
 		while (true) {
 			bfs.bfs();
-			if (bfs.getVertex(t).getDistance() == Integer.MAX_VALUE)
+			if (bfs.getVertex(t).getDistance() == Flow.INFINITY)
 				break;
-			// maxFlow += findMinimumResidualCapacityAndIncreaseFlow();
-			while ((flow = findAugmentingPaths(s, Integer.MAX_VALUE)) != 0)
-				// TODO: Use iterator
+			resetIteratorOfVertex();
+			while ((flow = findAugmentingPaths(s, Flow.INFINITY)) != 0)
 				maxFlow += flow;
 			bfs.reinitialize(s);
 		}
 		return maxFlow;
+	}
+
+	/**
+	 * Adds a new iterator to each vertex to avoid iteration through all the
+	 * adjacent edges repeatedly.
+	 */
+	private void resetIteratorOfVertex() {
+		for (Vertex u : gf) {
+			ResidueVertex ru = (ResidueVertex) u;
+			ru.iterator = ru.iterator();
+		}
 	}
 }

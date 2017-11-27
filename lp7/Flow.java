@@ -21,6 +21,8 @@ public class Flow {
 	ResidueVertex s, t;
 	HashMap<Edge, Integer> capacity;
 
+	static final int INFINITY = Integer.MAX_VALUE;
+
 	public Flow(Graph g, Vertex s, Vertex t, HashMap<Edge, Integer> capacity) {
 		gf = new ResidualGraph(g, capacity);
 		this.s = gf.getResidueVertexWithName(s.getName());
@@ -72,7 +74,10 @@ public class Flow {
 
 	/*
 	 * After maxflow has been computed, this method can be called to get the
-	 * "T"-side of the min-cut found by the algorithm
+	 * "T"-side of the min-cut found by the algorithm.
+	 *
+	 * Note-This method must be called only after finding the max flow using
+	 * either Dinitz/Preflow-push algorithms.
 	 */
 	public Set<Vertex> minCutT() {
 		BFS bfs = new BFS(gf, s);
@@ -82,5 +87,18 @@ public class Flow {
 			if (bfs.getVertex(v).getDistance() == BFS.INFINITY)
 				minCutT.add(v);
 		return minCutT;
+	}
+
+	public boolean verify() {
+		Set<Vertex> S = minCutS();
+		ResidueEdge re;
+		for (Vertex v : S)
+			for (Edge e : v) {
+				re = (ResidueEdge) e;
+				if (!S.contains(re.otherEnd(v)))
+					if (re.getResidualCapacity(v) != 0)
+						return false;
+			}
+		return true;
 	}
 }

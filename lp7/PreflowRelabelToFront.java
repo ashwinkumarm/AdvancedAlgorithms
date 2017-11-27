@@ -1,13 +1,13 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7;
 
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueEdge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
 /**
  * This class implements Preflow-push relabel to front algorithm to find the
@@ -21,6 +21,23 @@ public class PreflowRelabelToFront {
 	ResidualGraph gf;
 	ResidueVertex s, t;
 	HashMap<Edge, Integer> capacity;
+	Comparator<ResidueVertex> c = new PriorityComp();
+	// Queue to hold vertices with excess > 0
+	Queue<ResidueVertex> q = new PriorityQueue<>(c);
+	int maxPriority = 1, count = 0;
+
+	static class PriorityComp implements Comparator<ResidueVertex> {
+
+		@Override
+		public int compare(ResidueVertex v1, ResidueVertex v2) {
+			if (v1.priority > v2.priority)
+				return 1;
+			else if (v1.priority < v2.priority)
+				return -1;
+			else
+				return 0;
+		}
+	}
 
 	/**
 	 * @param gf
@@ -41,20 +58,14 @@ public class PreflowRelabelToFront {
 	 * the source.
 	 */
 	private void initialize() {
-		/*-for (Vertex u : gf) {
-			ResidueVertex ru = (ResidueVertex) u;
-			ru.height = 0;
-			ru.excess = 0;
-		}
-		for (Vertex u : gf)
-			for (Edge e : u)
-				((ResidueEdge) e).flow = 0;*/
 		s.height = gf.size();
 		for (Edge e : s) {
 			ResidueVertex ru = (ResidueVertex) e.otherEnd(s);
 			((ResidueEdge) e).flow = capacity.get(e);
 			s.excess = s.excess - capacity.get(e);
 			ru.excess = ru.excess + capacity.get(e);
+			if (e.to != s && e.to != t)
+				q.add((ResidueVertex) e.to);
 		}
 	}
 
@@ -73,6 +84,8 @@ public class PreflowRelabelToFront {
 		else
 			e.flow -= delta;
 		u.excess = u.excess - delta;
+		if (v.excess == 0 && v != s && v != t)
+			q.add(v);
 		v.excess = v.excess + delta;
 	}
 
@@ -128,32 +141,16 @@ public class PreflowRelabelToFront {
 	 */
 	public void relabelToFront() {
 		initialize();
-		// Create an list L of nodes in V - { s, t }, in any order
-		LinkedList<ResidueVertex> L = new LinkedList<>();
-		for (Vertex u : gf)
-			if (u != s && u != t)
-				L.add((ResidueVertex) u);
-		boolean done = false;
 		ResidueVertex ru = null;
-		while (!done) {
-			Iterator<ResidueVertex> it = L.iterator();
-			done = true;
-			while (it.hasNext()) {
-				ru = it.next();
-				if (ru.excess == 0)
-					continue;
-				int oldHeight = ru.height;
-				discharge(ru);
-				if (ru.height != oldHeight) {
-					done = false;
-					break;
-				}
-			}
-			if (!done) {
-				// Move u to beginning of L
-				it.remove();
-				L.addFirst(ru);
-			}
+		int oldHeight;
+		while (!q.isEmpty()) {
+			ru = q.poll();
+			oldHeight = ru.height;
+			count++;
+			discharge(ru);
+			if (ru.height != oldHeight)
+				ru.priority = maxPriority++;
 		}
+		System.out.println(count);
 	}
 }
