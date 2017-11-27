@@ -24,7 +24,7 @@ public class PreflowRelabelToFront {
 	Comparator<ResidueVertex> c = new PriorityComp();
 	// Queue to hold vertices with excess > 0
 	Queue<ResidueVertex> q = new PriorityQueue<>(c);
-	int maxPriority = 1, count = 0;
+	int maxPriority = 1;
 
 	static class PriorityComp implements Comparator<ResidueVertex> {
 
@@ -146,11 +146,9 @@ public class PreflowRelabelToFront {
 		while (!q.isEmpty()) {
 			ru = q.poll();
 			oldHeight = ru.height;
-			count++;
 			discharge(ru);
 			if (ru.height != oldHeight)
 				ru.priority = maxPriority++;
 		}
-		System.out.println(count);
 	}
 }
