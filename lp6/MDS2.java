@@ -317,11 +317,9 @@ public class MDS2 {
 			if ((supplierSet = suppliersGroupedByItemIds.get(entry.getValue().getItemPriceMap().keySet())) != null) {
 				supplierSet.add(entry.getKey());
 			} else {
-				suppliersGroupedByItemIds.put(entry.getValue().getItemPriceMap().keySet(), new HashSet<Long>() {
-					{
-						add(entry.getKey());
-					}
-				});
+				HashSet<Long> suppliers = new HashSet<>();
+				suppliers.add(entry.getKey());
+				suppliersGroupedByItemIds.put(entry.getValue().getItemPriceMap().keySet(), suppliers);
 			}
 
 		}
