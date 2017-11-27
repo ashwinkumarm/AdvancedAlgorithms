@@ -12,6 +12,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
 /**
+ * This class contains calls to all maximum flow algorithms.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *
@@ -89,6 +90,11 @@ public class Flow {
 		return minCutT;
 	}
 
+	/**
+	 * Verification method.
+	 *
+	 * @return
+	 */
 	public boolean verify() {
 		Set<Vertex> S = minCutS();
 		ResidueEdge re;
