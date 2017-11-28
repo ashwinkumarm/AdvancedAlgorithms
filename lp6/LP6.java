@@ -15,7 +15,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  *
  */
 public class LP6 {
-	static int VERBOSE = 0;
+	static int VERBOSE = 1;
 	static int limit = 0;
 
 	static class Container {
@@ -85,6 +85,7 @@ public class LP6 {
 
 	/**
 	 * Main method for testing
+	 * 
 	 * @param args
 	 * @throws FileNotFoundException
 	 */

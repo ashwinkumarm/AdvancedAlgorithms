@@ -11,7 +11,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
 
 /**
- * * This class implements the Dinitz maximum flow algorithm.
+ * This class implements the Dinitz maximum flow algorithm.
  *
  * @author Ashwin, Arun, Deepak, Haritha
  *
