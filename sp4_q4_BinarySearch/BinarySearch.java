@@ -115,7 +115,7 @@ public class BinarySearch {
 		for (int i = 0; i < a.length; i++) {
 			arr[i] = new Integer(a[i]);
 		}
-		int x = 0;
+		int x = 19;
 		int index = binarySearch(arr, x);
 		if (index != -1) {
 			System.out.println("Index of the larget number less than or equal to " + x + ": " + index);

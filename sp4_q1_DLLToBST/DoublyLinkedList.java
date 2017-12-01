@@ -235,7 +235,7 @@ public class DoublyLinkedList<T> implements Iterable<T> {
 		}
 
 		DoublyLinkedList<Integer> lst = new DoublyLinkedList<>();
-		for (int i = 1; i <= n; i++) {
+		for (int i = 1; i <= 6; i++) {
 			lst.add(new Integer(i));
 		}
 		lst.printList();

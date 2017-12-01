@@ -87,4 +87,11 @@ public class MergeSortInt {
 		}
 
 	}
+	
+	
+	public static void main(String[] args){
+		int[] arr = {14,7,3,12,9,11,6,2};
+		int[] t = new int[arr.length];
+		mergeSort(arr,t);
+	}
 }
