@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueEdge;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ResidualGraph;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ResidualGraph.ResidueEdge;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ResidualGraph.ResidueVertex;
 
 /**
  * This class implements Preflow-push relabel to front algorithm to find the
@@ -30,9 +31,9 @@ public class PreflowRelabelToFront {
 
 		@Override
 		public int compare(ResidueVertex v1, ResidueVertex v2) {
-			if (v1.priority > v2.priority)
+			if (v1.getPriority() > v2.getPriority())
 				return 1;
-			else if (v1.priority < v2.priority)
+			else if (v1.getPriority() < v2.getPriority())
 				return -1;
 			else
 				return 0;
@@ -95,24 +96,10 @@ public class PreflowRelabelToFront {
 	 * v.height
 	 *
 	 * @param u
+	 * @param minHeight
 	 */
-	private void relabel(ResidueVertex u) {
-		u.height = 1 + getAdjacentVertexWithMinimumHeight(u);
-	}
-
-	/**
-	 * Finds the adjacent vertex with minimum height.
-	 *
-	 * @param u
-	 * @return
-	 */
-	private int getAdjacentVertexWithMinimumHeight(ResidueVertex u) {
-		int minHeight = Integer.MAX_VALUE, vHeight;
-		for (Edge e : u) {
-			if ((vHeight = ((ResidueVertex) e.otherEnd(u)).height) < minHeight)
-				minHeight = vHeight;
-		}
-		return minHeight;
+	private void relabel(ResidueVertex u, int minHeight) {
+		u.height = 1 + minHeight;
 	}
 
 	/**
@@ -122,17 +109,21 @@ public class PreflowRelabelToFront {
 	 */
 	private void discharge(ResidueVertex u) {
 		ResidueEdge re;
+		int minHeight;
 		while (u.excess > 0) {
+			minHeight = Integer.MAX_VALUE;
 			for (Edge e : u) {
-				re = (ResidueEdge) e;
 				ResidueVertex v = (ResidueVertex) e.otherEnd(u);
+				if (v.height < minHeight)
+					minHeight = v.height;
+				re = (ResidueEdge) e;
 				if (u.height == 1 + v.height) {
 					push(u, v, re);
 					if (u.excess == 0)
 						return;
 				}
 			}
-			relabel(u);
+			relabel(u, minHeight);
 		}
 	}
 
@@ -148,7 +139,7 @@ public class PreflowRelabelToFront {
 			oldHeight = ru.height;
 			discharge(ru);
 			if (ru.height != oldHeight)
-				ru.priority = maxPriority++;
+				ru.setPriority(maxPriority++);
 		}
 	}
 }

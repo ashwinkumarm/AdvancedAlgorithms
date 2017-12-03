@@ -1,12 +1,9 @@
-package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7;
+package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ArrayIterator;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 
 /**
  * This class extends the graph class with a modified iterator to iterate only
@@ -19,16 +16,16 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 public class ResidualGraph extends Graph {
 	ResidueVertex[] residueVertexArray;
 	static HashMap<Edge, Integer> edgeCapacity;
+	public int maximumWeight;
 
 	/**
 	 * Nested class to represent a Vertex of a ResidueGraph
 	 */
 	public static class ResidueVertex extends Vertex {
-		int height, excess;
+		public int height, excess, p, priority;
 		List<ResidueEdge> residueAdj;
 		List<ResidueEdge> residueRevadj;
-		Iterator<Edge> iterator;
-		int priority;
+		public Iterator<Edge> iterator;
 
 		/**
 		 * Constructor for Residue vertex
@@ -44,6 +41,14 @@ public class ResidualGraph extends Graph {
 		@Override
 		public Iterator<Edge> iterator() {
 			return new ResidueVertexIterator(this);
+		}
+
+		public int getPriority() {
+			return priority;
+		}
+
+		public void setPriority(int priority) {
+			this.priority = priority;
 		}
 
 		/**
@@ -103,7 +108,7 @@ public class ResidualGraph extends Graph {
 	 *
 	 */
 	public static class ResidueEdge extends Edge {
-		int flow;
+		public int flow;
 
 		/**
 		 * Constructor for initializing the Residue Edge
@@ -126,6 +131,15 @@ public class ResidualGraph extends Graph {
 		 */
 		public int getResidualCapacity(Vertex u) {
 			return from == u ? edgeCapacity.get(this) - flow : flow;
+		}
+
+		/**
+		 * @param e
+		 * @param u
+		 * @return
+		 */
+		public int getCost(Vertex u) {
+			return from == u ? weight : -weight;
 		}
 
 		/**
@@ -160,6 +174,8 @@ public class ResidualGraph extends Graph {
 		for (Vertex u : g) {
 			ResidueVertex x1 = getVertex(u);
 			for (Edge e : u) {
+				if (e.weight > maximumWeight)
+					maximumWeight = e.weight;
 				Vertex v = e.otherEnd(u);
 				ResidueVertex x2 = getVertex(v);
 				residueEdge = new ResidueEdge(x1, x2, e.weight, capacity.get(e), e.getName());
@@ -177,7 +193,7 @@ public class ResidualGraph extends Graph {
 	 * @param u
 	 * @return
 	 */
-	ResidueVertex getVertex(Vertex u) {
+	public ResidueVertex getVertex(Vertex u) {
 		return Vertex.getVertex(residueVertexArray, u);
 	}
 

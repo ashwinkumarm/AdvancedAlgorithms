@@ -4,12 +4,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueEdge;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.ResidualGraph.ResidueVertex;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.BFS;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ResidualGraph;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ResidualGraph.ResidueEdge;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ResidualGraph.ResidueVertex;
 
 /**
  * This class contains calls to all maximum flow algorithms.
@@ -18,7 +19,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
  *
  */
 public class Flow {
-	ResidualGraph gf;
+	public ResidualGraph gf;
 	ResidueVertex s, t;
 	HashMap<Edge, Integer> capacity;
 

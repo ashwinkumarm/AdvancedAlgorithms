@@ -15,13 +15,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
+
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q1_TopologicalOrdering.TopologicalOrder;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp3_q4_IsADAG.DFSCheckDAG;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp6_q4and6_PrimAlgo2.IndexedHeap;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphAlgorithm;
 
 public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 
@@ -179,6 +180,9 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 		}
 	}
 
+	// To find negative cycle
+	public ShortestPathVertex u;
+
 	/**
 	 * Implements bellmanFord method for finding the shortest path
 	 */
@@ -187,7 +191,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 		q.add(getVertex(s));
 		int V = g.size();
 		while (!q.isEmpty()) {
-			ShortestPathVertex u = q.remove();
+			u = q.remove();
 			u.seen = false;
 			u.count = u.count + 1;
 			if (u.count >= V) {
@@ -301,6 +305,20 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 		return null;
 	}
 
+	public LinkedList<Edge> getNegativeCycle() {
+		LinkedList<Edge> cycle = null;
+		if (!bellmanFord()) {
+			cycle = new LinkedList<>();
+			ShortestPathVertex cur = u;
+			while (cur.parent != u.vertex) {
+				cycle.add(g.getEdgeFromGraph(cur.parent, cur.vertex));
+				cur = getVertex(cur.parent);
+			}
+			cycle.add(g.getEdgeFromGraph(cur.parent, cur.vertex));
+		}
+		return cycle;
+	}
+
 	/**
 	 * Method to print all the shortest path
 	 */
@@ -332,7 +350,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 
 		Scanner in;
 		boolean isDirectedGraph = false; // flag to read directed or undirected
-										// graph
+											// graph
 		Graph g;
 		Graph.Vertex src;
 		ShortestPath sp;
@@ -354,6 +372,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 
 		System.out.println("Enter 1 to find shortest path or ");
 		System.out.println("2. to find odd length cycle in a undirected graph using BFS");
+		System.out.println("3. to find negative cycle");
 		int a = in.nextInt();
 		switch (a) {
 		case 1:
@@ -378,6 +397,10 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 					System.out.println(edge);
 				}
 			}
+			break;
+		case 3:
+			sp = new ShortestPath(g, src);
+			System.out.println(sp.getNegativeCycle());
 			break;
 		default:
 			break;

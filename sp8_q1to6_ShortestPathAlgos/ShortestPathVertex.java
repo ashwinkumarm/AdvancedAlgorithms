@@ -15,6 +15,12 @@ public class ShortestPathVertex implements Index {
 	public Graph.Vertex vertex;
 	public int distance, index, count;
 	public long spCount;
+
+	@Override
+	public String toString() {
+		return vertex.toString();
+	}
+
 	public boolean seen;
 	public Graph.Vertex parent;
 

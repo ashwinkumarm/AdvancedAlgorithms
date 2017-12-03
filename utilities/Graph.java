@@ -367,6 +367,21 @@ public class Graph implements Iterable<Graph.Vertex> {
 	}
 
 	/**
+	 * This method gets the edge from the graph.
+	 *
+	 * @param parent
+	 * @param vertex
+	 * @param g
+	 * @return
+	 */
+	public Edge getEdgeFromGraph(Vertex parent, Vertex vertex) {
+		for (Edge e : parent)
+			if (e.otherEnd(parent).getName() == vertex.getName())
+				return e;
+		return null;
+	}
+
+	/**
 	 * Method to create iterator for vertices of graph
 	 */
 	public Iterator<Vertex> iterator() {
