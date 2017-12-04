@@ -63,7 +63,7 @@ public class CostScaling {
 	}
 
 	int RC(ResidueEdge e, Vertex u) {
-		return e.getCost(u) + ((ResidueVertex) e.from).p - ((ResidueVertex) e.to).p;
+		return e.cost(u) + ((ResidueVertex) e.from).p - ((ResidueVertex) e.to).p;
 	}
 
 	void discharge(ResidueVertex u) { // drain the excess at u
