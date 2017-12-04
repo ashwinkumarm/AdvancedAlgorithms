@@ -8,7 +8,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 // Driver program for testing LP7
 
 public class rbkLP7 {
-	static int VERBOSE = 0, which = 0;
+	static int VERBOSE = 1, which = 1;
 
 	public static void main(String[] args) {
 		int extra = 0;

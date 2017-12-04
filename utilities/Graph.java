@@ -176,6 +176,11 @@ public class Graph implements Iterable<Graph.Vertex> {
 			name = n;
 		}
 
+		public int cost(Vertex u) {
+			return weight;
+		}
+
+
 		/**
 		 * Method to find the other end end of an edge, given a vertex reference
 		 * This method is used for undirected graphs

@@ -27,7 +27,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.util
 public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 
 	public static final int INFINITY = Integer.MAX_VALUE;
-	Graph.Vertex s;
+	public Graph.Vertex s;
 	Boolean isPull = false;
 
 	/**
@@ -76,7 +76,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 	 * @param newSource
 	 *            : Graph Vertex : source vertex in the graph
 	 */
-	void reinitialize(Graph.Vertex newSource) {
+	public void reinitialize(Graph.Vertex newSource) {
 		s = newSource;
 		int index = 0;
 		for (Graph.Vertex u : g) {
@@ -85,6 +85,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 		}
 		getVertex(s).distance = 0;
 		getVertex(s).seen = true;
+		u = null;
 	}
 
 	/**
@@ -93,12 +94,12 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 	 *
 	 * @param e
 	 *            : Graph.Edge : Edge to be relaxed
+	 * @param u
 	 * @return boolean : true if the edge is relaxed else false
 	 */
-	boolean relax(Graph.Edge e) {
+	boolean relax(Graph.Edge e, Vertex u) {
 
-		Graph.Vertex u = e.from;
-		Graph.Vertex v = e.to;
+		Graph.Vertex v = e.otherEnd(u);
 		if (!g.isDirected()) {
 			if (seen(v)) {
 				Graph.Vertex tmp = u;
@@ -106,8 +107,8 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 				v = tmp;
 			}
 		}
-		if (distance(u) != INFINITY && distance(v) > distance(u) + e.weight) {
-			getVertex(v).distance = distance(u) + e.weight;
+		if (distance(u) != INFINITY && distance(v) > distance(u) + e.cost(u)) {
+			getVertex(v).distance = distance(u) + e.cost(u);
 			getVertex(v).parent = u;
 			return true;
 		}
@@ -137,7 +138,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 			for (Graph.Edge e : u) {
 				Graph.Vertex v = e.otherEnd(u);
 				if (!seen(v)) {
-					relax(e);
+					relax(e, u);
 					q.add(v);
 					getVertex(v).seen = true;
 				}
@@ -153,7 +154,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 		for (Graph.Vertex u : topoOrder) {
 			List<Edge> edgeList = isPull ? u.revAdj : u.adj;
 			for (Edge e : edgeList) {
-				relax(e);
+				relax(e, u);
 			}
 		}
 	}
@@ -171,7 +172,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 			u = vertexQueue.remove();
 			u.seen = true;
 			for (Graph.Edge e : u.vertex) {
-				boolean changed = relax(e);
+				boolean changed = relax(e, u.vertex);
 				if (changed) {
 					ShortestPathVertex sv = getVertex(e.otherEnd(u.vertex));
 					vertexQueue.decreaseKey(sv);
@@ -188,6 +189,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 	 */
 	public boolean bellmanFord() {
 		Queue<ShortestPathVertex> q = new LinkedList<>();
+		getVertex(s).seen = true;
 		q.add(getVertex(s));
 		int V = g.size();
 		while (!q.isEmpty()) {
@@ -198,7 +200,7 @@ public class ShortestPath extends GraphAlgorithm<ShortestPathVertex> {
 				return false;
 			}
 			for (Edge e : u.vertex) {
-				if (relax(e)) {
+				if (relax(e, u.vertex)) {
 					Vertex v = e.otherEnd(u.vertex);
 					if (!seen(v)) {
 						q.add(getVertex(v));

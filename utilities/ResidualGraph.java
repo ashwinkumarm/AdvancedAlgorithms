@@ -109,6 +109,7 @@ public class ResidualGraph extends Graph {
 	 */
 	public static class ResidueEdge extends Edge {
 		public int flow;
+		public boolean isEr = false;
 
 		/**
 		 * Constructor for initializing the Residue Edge
@@ -134,15 +135,6 @@ public class ResidualGraph extends Graph {
 		}
 
 		/**
-		 * @param e
-		 * @param u
-		 * @return
-		 */
-		public int getCost(Vertex u) {
-			return from == u ? weight : -weight;
-		}
-
-		/**
 		 * Method to check if the edge (edge out of u in Gf because of e/ edge
 		 * out of u in Gf because of flow) has residual capacity greater than 0.
 		 *
@@ -152,6 +144,10 @@ public class ResidualGraph extends Graph {
 		 */
 		public boolean inGf(Vertex u) {
 			return from == u ? flow < edgeCapacity.get(this) : flow > 0;
+		}
+
+		public int cost(Vertex u) {
+			return from == u ? weight : -weight;
 		}
 	}
 
@@ -262,10 +258,10 @@ public class ResidualGraph extends Graph {
 	 * @param g
 	 * @return
 	 */
-	public Edge getEdgeFromGraph(Vertex parent, Vertex vertex) {
+	public ResidueEdge getEdgeFromGraph(Vertex parent, Vertex vertex) {
 		for (Edge e : ((ResidueVertex) parent).residueAdj)
-			if (e.to.getName() == vertex.getName())
-				return e;
+			if (e.otherEnd(parent).getName() == vertex.getName())
+				return (ResidueEdge) e;
 		return null;
 	}
 }

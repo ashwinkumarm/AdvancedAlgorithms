@@ -9,7 +9,6 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp8_
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ResidualGraph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.ResidualGraph.ResidueEdge;
 
 public class MinCostFlow {
@@ -30,39 +29,54 @@ public class MinCostFlow {
 	int cycleCancellingMinCostFlow(int d) {
 		f = new Flow(g, s, t, capacity);
 		int value = f.dinitzMaxFlow();
-		ShortestPath sp = new ShortestPath(f.gf, f.gf.getVertex(s));
-		LinkedList<Edge> cycle = new LinkedList<>();
+		System.out.println(value);
+		LinkedList<ResidueEdge> cycle = new LinkedList<>();
 		int minFlowOfCycle;
-		while (!sp.bellmanFord()) {
-			getNegativeCycle(sp, cycle);
-			// TODO:
-			minFlowOfCycle = getMinimumWeightEdgeFromCycle(cycle);
-			for (Edge e : cycle) {
-
-			}
+		ShortestPath sp;
+		while ((sp = checkIfNegativeCycleExists()) != null) {
+			minFlowOfCycle = getNegativeCycleAndMinFlow(sp, cycle);
+			for (ResidueEdge e : cycle)
+				if (e.isEr)
+					e.flow -= minFlowOfCycle;
+				else
+					e.flow += minFlowOfCycle;
 			cycle = new LinkedList<>();
 		}
-		return 0;
+		return getMinCost();
 	}
 
-	private int getMinimumWeightEdgeFromCycle(LinkedList<Edge> cycle) {
-		int flowTobeSent = Integer.MAX_VALUE;
-
-		return flowTobeSent;
+	private ShortestPath checkIfNegativeCycleExists() {
+		for (Vertex v : f.gf) {
+			ShortestPath sp = new ShortestPath(f.gf, f.gf.getVertex(v));
+			if (!sp.bellmanFord())
+				return sp;
+		}
+		return null;
 	}
 
-	public int getNegativeCycle(ShortestPath sp, LinkedList<Edge> cycle) {
+	public int getNegativeCycleAndMinFlow(ShortestPath sp, LinkedList<ResidueEdge> cycle) {
 		ShortestPathVertex cur = sp.u;
-		int flowTobeSent = Integer.MAX_VALUE, flow;
-		while (cur.parent != sp.u.vertex) {
-			ResidueEdge e = (ResidueEdge) f.gf.getEdgeFromGraph(cur.parent, cur.vertex);
-			if ((flow = ((ResidueEdge) e).getResidualCapacity(null)) < flowTobeSent)
+		ResidueEdge e = (ResidueEdge) f.gf.getEdgeFromGraph(cur.parent, cur.vertex);
+		int flowTobeSent = checkErAndGetResidualCapacity(e, cur.parent), flow;
+		cycle.add(e);
+		cur = sp.getVertex(cur.parent);
+		while (cur.vertex != sp.u.vertex) {
+			e = (ResidueEdge) f.gf.getEdgeFromGraph(cur.parent, cur.vertex);
+			if ((flow = checkErAndGetResidualCapacity(e, cur.parent)) < flowTobeSent)
 				flowTobeSent = flow;
 			cycle.add(e);
 			cur = sp.getVertex(cur.parent);
 		}
-		cycle.add(g.getEdgeFromGraph(cur.parent, cur.vertex));
 		return flowTobeSent;
+	}
+
+	public int checkErAndGetResidualCapacity(ResidueEdge e, Vertex u) {
+		if (e.from == u)
+			return capacity.get(e) - e.flow;
+		else {
+			e.isEr = true;
+			return e.flow;
+		}
 	}
 
 	// Return cost of d units of flow found by successive shortest paths
@@ -78,16 +92,14 @@ public class MinCostFlow {
 		System.out.println(value);
 		CostScaling cs = new CostScaling(f.gf, s, t, capacity);
 		cs.minCostCirculation();
-		return getMinCost(f.gf);
+		return getMinCost();
 	}
 
-	private int getMinCost(ResidualGraph gf) {
+	private int getMinCost() {
 		int cost = 0;
-		ResidueEdge re;
-		for (Vertex u : gf)
+		for (Vertex u : g)
 			for (Edge e : u) {
-				re = (ResidueEdge) e;
-				cost += re.flow * re.getCost(u);
+				cost += f.gf.getEdgeFromGraph(f.gf.getVertex(e.from), f.gf.getVertex(e.to)).flow * e.cost(u);
 			}
 		return cost;
 	}

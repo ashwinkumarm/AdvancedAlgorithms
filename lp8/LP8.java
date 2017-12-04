@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.lp7.Flow;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Edge;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph.Vertex;
@@ -60,7 +59,7 @@ public class LP8 {
 		 * Flow(g, src, target, capacity); int value = f.relabelToFront();
 		 */
 		MinCostFlow mcf = new MinCostFlow(g, src, target, capacity, cost);
-		int minCost = mcf.costScalingMinCostFlow();
+		int minCost = mcf.cycleCancellingMinCostFlow(0);
 		System.out.println(minCost);
 
 		if (VERBOSE > 0) {
