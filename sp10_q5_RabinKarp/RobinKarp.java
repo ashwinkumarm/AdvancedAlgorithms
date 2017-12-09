@@ -1,6 +1,6 @@
 package cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp10_q5_RabinKarp;
 
-public class RabinKarp {
+public class RobinKarp {
 
 	public static void robinkarp(String text, String pattern) {
 		char[] textArr = text.toCharArray();

@@ -49,19 +49,6 @@ public class ArrayIteratorTimes<Integer> implements Iterator<Integer> {
 		return arr[cursor + 1];
 	}
 
-	public static void main(String[] args) {
-
-//		Object[] inp = {3,8,0,9,2,12};
-//		Object[] inp = {};
-//		Object[] inp = {-1, 8 , 0, 0, 1, 1};
-		Object[] inp = {'a', 8, 0,1};
-		
-//		ArrayIteratorTimes<Integer> it = new ArrayIteratorTimes<Integer>(inp);
-//
-//		while (it.hasNext()) {
-//			System.out.println(it.next());
-//		}
-	}
 }
 
 
