@@ -26,28 +26,28 @@ public class LP2 {
 		if (args.length > 2) {
 			VERBOSE = Integer.parseInt(args[2]);
 		}
+		Timer t = new Timer();
 		Graph g = Graph.readDirectedGraph(in);
+		System.out.println("Read Graph" + t.end());
 		Graph.Vertex startVertex = g.getVertex(start);
 
-		Timer timer = new Timer();
 		Euler euler = new Euler(g, startVertex);
 		euler.setVerbose(VERBOSE);
-
+		t.start();
 		boolean eulerian = euler.isEulerian();
+		System.out.println("Is Eulerian" + t.end());
 		if (!eulerian) {
 			return;
 		}
+		t.start();
 		List<Graph.Edge> tour = euler.findEulerTour();
-		timer.end();
+		System.out.println(t.end());
 
 		if (VERBOSE > 0) {
 			System.out.println("Output:\n_________________________");
-			for (Graph.Edge e : tour) {
-				System.out.print(e);
-			}
+			System.out.print(tour);
 			System.out.println();
 			System.out.println("_________________________");
 		}
-		System.out.println(timer);
 	}
 }

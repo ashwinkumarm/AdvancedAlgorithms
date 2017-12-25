@@ -12,7 +12,7 @@ public class Tokenizer {
 		if (s.matches("\\d+")) { // one or more digits
 			return Token.NUM;
 		} else if (s.matches("[a-z]")) { // letter
-			int index = s.charAt(0) - 'a'; // Convert var to index: a-z maps to
+			//int index = s.charAt(0) - 'a'; // Convert var to index: a-z maps to
 											// 0-25
 			return Token.VAR;
 		} else if (s.equals("+") || s.equals("-") || s.equals("*") || s.equals("/") || s.equals("%") || s.equals("^")
@@ -37,7 +37,7 @@ public class Tokenizer {
 
 	/**
 	 * Main method for testing
-	 * 
+	 *
 	 * @param args
 	 * @throws Exception
 	 */
@@ -51,6 +51,7 @@ public class Tokenizer {
 				System.out.println();
 			}
 		}
+		in.close();
 	}
 
 }

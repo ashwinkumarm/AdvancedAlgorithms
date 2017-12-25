@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFSWithColoring;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphVertexColor;
 
@@ -35,30 +35,30 @@ public class ConnectedComponentsOfGraph {
 
 		int cno = 0; // no of components
 		Iterator<Graph.Vertex> it = g.iterator();
-		DFS dfsGraph = new DFS(g);
+		DFSWithColoring dfsGraph = new DFSWithColoring(g);
 		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>();
 		Graph.Vertex u;
 		while (it.hasNext()) {
 			u = it.next();
 			if (dfsGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
-				DFS.cno++;
+				DFSWithColoring.cno++;
 				dfsGraph.dfsVisit(u, decFinishList);
 			}
 		}
 
-		DFS.cno = 0;
+		DFSWithColoring.cno = 0;
 		dfsGraph.reinitialize(g);
 		List<Graph.Vertex> decFinishList2 = new LinkedList<Graph.Vertex>();
 		for (Graph.Vertex v : decFinishList) {
 			if (dfsGraph.getVertexStatus(v) == GraphVertexColor.WHITE) {
-				DFS.cno++;
+				DFSWithColoring.cno++;
 				dfsGraph.dfsVisitReverse(v, decFinishList2);
 			}
 		}
 
 		if (decFinishList2.size() == g.size()) { // if not all vertices are processed then the graph is not strongly
 													// connected
-			cno = DFS.cno;
+			cno = DFSWithColoring.cno;
 			return cno;
 		}
 		return cno;

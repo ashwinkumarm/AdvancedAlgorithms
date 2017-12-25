@@ -8,7 +8,7 @@ import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.sp1_
 
 /**
  * This class performs 4 different versions of merge sort
- * 
+ *
  * @author Ashwin, Arun, Deepak, Haritha
  *
  */
@@ -18,7 +18,7 @@ public class MergeSortVariations {
 	/**
 	 * Performs the merge sort algorithm by creating two tmp arrays in the merge
 	 * phase
-	 * 
+	 *
 	 * @param A
 	 */
 	static void mergeSortVersion1(int[] A) {
@@ -28,7 +28,7 @@ public class MergeSortVariations {
 	/**
 	 * Recursively divides the array and performs the merge operation by sorting the
 	 * arrays
-	 * 
+	 *
 	 * @param A
 	 * @param l
 	 * @param r
@@ -44,7 +44,7 @@ public class MergeSortVariations {
 
 	/**
 	 * Merge method sorts the given array with the help of two tmp arrays(L and R)
-	 * 
+	 *
 	 * @param A
 	 * @param l
 	 * @param mid
@@ -69,7 +69,7 @@ public class MergeSortVariations {
 	/**
 	 * Performs the merge sort algorithm by passing the tmp array as an argument to
 	 * the merge phase
-	 * 
+	 *
 	 * @param A
 	 */
 	static void mergeSortVersion2(int[] A) {
@@ -80,7 +80,7 @@ public class MergeSortVariations {
 	/**
 	 * Recursively divides the array and performs the merge operation by sorting the
 	 * arrays
-	 * 
+	 *
 	 * @param A
 	 * @param l
 	 * @param r
@@ -95,10 +95,10 @@ public class MergeSortVariations {
 	}
 
 	/**
-	 * 
+	 *
 	 * Merge method sorts the given array with the help of one tmp arrays passed as
 	 * an argument
-	 * 
+	 *
 	 * @param A
 	 * @param tmp
 	 * @param l
@@ -119,7 +119,7 @@ public class MergeSortVariations {
 	/**
 	 * Performs the merge sort algorithm by performing the insertion sort for the
 	 * array size less than some threshold else performs the merge sort
-	 * 
+	 *
 	 * @param A
 	 */
 	static void mergeSortVersion3(int A[]) {
@@ -130,13 +130,13 @@ public class MergeSortVariations {
 	/**
 	 * Recursively divides the array and performs the insertion sort for some
 	 * threshold or else merge operation by sorting the arrays
-	 * 
+	 *
 	 * @param A
 	 * @param l
 	 * @param r
 	 */
 	private static void mergeSortVersion3(int[] A,int[] tmp, int l, int r) {
-		if ((r - l) < 18) {
+		if ((r - l) < 5) {
 			insertionSort(A, l, r);
 		} else {
 			int mid = (l + r) / 2;
@@ -148,7 +148,7 @@ public class MergeSortVariations {
 
 	/**
 	 * Performs the insertion sort on the given array
-	 * 
+	 *
 	 * @param A
 	 * @param l
 	 * @param r
@@ -171,7 +171,7 @@ public class MergeSortVariations {
 	/**
 	 * Merge method sorts the given array with the help of one tmp array passed as
 	 * an argument
-	 * 
+	 *
 	 * @param A
 	 * @param tmp
 	 * @param l
@@ -193,7 +193,7 @@ public class MergeSortVariations {
 	 * Performs the merge sort algorithm by performing the insertion sort for the
 	 * array size less than some threshold else performs the merge sort without
 	 * copying the input array to tmp array
-	 * 
+	 *
 	 * @param A
 	 */
 	static void mergeSortVersion4(int A[]) {
@@ -205,14 +205,14 @@ public class MergeSortVariations {
 	/**
 	 * Recursively divides the array and performs the insertion sort for some
 	 * threshold or else merge operation by sorting the arrays
-	 * 
+	 *
 	 * @param A
 	 * @param B
 	 * @param l
 	 * @param r
 	 */
 	private static void mergeSortVersion4(int[] A, int[] B, int l, int r) {
-		if ((r - l) < 18) {
+		if ((r - l) < 5) {
 			insertionSort(A, l, r);
 		} else {
 			int mid = (l + r) / 2;
@@ -225,7 +225,7 @@ public class MergeSortVariations {
 	/**
 	 * Merge method sorts the given array without copying the input array to tmp
 	 * array
-	 * 
+	 *
 	 * @param A
 	 * @param B
 	 * @param l
@@ -244,7 +244,7 @@ public class MergeSortVariations {
 
 	/**
 	 * Main method for testing
-	 * 
+	 *
 	 * @param args
 	 * @throws FileNotFoundException
 	 */

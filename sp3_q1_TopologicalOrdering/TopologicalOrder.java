@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
-import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFS;
+import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.DFSWithColoring;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.Graph;
 import cs6301.g12.Implementation_of_Advanced_Data_Structures_and_Algorithms.utilities.GraphVertexColor;
 
@@ -68,14 +68,14 @@ public class TopologicalOrder {
 	public static List<Graph.Vertex> toplogicalOrder2(Graph g) {
 
 		Iterator<Graph.Vertex> it = g.iterator();
-		DFS dfsTopoGraph = new DFS(g);
+		DFSWithColoring dfsTopoGraph = new DFSWithColoring(g);
 		List<Graph.Vertex> decFinishList = new LinkedList<Graph.Vertex>(); // list to store vertices in decrerasing
 																			// order of their finish time
 		Graph.Vertex u;
 		while (it.hasNext()) {
 			u = it.next();
 			if (dfsTopoGraph.getVertexStatus(u) == GraphVertexColor.WHITE) {
-				DFS.cno++;
+				DFSWithColoring.cno++;
 				if (!dfsTopoGraph.dfsVisitAndIsDAG(u, decFinishList)) {
 					return null;
 				}
